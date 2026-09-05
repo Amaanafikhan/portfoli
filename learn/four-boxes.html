@@ -1,0 +1,651 @@
+<title>The Four Boxes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+
+<style>
+:root{
+  --ground:#E9E7F2;
+  --panel:#FFFFFF;
+  --panel-2:#F3F1F9;
+  --ink:#1A1726;
+  --ink-soft:#5C5570;
+  --ink-faint:#8B84A0;
+  --rule:#D6D2E4;
+  --accent:#D91A63;
+  --list:#2F5BEA;
+  --tuple:#B96C05;
+  --dict:#D91A63;
+  --set:#0F9E76;
+  --good:#0F9E76;
+  --bad:#D9342B;
+  --console:#221E31;
+  --console-ink:#EDEAF7;
+  --shadow:0 2px 0 rgba(26,23,38,.12), 0 14px 32px -18px rgba(26,23,38,.55);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141220;
+    --panel:#1E1B2C;
+    --panel-2:#262236;
+    --ink:#EFECF7;
+    --ink-soft:#ADA5C2;
+    --ink-faint:#7B7392;
+    --rule:#332E47;
+    --accent:#FF4B87;
+    --list:#7C9BFF;
+    --tuple:#F0A93C;
+    --dict:#FF4B87;
+    --set:#2FD3A0;
+    --good:#2FD3A0;
+    --bad:#FF6B60;
+    --console:#0E0C16;
+    --console-ink:#E6E1F5;
+    --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141220;
+  --panel:#1E1B2C;
+  --panel-2:#262236;
+  --ink:#EFECF7;
+  --ink-soft:#ADA5C2;
+  --ink-faint:#7B7392;
+  --rule:#332E47;
+  --accent:#FF4B87;
+  --list:#7C9BFF;
+  --tuple:#F0A93C;
+  --dict:#FF4B87;
+  --set:#2FD3A0;
+  --good:#2FD3A0;
+  --bad:#FF6B60;
+  --console:#0E0C16;
+  --console-ink:#E6E1F5;
+  --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.6;
+}
+.wrap{max-width:760px;margin:0 auto;padding:44px 20px 72px;display:flex;flex-direction:column;gap:52px}
+
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1{font-size:clamp(38px,8vw,60px);font-weight:800;line-height:.96}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-size:clamp(24px,4.5vw,31px);font-weight:800;line-height:1.08}
+h3{font-size:19px;font-weight:800;letter-spacing:-.02em}
+p{margin:0}
+.lede{font-size:18px;line-height:1.6;color:var(--ink-soft);max-width:62ch}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px}
+b{font-weight:800}
+
+/* ---- section scaffolding ---- */
+section{display:flex;flex-direction:column;gap:18px}
+.step{
+  display:flex;align-items:baseline;gap:11px;
+  font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:var(--ink-faint);
+}
+.step b{
+  font-family:"JetBrains Mono",monospace;font-size:11px;
+  color:var(--panel);background:var(--ink-faint);
+  border-radius:4px;padding:2px 6px;letter-spacing:.06em;
+}
+
+/* ---- hero ---- */
+.hero{gap:20px}
+.hero .lede{font-size:19px}
+.jump{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.jump a{
+  text-decoration:none;font-weight:800;font-size:13px;
+  font-family:"JetBrains Mono",monospace;
+  border:1.5px solid var(--rule);border-left-width:5px;
+  border-radius:8px;padding:8px 13px;color:var(--ink);
+  background:var(--panel);transition:transform .1s,border-color .12s;
+}
+.jump a:hover{transform:translateY(-2px)}
+.jump a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.jump a.l{border-left-color:var(--list)}
+.jump a.t{border-left-color:var(--tuple)}
+.jump a.d{border-left-color:var(--dict)}
+.jump a.s{border-left-color:var(--set)}
+
+/* ---- the four-in-one summary ---- */
+.four{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+@media (max-width:560px){.four{grid-template-columns:1fr}}
+.four > div{
+  background:var(--panel);border:1px solid var(--rule);border-top:4px solid var(--rule);
+  border-radius:10px;padding:15px 16px;display:flex;flex-direction:column;gap:5px;
+}
+.four > div:nth-child(1){border-top-color:var(--list)}
+.four > div:nth-child(2){border-top-color:var(--tuple)}
+.four > div:nth-child(3){border-top-color:var(--dict)}
+.four > div:nth-child(4){border-top-color:var(--set)}
+.four h4{margin:0;font-family:"JetBrains Mono",monospace;font-size:14px;font-weight:700}
+.four p{font-size:14.5px;line-height:1.45;color:var(--ink-soft)}
+.four em{font-style:normal;display:block;font-size:12.5px;color:var(--ink-faint);margin-top:2px}
+
+/* ---- structure panel ---- */
+.panel{
+  background:var(--panel);border:1px solid var(--rule);border-radius:14px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.panel-head{
+  padding:19px 22px 17px;border-bottom:1px solid var(--rule);
+  display:flex;flex-direction:column;gap:7px;border-left:6px solid var(--rule);
+}
+#list .panel-head{border-left-color:var(--list)}
+#tuple .panel-head{border-left-color:var(--tuple)}
+#dict .panel-head{border-left-color:var(--dict)}
+#set .panel-head{border-left-color:var(--set)}
+.panel-head .name{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.panel-head .name h3{font-size:25px}
+.panel-head .name span{font-family:"JetBrains Mono",monospace;font-size:14px;color:var(--ink-faint)}
+.panel-head p{font-size:16px;color:var(--ink-soft)}
+
+.traits{display:flex;gap:6px;flex-wrap:wrap;padding:14px 22px;background:var(--panel-2);border-bottom:1px solid var(--rule)}
+.traits span{
+  font-size:11px;font-weight:800;letter-spacing:.04em;
+  border-radius:99px;padding:4px 10px;
+  background:var(--panel);border:1px solid var(--rule);color:var(--ink-soft);
+}
+.traits span.yes{color:var(--good);border-color:color-mix(in srgb,var(--good) 45%,var(--rule))}
+.traits span.no{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,var(--rule))}
+
+.panel-body{padding:20px 22px 22px;display:flex;flex-direction:column;gap:16px}
+.moves{display:flex;flex-wrap:wrap;gap:7px}
+.move{
+  font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:700;
+  background:var(--panel);color:var(--ink);
+  border:1.5px solid var(--rule);border-radius:7px;
+  padding:7px 11px;cursor:pointer;transition:transform .08s,border-color .12s,background .12s;
+}
+.move:hover{transform:translateY(-1px);border-color:var(--ink-faint)}
+.move:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.move.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+
+.console{
+  background:var(--console);color:var(--console-ink);
+  border-radius:10px;padding:15px 17px;
+  font-family:"JetBrains Mono",monospace;font-size:13.5px;line-height:1.65;
+  display:flex;flex-direction:column;gap:3px;min-height:118px;
+  overflow-x:auto;
+}
+.console .ln{white-space:pre}
+.console .ps{color:#8E86AB}
+.console .out{color:#8CE0C0}
+.console .err{color:#FF8A7E}
+.console .note{color:#8E86AB;font-style:italic;white-space:pre-wrap;font-size:12.5px;padding-top:5px}
+.console .idle{color:#8E86AB;font-style:italic}
+
+.trap{
+  display:flex;flex-direction:column;gap:6px;
+  border-left:4px solid var(--bad);padding:2px 0 2px 14px;
+}
+.trap h4{margin:0;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--bad)}
+.trap p{font-size:15px;color:var(--ink-soft)}
+
+.reach{font-size:15.5px;color:var(--ink-soft)}
+.reach b{color:var(--ink)}
+
+/* ---- decision tree ---- */
+.tree{display:flex;flex-direction:column;gap:0}
+.q{
+  display:grid;grid-template-columns:auto 1fr;gap:0 16px;
+  padding:17px 0;border-bottom:1px solid var(--rule);
+}
+.q:last-child{border-bottom:none}
+.q .num{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:27px;
+  color:var(--ink-faint);line-height:1;letter-spacing:-.04em;
+}
+.q .body{display:flex;flex-direction:column;gap:7px}
+.q h4{margin:0;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:18px;letter-spacing:-.02em}
+.q p{font-size:15px;color:var(--ink-soft)}
+.q .then{
+  font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.q .then i{font-style:normal;color:var(--ink-faint);font-family:"Public Sans",sans-serif;font-weight:600;font-size:13px}
+.tag{border-radius:5px;padding:2px 8px;color:#fff;font-weight:700}
+.tag.l{background:var(--list)}
+.tag.t{background:var(--tuple)}
+.tag.d{background:var(--dict)}
+.tag.s{background:var(--set)}
+
+/* ---- speed demo ---- */
+.demo{
+  background:var(--panel);border:1px solid var(--rule);border-radius:14px;
+  box-shadow:var(--shadow);padding:20px 22px 22px;display:flex;flex-direction:column;gap:16px;
+}
+.lane{display:flex;flex-direction:column;gap:8px}
+.lane-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.lane-top h4{margin:0;font-family:"JetBrains Mono",monospace;font-size:13.5px;font-weight:700}
+.lane-top h4 em{font-style:normal;color:var(--ink-faint);font-weight:400;font-family:"Public Sans",sans-serif;font-size:12.5px;margin-left:7px}
+.count{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink-faint);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cells{display:flex;gap:3px;flex-wrap:wrap}
+.cell{
+  width:19px;height:24px;border-radius:3px;
+  background:var(--panel-2);border:1px solid var(--rule);
+  transition:background .1s,border-color .1s,transform .1s;
+}
+.cell.scan{background:color-mix(in srgb,var(--list) 45%,var(--panel));border-color:var(--list)}
+.cell.miss{background:color-mix(in srgb,var(--bad) 22%,var(--panel));border-color:color-mix(in srgb,var(--bad) 40%,var(--rule))}
+.cell.hit{background:var(--good);border-color:var(--good);transform:scale(1.18)}
+.demo-btn{
+  align-self:flex-start;font-family:"Public Sans",sans-serif;font-weight:800;font-size:14px;
+  color:#fff;background:var(--accent);border:none;border-radius:9px;padding:11px 20px;cursor:pointer;
+  box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s;
+}
+.demo-btn:active{transform:translateY(2px);box-shadow:none}
+.demo-btn:disabled{opacity:.5;cursor:default}
+.demo-btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.verdict-line{font-size:15px;color:var(--ink-soft);border-top:1px solid var(--rule);padding-top:14px}
+.verdict-line b{color:var(--ink)}
+
+/* ---- cta ---- */
+.cta{
+  background:var(--ink);color:var(--ground);border-radius:14px;
+  padding:28px 26px;display:flex;flex-direction:column;gap:13px;align-items:flex-start;
+}
+.cta h2{color:var(--ground)}
+.cta p{color:color-mix(in srgb,var(--ground) 72%,var(--ink));font-size:16px;max-width:52ch}
+.cta a{
+  text-decoration:none;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:17px;
+  background:var(--accent);color:#fff;border-radius:10px;padding:13px 24px;
+  box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s;
+}
+.cta a:active{transform:translateY(2px);box-shadow:none}
+.cta a:focus-visible{outline:3px solid var(--ground);outline-offset:3px}
+
+hr{border:none;border-top:1px solid var(--rule);margin:0}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <!-- ================= HERO ================= -->
+  <header class="hero">
+    <h1>Four boxes.<br>That's the <em>whole thing.</em></h1>
+    <p class="lede">Python gives you four ways to hold more than one thing. Every one of them is a box with a different rule about what's allowed inside. Learn the rule and you never have to memorise the table again — you just ask what the box is for.</p>
+    <div class="jump">
+      <a class="l" href="#list">list</a>
+      <a class="t" href="#tuple">tuple</a>
+      <a class="d" href="#dict">dict</a>
+      <a class="s" href="#set">set</a>
+      <a href="#choose">how to choose</a>
+    </div>
+  </header>
+
+  <!-- ================= 30 SECONDS ================= -->
+  <section>
+    <div class="step"><b>00</b> The thirty-second version</div>
+    <h2>Each box has one job</h2>
+    <div class="four">
+      <div>
+        <h4>list</h4>
+        <p>A row of things you can rearrange.</p>
+        <em>Your shopping list — cross things off, add more.</em>
+      </div>
+      <div>
+        <h4>tuple</h4>
+        <p>A row of things nobody can rearrange.</p>
+        <em>Your date of birth — three numbers, permanently.</em>
+      </div>
+      <div>
+        <h4>dict</h4>
+        <p>Labelled drawers. You open one by its label.</p>
+        <em>A contacts app — a name gets you a number.</em>
+      </div>
+      <div>
+        <h4>set</h4>
+        <p>A bag that refuses duplicates and has no order.</p>
+        <em>A guest list — you're on it or you're not.</em>
+      </div>
+    </div>
+    <p class="lede">Everything below is just those four sentences, slowed down. Press the buttons — every panel has a real console you can poke.</p>
+  </section>
+
+  <hr>
+
+  <!-- ================= LIST ================= -->
+  <section id="list">
+    <div class="step"><b>01</b> The default box</div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="name"><h3>list</h3><span>[1, 2, 3]</span></div>
+        <p>An ordered row of things you expect to change. When you're not sure what to use, this is the right guess about 70% of the time.</p>
+      </div>
+      <div class="traits">
+        <span class="yes">ordered</span><span class="yes">changeable</span><span class="yes">duplicates ok</span><span class="no">can't be a dict key</span>
+      </div>
+      <div class="panel-body">
+        <p class="reach"><b>Position is the address.</b> <code>cart[0]</code> is the first thing, <code>cart[-1]</code> is the last. The list remembers the order you put things in, and you can change any of it whenever you like.</p>
+        <div class="moves" data-console="c-list"></div>
+        <div class="console" id="c-list"></div>
+        <div class="trap">
+          <h4>The trap</h4>
+          <p>Searching a list means checking every item one at a time. Fine for 10 things. A disaster for 10,000 things checked in a loop — that's section 05.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TUPLE ================= -->
+  <section id="tuple">
+    <div class="step"><b>02</b> The locked box</div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="name"><h3>tuple</h3><span>(1, 2, 3)</span></div>
+        <p>A list that has been welded shut. Same ordering, same indexing — but nothing can be added, removed, or replaced, ever.</p>
+      </div>
+      <div class="traits">
+        <span class="yes">ordered</span><span class="no">frozen</span><span class="yes">duplicates ok</span><span class="yes">can be a dict key</span>
+      </div>
+      <div class="panel-body">
+        <p class="reach"><b>Two reasons to reach for it.</b> First, to say out loud that a group of values belongs together and shouldn't change — a coordinate, an RGB colour, a database row. Second, the practical one: <b>only frozen things can be dict keys or set members</b>, so a tuple can be a key and a list can't.</p>
+        <div class="moves" data-console="c-tuple"></div>
+        <div class="console" id="c-tuple"></div>
+        <div class="trap">
+          <h4>The trap</h4>
+          <p>A tuple freezes <i>which objects</i> it holds, not the objects themselves. If there's a list inside, that list can still be changed — and the tuple can no longer be a dict key, because one of its contents isn't frozen. Press the last two buttons above; that pair catches nearly everyone.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DICT ================= -->
+  <section id="dict">
+    <div class="step"><b>03</b> The labelled drawers</div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="name"><h3>dict</h3><span>{"key": "value"}</span></div>
+        <p>Pairs. You hand it a key, it hands back a value — instantly, no matter how many pairs are in there.</p>
+      </div>
+      <div class="traits">
+        <span class="yes">keeps insertion order</span><span class="yes">changeable</span><span class="no">no duplicate keys</span><span class="yes">instant lookup</span>
+      </div>
+      <div class="panel-body">
+        <p class="reach"><b>The word that gives it away is "by."</b> A price <i>by</i> product, a user <i>by</i> id, a count <i>by</i> word. The moment you hear "by," you want a dict. And if you find yourself writing <code>data[2]</code> while trying to remember what slot 2 meant — you wanted a dict.</p>
+        <div class="moves" data-console="c-dict"></div>
+        <div class="console" id="c-dict"></div>
+        <div class="trap">
+          <h4>The trap</h4>
+          <p><code>d["missing"]</code> crashes with a <code>KeyError</code>. Use <code>d.get("missing")</code> to get <code>None</code> instead, or <code>d.get("missing", 0)</code> for a default. In real code you'll use <code>.get()</code> far more often than square brackets.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SET ================= -->
+  <section id="set">
+    <div class="step"><b>04</b> The bouncer</div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="name"><h3>set</h3><span>{1, 2, 3}</span></div>
+        <p>A bag with two rules: no duplicates, and no order. In exchange it answers "is this in here?" instantly, forever, at any size.</p>
+      </div>
+      <div class="traits">
+        <span class="no">no order</span><span class="yes">changeable</span><span class="no">no duplicates</span><span class="yes">instant <code>in</code></span>
+      </div>
+      <div class="panel-body">
+        <p class="reach"><b>Two jobs, both worth memorising.</b> Killing duplicates in one line, and answering membership questions fast. It also does the maths you'd otherwise write loops for: <code>a &amp; b</code> is what's in both, <code>a | b</code> is everything, <code>a - b</code> is what's only in the first.</p>
+        <div class="moves" data-console="c-set"></div>
+        <div class="console" id="c-set"></div>
+        <div class="trap">
+          <h4>The trap</h4>
+          <p>No order means no <code>s[0]</code> — there is no "first" item to ask for. And whatever goes in must be frozen, so a set of lists is impossible. A set of tuples is fine.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ================= SPEED ================= -->
+  <section>
+    <div class="step"><b>05</b> The one that costs money</div>
+    <h2>Why a set is fast and a list isn't</h2>
+    <p class="lede">This is the single most common performance mistake in Python, and it's easier to see than to explain. Both boxes below hold the same 40 names. Watch what each one does to find <code>"zoe"</code>.</p>
+
+    <div class="demo">
+      <div class="lane">
+        <div class="lane-top">
+          <h4>a list<em>checks every box in order</em></h4>
+          <span class="count" id="listCount">not started</span>
+        </div>
+        <div class="cells" id="listCells"></div>
+      </div>
+      <div class="lane">
+        <div class="lane-top">
+          <h4>a set<em>computes where it must be, goes straight there</em></h4>
+          <span class="count" id="setCount">not started</span>
+        </div>
+        <div class="cells" id="setCells"></div>
+      </div>
+      <button class="demo-btn" id="race">Find "zoe" in both</button>
+      <p class="verdict-line" id="raceVerdict">A set runs the name through a hash function, which produces the address to look at. It doesn't search — it calculates. That's why the size of the box doesn't matter to it, and why it matters enormously to a list.</p>
+    </div>
+
+    <p class="lede">Now scale it up. With 10,000 names checked 10,000 times, the list does up to <b>100 million</b> comparisons and the set does about <b>10,000</b>. Same output, same code shape, one word different. If something in your program is mysteriously slow, look for <code>in</code> or <code>.index()</code> inside a loop before you look anywhere else.</p>
+    <div class="trap" style="border-left-color:var(--tuple)">
+      <h4 style="color:var(--tuple)">But don't overcorrect</h4>
+      <p>Building a set costs one full pass through the data. If you're only checking membership <b>once</b>, converting a list to a set first is wasted work — you did the whole scan anyway. Sets pay off when you check <i>repeatedly</i>.</p>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ================= DECISION ================= -->
+  <section id="choose">
+    <div class="step"><b>06</b> The only thing to memorise</div>
+    <h2>Three questions, in this order</h2>
+    <p class="lede">Ask them top to bottom and stop at the first "yes." This replaces the whole comparison table.</p>
+    <div class="tree">
+      <div class="q">
+        <div class="num">1</div>
+        <div class="body">
+          <h4>Am I looking things up <i>by</i> a name, id, or key?</h4>
+          <p>Prices by product, settings by name, counts by word, anything cached by its address.</p>
+          <p class="then"><i>then</i> <span class="tag d">dict</span></p>
+        </div>
+      </div>
+      <div class="q">
+        <div class="num">2</div>
+        <div class="body">
+          <h4>Do I only care <i>whether</i> something is in there — and never about duplicates or order?</h4>
+          <p>Seen it already? Is this tag applied? Which items are in both groups? Strip the repeats.</p>
+          <p class="then"><i>then</i> <span class="tag s">set</span></p>
+        </div>
+      </div>
+      <div class="q">
+        <div class="num">3</div>
+        <div class="body">
+          <h4>Order matters. Will this ever change after I build it?</h4>
+          <p>If yes, it's the ordinary changeable sequence. If no — it's a fixed group, or you need it as a dict key.</p>
+          <p class="then"><i>changes →</i> <span class="tag l">list</span> &nbsp; <i>frozen →</i> <span class="tag t">tuple</span></p>
+        </div>
+      </div>
+    </div>
+    <p class="lede">One extra rule that explains half the errors you'll hit: <b>dict keys and set members must be frozen.</b> Numbers, strings and tuples are frozen. Lists, dicts and sets are not. That's the entire reason <code>{[1,2]: "x"}</code> fails and <code>{(1,2): "x"}</code> works.</p>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <div class="cta">
+    <h2>Now make it automatic</h2>
+    <p>Reading it once gets you understanding. Getting it wrong under an 11-second timer is what makes it stick. Same four boxes, thirty-three questions, three lives.</p>
+    <a href="https://claude.ai/code/artifact/6f976c55-1230-45fb-bc09-e445b78fcb75">Play Set or Regret →</a>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   Console demos — each snippet starts from the shown value,
+   so buttons can be pressed in any order.
+   ========================================================= */
+const DEMOS = {
+  'c-list': {
+    start: 'cart = ["milk", "eggs", "milk"]',
+    moves: [
+      {c:'cart[0]',            o:"'milk'",                          n:"Position 0 is the first item. Counting starts at zero."},
+      {c:'cart[-1]',           o:"'milk'",                          n:"Negative counts from the end. -1 is always the last item."},
+      {c:'cart.append("jam")', o:'cart is now ["milk", "eggs", "milk", "jam"]', n:"Adds to the end. This is the move you'll use most."},
+      {c:'cart[1] = "bread"',  o:'cart is now ["milk", "bread", "milk"]', n:"Replacing in place is allowed — a list is changeable."},
+      {c:'len(cart)',          o:'3',                               n:"Duplicates are welcome, so both 'milk' entries count."},
+      {c:'sorted(cart)',       o:"['eggs', 'milk', 'milk']",        n:"Returns a new sorted list. cart.sort() would reorder cart itself."},
+      {c:'"eggs" in cart',     o:'True',                            n:"Works — but Python checks each item one by one to answer. Slow on big lists."}
+    ]
+  },
+  'c-tuple': {
+    start: 'point = (4, 7)',
+    moves: [
+      {c:'point[0]',            o:'4',                              n:"Indexing works exactly like a list."},
+      {c:'point[0] = 99',       e:"TypeError: 'tuple' object does not\nsupport item assignment", n:"This is the whole point of a tuple. You can't edit it — build a new one instead."},
+      {c:'x, y = point',        o:'x is 4, y is 7',                 n:"Unpacking. This is why functions return tuples so often."},
+      {c:'{point: "home"}',     o:"{(4, 7): 'home'}",               n:"A tuple can be a dict key, because it's frozen. This is the practical superpower."},
+      {c:'{[4, 7]: "home"}',    e:"TypeError: unhashable type: 'list'", n:"The same thing with a list fails. Frozen things can be keys; changeable things can't."},
+      {c:'mixed = (1, [2, 3])\nmixed[1].append(4)', o:'mixed is now (1, [2, 3, 4])', n:"Surprise — this works. The tuple is frozen, but the list inside it isn't."},
+      {c:'{(1, [2]): "x"}',     e:"TypeError: unhashable type: 'list'", n:"And so this fails: a tuple is only a valid key if everything inside it is frozen too."}
+    ]
+  },
+  'c-dict': {
+    start: 'ages = {"ana": 31, "bo": 24}',
+    moves: [
+      {c:'ages["ana"]',            o:'31',                          n:"Hand it the key, get the value. Instant, whatever the size."},
+      {c:'ages["cy"] = 45',        o:"ages is now {'ana': 31, 'bo': 24, 'cy': 45}", n:"Assigning to a new key adds it. No .append() needed."},
+      {c:'ages["ana"] = 32',       o:"ages is now {'ana': 32, 'bo': 24}", n:"Same syntax updates an existing key — keys are unique, so it overwrites."},
+      {c:'ages["zed"]',            e:"KeyError: 'zed'",             n:"Missing keys crash. This is the error you'll hit most often."},
+      {c:'ages.get("zed", 0)',     o:'0',                           n:"The safe version. Returns your default instead of crashing."},
+      {c:'"bo" in ages',           o:'True',                        n:"Checks the KEYS, not the values — and it's instant, like a set."},
+      {c:'for k, v in ages.items():', o:"ana 31\nbo 24",            n:"How you loop over both at once. Order is the order you inserted them."}
+    ]
+  },
+  'c-set': {
+    start: 'tags = {"python", "web"}',
+    moves: [
+      {c:'set(["a", "b", "a", "a"])', o:"{'a', 'b'}",               n:"Duplicates vanish. This one line replaces a whole deduplication loop."},
+      {c:'tags.add("python")',        o:"tags is still {'python', 'web'}", n:"Adding something already there isn't an error — it's just ignored. That's the feature."},
+      {c:'"web" in tags',             o:'True',                     n:"Instant, no matter how big the set is. This is why sets exist."},
+      {c:'tags[0]',                   e:"TypeError: 'set' object is\nnot subscriptable", n:"No order means there's no 'first' item to ask for."},
+      {c:'{1,2,3} & {2,3,9}',         o:'{2, 3}',                   n:"In both. One character instead of a nested loop."},
+      {c:'{1,2,3} - {2,3,9}',         o:'{1}',                      n:"In the first but not the second. Great for 'what's new since last time?'"},
+      {c:'{[1], [2]}',                e:"TypeError: unhashable type: 'list'", n:"Set members follow the same frozen rule as dict keys — same machinery underneath."}
+    ]
+  }
+};
+
+for (const [id, demo] of Object.entries(DEMOS)){
+  const box = document.getElementById(id);
+  const bar = document.querySelector(`.moves[data-console="${id}"]`);
+
+  const idle = () => {
+    box.innerHTML =
+      `<div class="ln"><span class="ps">&gt;&gt;&gt; </span>${esc(demo.start)}</div>` +
+      `<div class="ln idle">pick a move below to run it</div>`;
+  };
+
+  demo.moves.forEach((m, n) => {
+    const b = document.createElement('button');
+    b.className = 'move';
+    b.type = 'button';
+    b.textContent = m.c.split('\n')[0];
+    b.onclick = () => {
+      bar.querySelectorAll('.move').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+      const lines = m.c.split('\n')
+        .map(l => `<div class="ln"><span class="ps">&gt;&gt;&gt; </span>${esc(l)}</div>`).join('');
+      const result = m.e
+        ? m.e.split('\n').map(l => `<div class="ln err">${esc(l)}</div>`).join('')
+        : m.o.split('\n').map(l => `<div class="ln out">${esc(l)}</div>`).join('');
+      box.innerHTML =
+        `<div class="ln"><span class="ps">&gt;&gt;&gt; </span>${esc(demo.start)}</div>` +
+        lines + result +
+        `<div class="note">${m.n}</div>`;
+    };
+    bar.appendChild(b);
+  });
+
+  idle();
+}
+
+function esc(s){ return s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])) }
+
+/* =========================================================
+   Speed race
+   ========================================================= */
+const N = 40, TARGET = 31;
+const listCells = document.getElementById('listCells');
+const setCells  = document.getElementById('setCells');
+const listCount = document.getElementById('listCount');
+const setCount  = document.getElementById('setCount');
+const raceBtn   = document.getElementById('race');
+
+function buildCells(host){
+  host.innerHTML = '';
+  for (let i = 0; i < N; i++){
+    const d = document.createElement('div');
+    d.className = 'cell';
+    host.appendChild(d);
+  }
+}
+buildCells(listCells); buildCells(setCells);
+
+let running = false;
+raceBtn.onclick = () => {
+  if (running) return;
+  running = true;
+  raceBtn.disabled = true;
+  buildCells(listCells); buildCells(setCells);
+  listCount.textContent = 'searching…';
+  setCount.textContent  = 'searching…';
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const step = reduce ? 0 : 55;
+
+  // set: straight to the answer
+  setTimeout(() => {
+    setCells.children[TARGET].classList.add('hit');
+    setCount.textContent = '1 look';
+  }, reduce ? 0 : 260);
+
+  // list: one at a time
+  let i = 0;
+  const walk = () => {
+    if (i > 0) {
+      listCells.children[i - 1].classList.remove('scan');
+      listCells.children[i - 1].classList.add('miss');
+    }
+    if (i > TARGET){
+      listCount.textContent = `${TARGET + 1} looks`;
+      running = false;
+      raceBtn.disabled = false;
+      raceBtn.textContent = 'Run it again';
+      return;
+    }
+    if (i === TARGET){
+      listCells.children[i].classList.add('hit');
+      listCount.textContent = `${TARGET + 1} looks`;
+      i++;
+      setTimeout(() => { running = false; raceBtn.disabled = false; raceBtn.textContent = 'Run it again'; }, step * 3);
+      return;
+    }
+    listCells.children[i].classList.add('scan');
+    listCount.textContent = `${i + 1} looks…`;
+    i++;
+    setTimeout(walk, step);
+  };
+  if (reduce){
+    for (let k = 0; k < TARGET; k++) listCells.children[k].classList.add('miss');
+    listCells.children[TARGET].classList.add('hit');
+    listCount.textContent = `${TARGET + 1} looks`;
+    running = false; raceBtn.disabled = false; raceBtn.textContent = 'Run it again';
+  } else {
+    setTimeout(walk, 260);
+  }
+};
+</script>

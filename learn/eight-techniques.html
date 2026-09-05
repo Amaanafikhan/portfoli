@@ -1,0 +1,716 @@
+<title>Eight Techniques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+
+<style>
+:root{
+  --ground:#E9E7F2; --panel:#FFFFFF; --panel-2:#F3F1F9;
+  --ink:#1A1726; --ink-soft:#5C5570; --ink-faint:#8B84A0; --rule:#D6D2E4;
+  --accent:#D91A63;
+  --p1:#2F5BEA; --p2:#0F9E76; --p3:#B96C05; --p4:#7B3FE4;
+  --good:#0F9E76; --bad:#D9342B; --warn:#B96C05;
+  --console:#221E31; --console-ink:#EDEAF7;
+  --shadow:0 2px 0 rgba(26,23,38,.12), 0 14px 32px -18px rgba(26,23,38,.55);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+    --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+    --accent:#FF4B87;
+    --p1:#7C9BFF; --p2:#2FD3A0; --p3:#F0A93C; --p4:#B48CFF;
+    --good:#2FD3A0; --bad:#FF6B60; --warn:#F0A93C;
+    --console:#0E0C16; --console-ink:#E6E1F5;
+    --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+  --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+  --accent:#FF4B87;
+  --p1:#7C9BFF; --p2:#2FD3A0; --p3:#F0A93C; --p4:#B48CFF;
+  --good:#2FD3A0; --bad:#FF6B60; --warn:#F0A93C;
+  --console:#0E0C16; --console-ink:#E6E1F5;
+  --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6}
+.wrap{max-width:800px;margin:0 auto;padding:44px 20px 76px;display:flex;flex-direction:column;gap:48px}
+h1,h2,h3,h4{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1{font-size:clamp(36px,7.4vw,56px);font-weight:800;line-height:.98}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-size:clamp(23px,4.4vw,30px);font-weight:800;line-height:1.1}
+h3{font-size:19px;font-weight:800;letter-spacing:-.02em}
+p{margin:0}
+.lede{font-size:17px;line-height:1.6;color:var(--ink-soft);max-width:62ch}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px}
+b{font-weight:800}
+section{display:flex;flex-direction:column;gap:16px}
+.step{display:flex;align-items:baseline;gap:11px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.step b{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--panel);background:var(--ink-faint);border-radius:4px;padding:2px 6px;letter-spacing:.06em}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px 22px;display:flex;flex-direction:column;gap:15px}
+hr{border:none;border-top:1px solid var(--rule);margin:0}
+
+.rule-box{display:flex;flex-direction:column;gap:6px;border-left:4px solid var(--accent);padding:2px 0 2px 14px}
+.rule-box h4{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--accent)}
+.rule-box p{font-size:15px;color:var(--ink-soft)}
+.rule-box p b{color:var(--ink)}
+.rule-box code{font-size:13px}
+.trap{border-left-color:var(--bad)} .trap h4{color:var(--bad)}
+.win{border-left-color:var(--good)} .win h4{color:var(--good)}
+.warnb{border-left-color:var(--warn)} .warnb h4{color:var(--warn)}
+
+/* ---- technique grid ---- */
+.techs{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+@media (max-width:600px){.techs{grid-template-columns:1fr}}
+.tech{background:var(--panel);border:1px solid var(--rule);border-left:5px solid var(--rule);border-radius:10px;padding:13px 15px;display:flex;flex-direction:column;gap:4px}
+.tech b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:15.5px;letter-spacing:-.02em}
+.tech .tell{font-size:13px;line-height:1.45;color:var(--ink-soft)}
+.tech .tell i{font-style:normal;color:var(--ink);font-weight:700}
+.tech:nth-child(1),.tech:nth-child(5){border-left-color:var(--p1)}
+.tech:nth-child(2),.tech:nth-child(6){border-left-color:var(--p2)}
+.tech:nth-child(3),.tech:nth-child(7){border-left-color:var(--p3)}
+.tech:nth-child(4),.tech:nth-child(8){border-left-color:var(--p4)}
+
+/* ---- loop forms ---- */
+.tabs{display:flex;gap:0;border:1.5px solid var(--rule);border-radius:9px;overflow:hidden;flex-wrap:wrap}
+.tabs button{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:12px;background:none;border:none;color:var(--ink-soft);padding:9px 13px;cursor:pointer;white-space:nowrap;flex:1}
+.tabs button.on{background:var(--ink);color:var(--panel)}
+.tabs button:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.loopout{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:600px){.loopout{grid-template-columns:1fr}}
+.console{background:var(--console);color:var(--console-ink);border-radius:10px;padding:14px 16px;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.62;display:flex;flex-direction:column;gap:2px;min-height:120px;overflow-x:auto}
+.console .ln{white-space:pre}
+.console .out{color:#8CE0C0}
+.console .err{color:#FF8A7E}
+.console .cm{color:#8E86AB}
+.loopnote{font-size:14.5px;line-height:1.5;color:var(--ink-soft)}
+.loopnote b{color:var(--ink)}
+
+/* ---- tracer ---- */
+.tracer{display:flex;flex-direction:column;gap:14px}
+.tracehead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tracehead h3{font-size:18px}
+.tracehead .prob{font-size:12.5px;color:var(--ink-faint);font-family:"JetBrains Mono",monospace}
+.codebox{background:var(--console);border-radius:10px;padding:13px 0;overflow-x:auto}
+.codeline{
+  font-family:"JetBrains Mono",monospace;font-size:12.8px;line-height:1.72;
+  color:#B9B2CE;white-space:pre;padding:0 16px;border-left:3px solid transparent;
+}
+.codeline.on{background:rgba(217,26,99,.18);color:#fff;border-left-color:var(--accent)}
+:root[data-theme="dark"] .codeline.on,
+:root:not([data-theme="light"]) .codeline.on{background:rgba(255,75,135,.22)}
+
+.viz{display:flex;flex-direction:column;gap:11px}
+.arrrow{display:flex;flex-direction:column;gap:3px}
+.arrlabel{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-faint)}
+.cells{display:flex;gap:4px;flex-wrap:wrap}
+.cellwrap{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:42px}
+.cell{
+  width:100%;min-width:42px;height:44px;border-radius:7px;border:1.5px solid var(--rule);background:var(--panel-2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:"JetBrains Mono",monospace;font-weight:700;font-size:15px;transition:all .14s;
+}
+.cell small{font-size:10px;color:var(--ink-faint);font-weight:400}
+.cell.win{background:color-mix(in srgb,var(--p2) 20%,var(--panel));border-color:var(--p2)}
+.cell.hit{background:color-mix(in srgb,var(--accent) 24%,var(--panel));border-color:var(--accent)}
+.cell.done{background:color-mix(in srgb,var(--good) 17%,var(--panel));border-color:var(--good)}
+.idx{font-family:"JetBrains Mono",monospace;font-size:9.5px;color:var(--ink-faint)}
+.ptrs{display:flex;flex-direction:column;gap:1px;min-height:15px;align-items:center}
+.ptr{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;color:#fff;border-radius:3px;padding:0 4px;white-space:nowrap}
+
+.vars{display:flex;gap:6px;flex-wrap:wrap}
+.var{
+  font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;
+  background:var(--panel-2);border:1px solid var(--rule);border-radius:6px;padding:4px 9px;
+}
+.var i{font-style:normal;color:var(--ink-faint);font-weight:400}
+.extra{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.extra .lab{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
+.chip{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:700;background:color-mix(in srgb,var(--p4) 18%,var(--panel));border:1px solid color-mix(in srgb,var(--p4) 45%,var(--rule));border-radius:99px;padding:3px 9px}
+
+.tracenote{font-size:14.5px;line-height:1.5;color:var(--ink-soft);min-height:44px;border-top:1px solid var(--rule);padding-top:11px}
+.tracenote b{color:var(--ink)}
+.tracenote code{font-size:13px}
+.controls{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.btn{font-family:"Public Sans",sans-serif;font-weight:800;font-size:13.5px;color:#fff;background:var(--accent);border:none;border-radius:9px;padding:10px 16px;cursor:pointer;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.btn.quiet{background:none;color:var(--ink);border:1.5px solid var(--rule);box-shadow:none}
+.count{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint);margin-left:auto;font-variant-numeric:tabular-nums}
+
+/* ---- problem index ---- */
+.plist{display:flex;flex-direction:column;border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+.prow{display:grid;grid-template-columns:26px 1fr auto;gap:13px;padding:12px 15px;border-bottom:1px solid var(--rule);align-items:baseline}
+.prow:last-child{border-bottom:none}
+.prow:nth-child(odd){background:var(--panel-2)}
+.prow .num{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint)}
+.prow .name{font-size:14.5px;font-weight:700}
+.prow .name span{display:block;font-weight:400;font-size:13px;color:var(--ink-soft);margin-top:1px}
+.prow .t{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;border-radius:5px;padding:3px 8px;white-space:nowrap;color:#fff}
+
+.seven{display:flex;flex-direction:column;counter-reset:s}
+.seven li{list-style:none;counter-increment:s;display:grid;grid-template-columns:auto 1fr;gap:0 14px;padding:12px 0;border-bottom:1px solid var(--rule);align-items:baseline}
+.seven li:last-child{border-bottom:none}
+.seven li::before{content:counter(s);font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:18px;color:var(--ink-faint)}
+.seven li span{font-size:15.5px;line-height:1.5}
+.seven li code{font-size:13.5px}
+
+.cta{background:var(--ink);color:var(--ground);border-radius:14px;padding:26px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.cta h2{color:var(--ground)}
+.cta p{color:color-mix(in srgb,var(--ground) 72%,var(--ink));font-size:15.5px;max-width:52ch}
+.cta .row{display:flex;gap:8px;flex-wrap:wrap}
+.cta a{text-decoration:none;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:15.5px;background:var(--accent);color:#fff;border-radius:10px;padding:11px 18px;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+.cta a.alt{background:none;color:var(--ground);border:1.5px solid color-mix(in srgb,var(--ground) 40%,var(--ink));box-shadow:none}
+.cta a:focus-visible{outline:3px solid var(--ground);outline-offset:3px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:18px">
+  <h1>Fifteen problems.<br>Eight <em>techniques.</em></h1>
+  <p class="lede">The problems are not the point — they're the cheapest way to learn eight patterns that cover most of what gets asked. And the part that actually trips people isn't the idea, it's the mechanics: which loop to write, and which side of the <code>=</code> the index belongs on. So every pattern here is a trace you step through, one line at a time, watching the pointers move and the assignment land.</p>
+</header>
+
+<hr>
+
+<!-- ===================== 00 TECHNIQUES ===================== -->
+<section>
+  <div class="step"><b>00</b> The real answer</div>
+  <h2>Eight techniques, and the tell for each</h2>
+  <p class="lede">Learn to spot the tell in the question and the code writes itself. This is what you're actually memorising — not fifteen solutions.</p>
+  <div class="techs">
+    <div class="tech"><b>Two pointers</b><p class="tell"><i>Tell:</i> sorted input, or something symmetric — palindromes, pairs, reversing.</p></div>
+    <div class="tech"><b>Sliding window</b><p class="tell"><i>Tell:</i> "longest / shortest / contains" over a <b>contiguous</b> run.</p></div>
+    <div class="tech"><b>Hash map lookup</b><p class="tell"><i>Tell:</i> "have I seen this before?" — trades memory for speed.</p></div>
+    <div class="tech"><b>Canonical form</b><p class="tell"><i>Tell:</i> grouping things that are "the same" under some rule. Build a key.</p></div>
+    <div class="tech"><b>Read / write pointers</b><p class="tell"><i>Tell:</i> "in place", "without extra space", "remove / move / compact".</p></div>
+    <div class="tech"><b>Running state (DP)</b><p class="tell"><i>Tell:</i> best-so-far over a sequence, where each step only needs the last one.</p></div>
+    <div class="tech"><b>Sorting as prep</b><p class="tell"><i>Tell:</i> order doesn't matter in the answer, but grouping or pairing does.</p></div>
+    <div class="tech"><b>Math &amp; bit tricks</b><p class="tell"><i>Tell:</i> "no extra space", digits, or something that should cancel out.</p></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ===================== 01 LOOPS ===================== -->
+<section>
+  <div class="step"><b>01</b> Before any of it</div>
+  <h2>Which loop, and what the variable holds</h2>
+  <p class="lede">Almost every "I got confused assigning values" moment comes from here. Four loop forms, the same list, and what the loop variable actually contains in each. Click through them.</p>
+
+  <div class="card">
+    <div class="tabs" id="loopTabs"></div>
+    <div class="loopout">
+      <div class="console" id="loopCode"></div>
+      <div class="console" id="loopOut"></div>
+    </div>
+    <p class="loopnote" id="loopNote"></p>
+  </div>
+
+  <div class="rule-box win">
+    <h4>The decision, in one line each</h4>
+    <p><b><code>for x in arr</code></b> — you only need the values, front to back. Cannot assign back into the list.<br>
+       <b><code>for i in range(len(arr))</code></b> — you need the position, because you're writing into the list or comparing neighbours.<br>
+       <b><code>while cond</code></b> — the pointers move at different speeds, or move conditionally. You control every step.<br>
+       <b><code>while left &lt; right</code></b> — two pointers converging from the ends.</p>
+  </div>
+
+  <div class="rule-box trap">
+    <h4>What goes wrong with <code>while</code></h4>
+    <p>A <code>for</code> loop advances itself. A <code>while</code> loop does not — <b>you</b> must move the variable, and every path through the body must move it. Forget it inside one <code>if</code> branch and the program hangs forever with no error message, no traceback, nothing. Before you run any <code>while</code>, point at the line that changes the condition. If you can't find it, it isn't there.</p>
+  </div>
+
+  <div class="rule-box warnb">
+    <h4>Never mutate what you're looping over</h4>
+    <p>Removing items from a list while iterating it makes the loop skip elements — the indexes shift underneath you and nothing warns you. Build a new list, or loop over a copy with <code>for x in items[:]</code>, or walk backwards with <code>range(len(items) - 1, -1, -1)</code>.</p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ===================== 02 ASSIGNMENT ===================== -->
+<section>
+  <div class="step"><b>02</b> The confusion, named</div>
+  <h2>Which side of the <code>=</code> you're on</h2>
+  <div class="card">
+    <div class="rule-box">
+      <h4>One rule, and it never has an exception</h4>
+      <p><code>arr[i]</code> on the <b>left</b> of <code>=</code> <b>writes into</b> the slot.<br>
+         <code>arr[i]</code> on the <b>right</b> of <code>=</code> <b>reads out of</b> the slot.<br><br>
+         So <code>nums[write] = nums[read]</code> means: <i>take the value at read, put it at write.</i> Left is the destination, right is the source — the same way as everywhere else in the language. When you're unsure which pointer goes where, ask "what am I copying, and where is it going?" and the answer places both.</p>
+    </div>
+    <div class="rule-box win">
+      <h4>Swapping, and why Python needs no temp</h4>
+      <p><code>a, b = b, a</code> — Python builds the <b>entire right side first</b>, as a tuple, then unpacks it into the left. The old values are safely captured before anything is overwritten. That's why <code>arr[i], arr[j] = arr[j], arr[i]</code> works, and why the same thing written as two separate lines destroys a value.</p>
+    </div>
+    <div class="rule-box trap">
+      <h4>Two more that bite</h4>
+      <p><code>i += 1</code> moves the pointer. <code>arr[i] += 1</code> changes the data. They look alike and do entirely different things.<br><br>
+         <code>arr = other</code> rebinds your local name and leaves the caller's list untouched. <code>arr[:] = other</code> overwrites the contents in place, which the caller does see. If a question says "in place," the difference is the whole grade.</p>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ===================== 03 TRACES ===================== -->
+<section>
+  <div class="step"><b>03</b> Step through it</div>
+  <h2>Six patterns, one line at a time</h2>
+  <p class="lede">Press <b>Step</b> and watch. The highlighted line is what's executing; the pointers under the cells are where you are; the note explains what just changed and why. Nothing here is a picture of code — every frame was recorded by actually running the algorithm.</p>
+</section>
+
+<div id="tracers"></div>
+
+<hr>
+
+<!-- ===================== 04 INDEX ===================== -->
+<section>
+  <div class="step"><b>04</b> The fifteen</div>
+  <h2>Which problem teaches which technique</h2>
+  <p class="lede">When you sit down to solve one, name the technique first. If you can't, that's the thing to look up — not the solution.</p>
+  <div class="plist" id="plist"></div>
+</section>
+
+<hr>
+
+<!-- ===================== 05 CHECKLIST ===================== -->
+<section>
+  <div class="step"><b>05</b> Before you write a line</div>
+  <h2>The seven questions</h2>
+  <p class="lede">Run this list every time. It takes twenty seconds and it prevents most of the wrong turns.</p>
+  <ol class="seven">
+    <li><span><b>What technique is this?</b> Name it out loud before touching the keyboard. If nothing fits, you're missing something in the question.</span></li>
+    <li><span><b>Do I need the index, or just the value?</b> This picks your loop form and nothing else does.</span></li>
+    <li><span><b>Am I allowed extra space?</b> "In place" or "O(1) space" rules out the hash map and forces pointers or maths.</span></li>
+    <li><span><b>Is the input sorted?</b> If yes, two pointers or binary search are probably intended. If not, is sorting it first allowed?</span></li>
+    <li><span><b>What moves the loop forward?</b> Point at that exact line. For a <code>while</code>, check every branch reaches it.</span></li>
+    <li><span><b>What are my edge cases?</b> Empty input, one element, all identical, all negative. Say them before you code.</span></li>
+    <li><span><b>Walk it on paper with three items.</b> Every off-by-one you'll ever have shows up in the first three steps.</span></li>
+  </ol>
+</section>
+
+<div class="cta">
+  <h2>Same shelf as the rest</h2>
+  <p>The Day 1 pages cover the language; this one covers the patterns. Different muscles, same habit — read it, then close it and rebuild it from memory.</p>
+  <div class="row">
+    <a href="https://claude.ai/code/artifact/64f95123-a9ed-4a95-9c5e-3a84b1b73646">Day One, Explained →</a>
+    <a class="alt" href="https://claude.ai/code/artifact/1c759e0a-4535-4fb9-a223-2dbd0ad42765">The Reload Arcade</a>
+  </div>
+</div>
+
+</div>
+
+<script>
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+/* =====================================================================
+   LOOP FORMS
+   ===================================================================== */
+const LOOPS = [
+  {
+    tab: 'for x in arr',
+    code: 'arr = ["a", "b", "c"]\n\nfor x in arr:\n    print(x)',
+    out: () => ['a', 'b', 'c'].map(v => `${v}`),
+    note: "The variable holds the <b>value</b>. There is no index in sight — so you cannot write back into the list, you cannot look at the neighbour, and you cannot skip ahead. Use it when reading is all you need, which is more often than you'd think."
+  },
+  {
+    tab: 'for i in range(len(arr))',
+    code: 'arr = ["a", "b", "c"]\n\nfor i in range(len(arr)):\n    print(i, arr[i])',
+    out: () => ['0 a', '1 b', '2 c'],
+    note: "The variable holds the <b>index</b>; <code>arr[i]</code> gets the value. This is the form you need the moment you assign back into the list — <code>arr[i] = something</code> — or compare <code>arr[i]</code> with <code>arr[i + 1]</code>."
+  },
+  {
+    tab: 'for i, x in enumerate(arr)',
+    code: 'arr = ["a", "b", "c"]\n\nfor i, x in enumerate(arr):\n    print(i, x)',
+    out: () => ['0 a', '1 b', '2 c'],
+    note: "Both at once, and the reason you rarely need <code>range(len(...))</code>. Same output as above, but you never risk an index that doesn't exist. Reach for this by default when you want the position."
+  },
+  {
+    tab: 'while i < len(arr)',
+    code: 'arr = ["a", "b", "c"]\ni = 0\n\nwhile i < len(arr):\n    print(i, arr[i])\n    i += 1        # you must do this',
+    out: () => ['0 a', '1 b', '2 c'],
+    note: "Identical output — but <b>you</b> own the movement. That's the whole trade: a <code>while</code> is what you use when the pointer advances by different amounts, or only sometimes. And if you delete that last line, the program never stops."
+  }
+];
+const loopTabs = document.getElementById('loopTabs');
+const loopCode = document.getElementById('loopCode');
+const loopOut  = document.getElementById('loopOut');
+const loopNote = document.getElementById('loopNote');
+
+function paintLoop(n){
+  const L = LOOPS[n];
+  loopTabs.querySelectorAll('button').forEach((b, k) => b.classList.toggle('on', k === n));
+  loopCode.innerHTML = L.code.split('\n')
+    .map(l => `<div class="ln">${l.includes('#') ? esc(l.split('#')[0]) + `<span class="cm"># ${esc(l.split('# ')[1] || '')}</span>` : esc(l)}</div>`).join('');
+  loopOut.innerHTML = `<div class="ln cm"># prints</div>` + L.out().map(o => `<div class="ln out">${esc(o)}</div>`).join('');
+  loopNote.innerHTML = L.note;
+}
+LOOPS.forEach((L, n) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.textContent = L.tab;
+  b.onclick = () => paintLoop(n);
+  loopTabs.appendChild(b);
+});
+paintLoop(0);
+
+/* =====================================================================
+   TRACE BUILDERS — every frame recorded by really running the algorithm
+   ===================================================================== */
+
+function traceReverse(){
+  const code = [
+    'def reverse(arr):',
+    '    left, right = 0, len(arr) - 1',
+    '    while left < right:',
+    '        arr[left], arr[right] = arr[right], arr[left]',
+    '        left += 1',
+    '        right -= 1',
+    '    return arr'
+  ];
+  const F = [], arr = ['A','B','C','D','E'];
+  let left = 0, right = arr.length - 1;
+  const snap = (line, note) => F.push({line, arr:[...arr], ptrs:{left, right}, vars:{left, right}, note});
+  snap(1, 'Two pointers, one at each end. They will walk toward each other and meet in the middle.');
+  for(;;){
+    snap(2, `Check <code>left &lt; right</code> → <code>${left} &lt; ${right}</code> is <b>${left < right}</b>. ${left < right ? 'Enter the body.' : 'Stop — they have met, so every pair is already swapped.'}`);
+    if (!(left < right)) break;
+    [arr[left], arr[right]] = [arr[right], arr[left]];
+    snap(3, `Swap slots <b>${left}</b> and <b>${right}</b>. The right side is built first, so neither value is lost — no temp variable needed.`);
+    left++;  snap(4, `<code>left</code> moves inward → <b>${left}</b>. This is the line that makes the loop finish.`);
+    right--; snap(5, `<code>right</code> moves inward → <b>${right}</b>.`);
+  }
+  snap(6, 'Done. Each pass fixed two cells, so the loop ran <b>len(arr) // 2</b> times — not len(arr).');
+  return {code, frames:F,
+    title:'Two pointers, converging',
+    prob:'#1 reverse in place · #2 palindrome',
+    when:'Use when the input is symmetric or sorted. The loop is <code>while left &lt; right</code> — never a <code>for</code>, because two things move.'};
+}
+
+function traceMoveZeroes(){
+  const code = [
+    'def move_zeroes(nums):',
+    '    write = 0',
+    '    for read in range(len(nums)):',
+    '        if nums[read] != 0:',
+    '            nums[write] = nums[read]',
+    '            write += 1',
+    '    while write < len(nums):',
+    '        nums[write] = 0',
+    '        write += 1'
+  ];
+  const F = [], nums = [0, 1, 0, 3, 12];
+  let write = 0;
+  const snap = (line, note, ptrs) => F.push({line, arr:[...nums], ptrs, vars:{write}, note});
+  snap(1, '<code>write</code> is where the next kept value goes. <code>read</code> will scan everything.', {write});
+  for (let read = 0; read < nums.length; read++){
+    snap(2, `<code>read</code> = <b>${read}</b>, value <code>${nums[read]}</code>.`, {read, write});
+    if (nums[read] !== 0){
+      snap(3, `<code>${nums[read]} != 0</code> → keep it.`, {read, write});
+      nums[write] = nums[read];
+      snap(4, `<b>nums[${write}] = nums[${read}]</b> — left is the destination, right is the source. The value moves back to slot ${write}.`, {read, write});
+      write++;
+      snap(5, `<code>write</code> advances → <b>${write}</b>. It only moves when we actually kept something — that's why the two pointers drift apart.`, {read, write});
+    } else {
+      snap(3, `<code>${nums[read]} == 0</code> → skip it. <code>write</code> stays at <b>${write}</b>, so this slot will be overwritten later.`, {read, write});
+    }
+  }
+  snap(6, `Scan finished. Everything before index <b>${write}</b> is a kept value, in order. The rest is leftover junk.`, {write});
+  while (write < nums.length){
+    snap(6, `<code>while write &lt; len(nums)</code> → <code>${write} &lt; ${nums.length}</code> is true.`, {write});
+    nums[write] = 0;
+    snap(7, `Fill slot <b>${write}</b> with 0.`, {write});
+    write++;
+    snap(8, `<code>write</code> advances → <b>${write}</b>.`, {write});
+  }
+  snap(8, 'Done, in one pass and no extra list. Note the two loop forms: a <code>for</code> to scan, a <code>while</code> to fill.', {write});
+  return {code, frames:F,
+    title:'Read pointer / write pointer',
+    prob:'#14 move zeroes · also remove-duplicates, compact-array',
+    when:'Use when the question says <b>in place</b> or <b>no extra space</b>. <code>read</code> always advances; <code>write</code> only advances when you keep something.'};
+}
+
+function traceWindow(){
+  const code = [
+    'def longest(s):',
+    '    seen = set()',
+    '    left = 0',
+    '    best = 0',
+    '    for right in range(len(s)):',
+    '        while s[right] in seen:',
+    '            seen.remove(s[left])',
+    '            left += 1',
+    '        seen.add(s[right])',
+    '        best = max(best, right - left + 1)',
+    '    return best'
+  ];
+  const s = 'abcabb'.split('');
+  const F = [], seen = new Set();
+  let left = 0, best = 0;
+  const snap = (line, note, ptrs, win) => F.push({
+    line, arr:[...s], ptrs, vars:{left, best},
+    extra:{label:'seen', items:[...seen]}, window:win, note
+  });
+  snap(1, 'A window from <code>left</code> to <code>right</code>, and a set holding exactly what is inside it.', {left}, null);
+  for (let right = 0; right < s.length; right++){
+    snap(4, `<code>right</code> = <b>${right}</b>, character <code>'${s[right]}'</code>. The window wants to grow.`, {left, right}, [left, right]);
+    while (seen.has(s[right])){
+      snap(5, `<code>'${s[right]}'</code> is already in the window → we must shrink from the left first.`, {left, right}, [left, right]);
+      seen.delete(s[left]);
+      snap(6, `Drop <code>'${s[left]}'</code> from the set.`, {left, right}, [left, right]);
+      left++;
+      snap(7, `<code>left</code> advances → <b>${left}</b>. The window just got smaller.`, {left, right}, [left, right]);
+    }
+    seen.add(s[right]);
+    snap(8, `No duplicate now, so <code>'${s[right]}'</code> joins the window.`, {left, right}, [left, right]);
+    const size = right - left + 1;
+    best = Math.max(best, size);
+    snap(9, `Window is <code>${right} - ${left} + 1</code> = <b>${size}</b>. Best so far: <b>${best}</b>. The <code>+ 1</code> is because both ends are included.`, {left, right}, [left, right]);
+  }
+  snap(10, `Answer: <b>${best}</b>. Each character entered the window once and left at most once — one pass, not nested scanning.`, {left}, null);
+  return {code, frames:F,
+    title:'Sliding window',
+    prob:'#3 longest substring without repeats',
+    when:'Use for <b>longest / shortest / contains</b> over a contiguous run. The shape is always: <code>for</code> grows the right edge, an inner <code>while</code> shrinks the left edge until the window is legal again.'};
+}
+
+function traceTwoSum(){
+  const code = [
+    'def two_sum(nums, target):',
+    '    seen = {}',
+    '    for i, n in enumerate(nums):',
+    '        need = target - n',
+    '        if need in seen:',
+    '            return [seen[need], i]',
+    '        seen[n] = i'
+  ];
+  const nums = [2, 7, 11, 15], target = 9;
+  const F = [], seen = new Map();
+  const snap = (line, note, ptrs, hit) => F.push({
+    line, arr:[...nums], ptrs, vars:{target},
+    extra:{label:'seen', items:[...seen].map(([k, v]) => `${k}→${v}`)}, hit, note
+  });
+  snap(1, `Target is <b>${target}</b>. The dict will remember every value we've walked past, and where it was.`, {}, null);
+  for (let i = 0; i < nums.length; i++){
+    const n = nums[i];
+    snap(2, `<code>i</code> = <b>${i}</b>, value <b>${n}</b>.`, {i}, null);
+    const need = target - n;
+    snap(3, `What would complete the pair? <code>${target} - ${n}</code> = <b>${need}</b>.`, {i}, null);
+    if (seen.has(need)){
+      snap(4, `<b>${need} is in seen</b>, recorded at index ${seen.get(need)}. That's the pair.`, {i}, [seen.get(need), i]);
+      snap(5, `Return <code>[${seen.get(need)}, ${i}]</code>. One pass — never scanned backwards.`, {i}, [seen.get(need), i]);
+      break;
+    }
+    snap(4, `<code>${need}</code> is not in seen yet.`, {i}, null);
+    seen.set(n, i);
+    snap(6, `Record <code>${n} → ${i}</code>, so a later number can find it instantly.`, {i}, null);
+  }
+  return {code, frames:F,
+    title:'Hash map lookup',
+    prob:'#11 two sum — the most asked question anywhere',
+    when:'The tell is <b>"have I seen this before?"</b> You spend memory to avoid a second loop. Store the thing you\'ll want to <i>find</i>, keyed by what you\'ll <i>search with</i>.'};
+}
+
+function traceKadane(){
+  const code = [
+    'def max_subarray(nums):',
+    '    best = cur = nums[0]',
+    '    for n in nums[1:]:',
+    '        cur = max(n, cur + n)',
+    '        best = max(best, cur)',
+    '    return best'
+  ];
+  const nums = [-2, 1, -3, 4, -1, 2, -5, 4];
+  const F = [];
+  let best = nums[0], cur = nums[0];
+  const snap = (line, note, i) => F.push({line, arr:[...nums], ptrs: i === undefined ? {} : {n:i}, vars:{cur, best}, note});
+  snap(1, `Start both at the first element (<b>${nums[0]}</b>). Not at 0 — an all-negative array would then wrongly answer 0.`, 0);
+  for (let i = 1; i < nums.length; i++){
+    const n = nums[i];
+    snap(2, `Next value: <b>${n}</b>.`, i);
+    const restart = n, extend = cur + n;
+    cur = Math.max(restart, extend);
+    snap(3, `Start fresh at <b>${restart}</b>, or extend to <code>${extend - n} + ${n}</code> = <b>${extend}</b>? Take <b>${cur}</b>. ${restart > extend ? 'Restarting — the old run was dragging us down.' : 'Extending — the run is still worth keeping.'}`, i);
+    best = Math.max(best, cur);
+    snap(4, `Best ever seen: <b>${best}</b>. <code>cur</code> is the run ending here; <code>best</code> is the champion so far. Two different jobs — that's the whole trick.`, i);
+  }
+  snap(5, `Answer: <b>${best}</b>. One pass, two variables, no array of results.`);
+  return {code, frames:F,
+    title:'Running state (DP in miniature)',
+    prob:'#12 maximum subarray — Kadane\'s algorithm',
+    when:'Use when each step only needs the <i>previous</i> answer, not all of them. Ask at every element: <b>extend the run, or start over here?</b> Keep a separate champion.'};
+}
+
+function traceMerge(){
+  const code = [
+    'def merge(nums1, m, nums2, n):',
+    '    p1, p2 = m - 1, n - 1',
+    '    write = m + n - 1',
+    '    while p2 >= 0:',
+    '        if p1 >= 0 and nums1[p1] > nums2[p2]:',
+    '            nums1[write] = nums1[p1]',
+    '            p1 -= 1',
+    '        else:',
+    '            nums1[write] = nums2[p2]',
+    '            p2 -= 1',
+    '        write -= 1'
+  ];
+  const nums1 = [1, 3, 5, null, null, null], nums2 = [2, 4, 6];
+  const m = 3, n = 3;
+  const F = [];
+  let p1 = m - 1, p2 = n - 1, write = m + n - 1;
+  const snap = (line, note) => F.push({
+    line, arr: nums1.map(v => v === null ? '·' : v), arr2:[...nums2],
+    ptrs:{p1, write}, ptrs2:{p2}, vars:{p1, p2, write}, note
+  });
+  snap(2, 'All three pointers start at the <b>end</b>. Filling backwards means we never overwrite a value we still need — that is the entire reason this works in place.');
+  while (p2 >= 0){
+    snap(3, `<code>p2 &gt;= 0</code> → <code>${p2} &gt;= 0</code> is <b>${p2 >= 0}</b>. ${p2 >= 0 ? 'Still values left in nums2.' : 'nums2 is exhausted — and anything left in nums1 is already in the right place.'}`);
+    if (p2 < 0) break;
+    const takeFrom1 = p1 >= 0 && nums1[p1] > nums2[p2];
+    snap(4, takeFrom1
+      ? `<code>nums1[${p1}]</code> = ${nums1[p1]} is bigger than <code>nums2[${p2}]</code> = ${nums2[p2]} → take from nums1.`
+      : (p1 < 0 ? `<code>p1</code> ran out, so take from nums2.` : `<code>nums2[${p2}]</code> = ${nums2[p2]} is bigger or equal → take from nums2.`));
+    if (takeFrom1){
+      nums1[write] = nums1[p1];
+      snap(5, `<b>nums1[${write}] = nums1[${p1}]</b> — the bigger value goes to the back.`);
+      p1--; snap(6, `<code>p1</code> steps left → <b>${p1}</b>.`);
+    } else {
+      nums1[write] = nums2[p2];
+      snap(8, `<b>nums1[${write}] = nums2[${p2}]</b> — copied across from the second array.`);
+      p2--; snap(9, `<code>p2</code> steps left → <b>${p2}</b>.`);
+    }
+    write--;
+    snap(10, `<code>write</code> steps left → <b>${write}</b>. It moves every single time; p1 and p2 only move when they were chosen.`);
+  }
+  snap(10, 'Done, in place. Notice the loop condition is <code>p2 >= 0</code>, not both — once nums2 is empty, whatever remains in nums1 is already sorted and already positioned.');
+  return {code, frames:F,
+    title:'The merge step',
+    prob:'#13 merge sorted array — half of merge sort',
+    when:'Two sorted inputs, one output. Compare the fronts (or backs), take the winner, advance <b>only that one</b>. Filling backwards is what makes the in-place version safe.'};
+}
+
+/* =====================================================================
+   TRACE RENDERER
+   ===================================================================== */
+const PTR_COLORS = {
+  left:'var(--p1)', right:'var(--p2)', read:'var(--p1)', write:'var(--p3)',
+  i:'var(--p1)', n:'var(--p1)', p1:'var(--p1)', p2:'var(--p2)'
+};
+
+function mountTracer(host, T){
+  const el = document.createElement('section');
+  el.className = 'card tracer';
+  el.innerHTML = `
+    <div class="tracehead">
+      <h3>${T.title}</h3>
+      <span class="prob">${T.prob}</span>
+    </div>
+    <p class="lede" style="font-size:15px">${T.when}</p>
+    <div class="codebox"></div>
+    <div class="viz"></div>
+    <p class="tracenote"></p>
+    <div class="controls">
+      <button class="btn" data-a="step">Step →</button>
+      <button class="btn quiet" data-a="back">← Back</button>
+      <button class="btn quiet" data-a="play">Play</button>
+      <button class="btn quiet" data-a="reset">Reset</button>
+      <span class="count"></span>
+    </div>`;
+  host.appendChild(el);
+
+  const codebox = el.querySelector('.codebox');
+  const viz = el.querySelector('.viz');
+  const note = el.querySelector('.tracenote');
+  const count = el.querySelector('.count');
+  let at = 0, timer = null;
+
+  codebox.innerHTML = T.code.map((l, n) => `<div class="codeline" data-l="${n}">${esc(l) || ' '}</div>`).join('');
+
+  function cellsFor(arr, ptrs, opts){
+    return `<div class="cells">${arr.map((v, i) => {
+      const names = Object.entries(ptrs || {}).filter(([, p]) => p === i).map(([nm]) => nm);
+      let cls = '';
+      if (opts.window && i >= opts.window[0] && i <= opts.window[1]) cls = 'win';
+      if (opts.hit && opts.hit.includes(i)) cls = 'hit';
+      return `<div class="cellwrap">
+          <div class="idx">${i}</div>
+          <div class="cell ${cls}">${esc(v)}</div>
+          <div class="ptrs">${names.map(nm =>
+            `<span class="ptr" style="background:${PTR_COLORS[nm] || 'var(--ink-soft)'}">${nm}</span>`).join('')}</div>
+        </div>`;
+    }).join('')}</div>`;
+  }
+
+  function paint(){
+    const f = T.frames[at];
+    codebox.querySelectorAll('.codeline').forEach(d => d.classList.toggle('on', +d.dataset.l === f.line));
+    const opts = {window:f.window, hit:f.hit};
+    viz.innerHTML =
+      `<div class="arrrow">${f.arr2 ? '<span class="arrlabel">nums1</span>' : ''}${cellsFor(f.arr, f.ptrs, opts)}</div>` +
+      (f.arr2 ? `<div class="arrrow"><span class="arrlabel">nums2</span>${cellsFor(f.arr2, f.ptrs2, {})}</div>` : '') +
+      `<div class="vars">${Object.entries(f.vars || {}).map(([k, v]) =>
+        `<span class="var"><i>${k}</i> = ${esc(v)}</span>`).join('')}</div>` +
+      (f.extra ? `<div class="extra"><span class="lab">${f.extra.label} =</span>${
+        f.extra.items.length ? f.extra.items.map(x => `<span class="chip">${esc(x)}</span>`).join('')
+                             : '<span class="lab">empty</span>'}</div>` : '');
+    note.innerHTML = f.note;
+    count.textContent = `${at + 1} / ${T.frames.length}`;
+    el.querySelector('[data-a="step"]').disabled = at >= T.frames.length - 1;
+    el.querySelector('[data-a="back"]').disabled = at === 0;
+  }
+
+  function stop(){ clearInterval(timer); timer = null; el.querySelector('[data-a="play"]').textContent = 'Play'; }
+
+  el.querySelector('[data-a="step"]').onclick = () => { stop(); if (at < T.frames.length - 1){ at++; paint() } };
+  el.querySelector('[data-a="back"]').onclick = () => { stop(); if (at > 0){ at--; paint() } };
+  el.querySelector('[data-a="reset"]').onclick = () => { stop(); at = 0; paint() };
+  el.querySelector('[data-a="play"]').onclick = e => {
+    if (timer){ stop(); return }
+    e.target.textContent = 'Pause';
+    timer = setInterval(() => {
+      if (at >= T.frames.length - 1){ stop(); return }
+      at++; paint();
+    }, 900);
+  };
+  paint();
+}
+
+const host = document.getElementById('tracers');
+host.style.display = 'flex';
+host.style.flexDirection = 'column';
+host.style.gap = '20px';
+[traceReverse(), traceMoveZeroes(), traceWindow(), traceTwoSum(), traceKadane(), traceMerge()]
+  .forEach(T => mountTracer(host, T));
+
+/* =====================================================================
+   PROBLEM INDEX
+   ===================================================================== */
+const PROBLEMS = [
+  [1,  'Reverse a string in place', 'Two pointers from the ends, swap, walk inward.', 'two pointers', 'var(--p1)'],
+  [2,  'Valid palindrome', 'Same walk, but skip non-alphanumerics and lowercase as you go.', 'two pointers', 'var(--p1)'],
+  [3,  'Longest substring, no repeats', 'Grow right, shrink left until legal. Set holds the window.', 'sliding window', 'var(--p2)'],
+  [4,  'Valid anagram', 'Count letters in one, subtract with the other. Any non-zero left means no.', 'hash map', 'var(--p3)'],
+  [5,  'Group anagrams', 'Key = sorted(word). Same key, same bucket.', 'canonical form', 'var(--p4)'],
+  [6,  'FizzBuzz', 'Check 15 first, or build the string by appending. Order of conditions is the test.', 'conditionals', 'var(--ink-soft)'],
+  [7,  'Primes up to N', 'Trial divide only to √n. Then the sieve: cross out multiples.', 'loop bounds', 'var(--ink-soft)'],
+  [8,  'Reverse an integer', 'n % 10 peels the last digit, n //= 10 drops it. Check the range before returning.', 'math', 'var(--p4)'],
+  [9,  'Fibonacci, three ways', 'Recursion → memo → two rolling variables. All of DP in one problem.', 'running state', 'var(--p2)'],
+  [10, 'Count set bits', 'n &= n - 1 clears the lowest set bit. Loop until zero, count the passes.', 'bit tricks', 'var(--p4)'],
+  [11, 'Two Sum', 'Store value → index as you walk. Look for target - n.', 'hash map', 'var(--p3)'],
+  [12, 'Maximum subarray', 'Extend or restart at each element. Keep a separate best.', 'running state', 'var(--p2)'],
+  [13, 'Merge sorted arrays', 'Fill from the back so nothing you still need gets overwritten.', 'merge step', 'var(--p1)'],
+  [14, 'Move zeroes', 'Write pointer only advances when you keep something. Fill the tail after.', 'read / write', 'var(--p3)'],
+  [15, 'Missing number in 1..N', 'Expected sum minus actual sum. Or XOR everything — pairs cancel.', 'math / XOR', 'var(--p4)']
+];
+document.getElementById('plist').innerHTML = PROBLEMS.map(([n, name, hint, tech, color]) => `
+  <div class="prow">
+    <span class="num">${n}</span>
+    <span class="name">${name}<span>${hint}</span></span>
+    <span class="t" style="background:${color}">${tech}</span>
+  </div>`).join('');
+</script>

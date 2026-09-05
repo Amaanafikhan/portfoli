@@ -1,0 +1,652 @@
+<title>Set or Regret</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800;1,400&display=swap">
+
+<style>
+:root{
+  --ground:#E9E7F2;
+  --panel:#FFFFFF;
+  --panel-2:#F3F1F9;
+  --ink:#1A1726;
+  --ink-soft:#5C5570;
+  --ink-faint:#8B84A0;
+  --rule:#D6D2E4;
+  --accent:#D91A63;
+  --list:#2F5BEA;
+  --tuple:#B96C05;
+  --dict:#D91A63;
+  --set:#0F9E76;
+  --good:#0F9E76;
+  --bad:#D9342B;
+  --shadow:0 2px 0 rgba(26,23,38,.16), 0 12px 28px -14px rgba(26,23,38,.5);
+  --btn-shadow:0 4px 0 var(--rule);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141220;
+    --panel:#1E1B2C;
+    --panel-2:#262236;
+    --ink:#EFECF7;
+    --ink-soft:#ADA5C2;
+    --ink-faint:#7B7392;
+    --rule:#332E47;
+    --accent:#FF4B87;
+    --list:#7C9BFF;
+    --tuple:#F0A93C;
+    --dict:#FF4B87;
+    --set:#2FD3A0;
+    --good:#2FD3A0;
+    --bad:#FF6B60;
+    --shadow:0 2px 0 rgba(0,0,0,.5), 0 14px 30px -14px rgba(0,0,0,.85);
+    --btn-shadow:0 4px 0 #0F0D18;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141220;
+  --panel:#1E1B2C;
+  --panel-2:#262236;
+  --ink:#EFECF7;
+  --ink-soft:#ADA5C2;
+  --ink-faint:#7B7392;
+  --rule:#332E47;
+  --accent:#FF4B87;
+  --list:#7C9BFF;
+  --tuple:#F0A93C;
+  --dict:#FF4B87;
+  --set:#2FD3A0;
+  --good:#2FD3A0;
+  --bad:#FF6B60;
+  --shadow:0 2px 0 rgba(0,0,0,.5), 0 14px 30px -14px rgba(0,0,0,.85);
+  --btn-shadow:0 4px 0 #0F0D18;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px 16px;
+}
+.cabinet{
+  width:100%;
+  max-width:660px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+/* ---------- HUD ---------- */
+.hud{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:14px;
+}
+.wordmark{
+  font-family:"Bricolage Grotesque","Public Sans",sans-serif;
+  font-weight:800;
+  font-size:19px;
+  letter-spacing:-.02em;
+  line-height:1;
+  margin:0;
+}
+.wordmark em{font-style:normal;color:var(--accent)}
+.stats{
+  display:flex;
+  gap:16px;
+  align-items:baseline;
+  justify-self:end;
+  font-variant-numeric:tabular-nums;
+}
+.stat{display:flex;flex-direction:column;align-items:flex-end;line-height:1}
+.stat b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px}
+.stat span{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin-top:3px}
+.hearts{letter-spacing:1px;font-size:15px;line-height:1}
+.hearts i{font-style:normal;opacity:.22;transition:opacity .2s}
+.hearts i.on{opacity:1}
+
+/* ---------- timer ---------- */
+.timer{
+  height:6px;
+  background:var(--rule);
+  border-radius:99px;
+  overflow:hidden;
+}
+.timer > div{
+  height:100%;
+  width:100%;
+  background:var(--accent);
+  transform-origin:left center;
+  border-radius:99px;
+}
+.timer.warn > div{background:var(--bad)}
+
+/* ---------- card ---------- */
+.card{
+  background:var(--panel);
+  border:1px solid var(--rule);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  padding:22px;
+  min-height:232px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:14px;
+  position:relative;
+  overflow:hidden;
+}
+.card.shake{animation:shake .34s}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-7px)}
+  45%{transform:translateX(6px)}
+  70%{transform:translateX(-3px)}
+}
+.card.pop{animation:pop .3s}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.015)}100%{transform:scale(1)}}
+
+.eyebrow{
+  font-size:10px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  font-weight:800;
+  color:var(--ink-faint);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.eyebrow s{
+  text-decoration:none;
+  padding:3px 7px;
+  border-radius:5px;
+  color:var(--panel);
+  background:var(--ink-soft);
+  letter-spacing:.1em;
+}
+.eyebrow s.pick{background:var(--dict)}
+.eyebrow s.crash{background:var(--tuple)}
+.eyebrow s.speed{background:var(--list)}
+
+.prompt{
+  font-family:"Bricolage Grotesque","Public Sans",sans-serif;
+  font-weight:700;
+  font-size:clamp(19px,4.2vw,25px);
+  line-height:1.22;
+  letter-spacing:-.02em;
+  text-wrap:balance;
+  margin:0;
+}
+pre.code{
+  font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  font-size:14px;
+  line-height:1.6;
+  background:var(--panel-2);
+  border:1px solid var(--rule);
+  border-left:3px solid var(--ink-soft);
+  border-radius:0 8px 8px 0;
+  padding:12px 14px;
+  margin:0;
+  overflow-x:auto;
+  white-space:pre;
+}
+
+/* ---------- answers ---------- */
+.answers{display:grid;gap:9px}
+.answers.four{grid-template-columns:repeat(2,1fr)}
+.answers.two{grid-template-columns:repeat(2,1fr)}
+@media (max-width:430px){.answers.four,.answers.two{grid-template-columns:1fr}}
+
+.ans{
+  font-family:"Public Sans",sans-serif;
+  font-weight:800;
+  font-size:15px;
+  color:var(--ink);
+  background:var(--panel);
+  border:1.5px solid var(--rule);
+  border-radius:10px;
+  box-shadow:var(--btn-shadow);
+  padding:13px 14px;
+  text-align:left;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transition:transform .08s, background .12s, border-color .12s;
+}
+.ans kbd{
+  font-family:"JetBrains Mono",monospace;
+  font-size:10px;
+  font-weight:700;
+  color:var(--ink-faint);
+  border:1px solid var(--rule);
+  border-radius:4px;
+  padding:2px 5px;
+  flex:none;
+}
+.ans code{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint);font-weight:400;margin-left:auto}
+.ans:hover:not(:disabled){transform:translateY(-1px);border-color:var(--ink-faint)}
+.ans:active:not(:disabled){transform:translateY(3px);box-shadow:none}
+.ans:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ans:disabled{cursor:default}
+.ans[data-k="list"]{border-left:5px solid var(--list)}
+.ans[data-k="tuple"]{border-left:5px solid var(--tuple)}
+.ans[data-k="dict"]{border-left:5px solid var(--dict)}
+.ans[data-k="set"]{border-left:5px solid var(--set)}
+.ans.right{background:color-mix(in srgb,var(--good) 16%,var(--panel));border-color:var(--good)}
+.ans.wrong{background:color-mix(in srgb,var(--bad) 15%,var(--panel));border-color:var(--bad)}
+.ans.dim{opacity:.42}
+
+/* ---------- verdict ---------- */
+.verdict{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  border-top:1px solid var(--rule);
+  padding-top:12px;
+}
+.verdict h4{
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:800;
+  font-size:16px;
+  margin:0;
+  letter-spacing:-.01em;
+}
+.verdict h4.right{color:var(--good)}
+.verdict h4.wrong{color:var(--bad)}
+.verdict p{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink-soft)}
+.verdict p b{color:var(--ink)}
+.verdict code{
+  font-family:"JetBrains Mono",monospace;
+  font-size:12.5px;
+  background:var(--panel-2);
+  padding:1px 5px;
+  border-radius:4px;
+  color:var(--ink);
+}
+.next{
+  align-self:flex-start;
+  margin-top:2px;
+  font-family:"Public Sans",sans-serif;
+  font-weight:800;
+  font-size:13px;
+  color:var(--panel);
+  background:var(--ink);
+  border:none;
+  border-radius:8px;
+  padding:9px 15px;
+  cursor:pointer;
+}
+.next:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* ---------- screens ---------- */
+.screen{display:flex;flex-direction:column;gap:14px;text-align:left}
+.screen h2{
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:800;
+  font-size:clamp(30px,7vw,44px);
+  line-height:.98;
+  letter-spacing:-.035em;
+  margin:0;
+  text-wrap:balance;
+}
+.screen h2 em{font-style:normal;color:var(--accent)}
+.screen p.lede{margin:0;font-size:15px;line-height:1.55;color:var(--ink-soft);max-width:52ch}
+.legend{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+@media (max-width:430px){.legend{grid-template-columns:1fr}}
+.legend div{
+  display:flex;align-items:baseline;gap:8px;
+  font-size:13px;color:var(--ink-soft);
+  border-left:4px solid var(--rule);padding-left:9px;
+}
+.legend div b{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink)}
+.legend div:nth-child(1){border-color:var(--list)}
+.legend div:nth-child(2){border-color:var(--tuple)}
+.legend div:nth-child(3){border-color:var(--dict)}
+.legend div:nth-child(4){border-color:var(--set)}
+.start{
+  align-self:flex-start;
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:800;font-size:18px;
+  color:#fff;background:var(--accent);
+  border:none;border-radius:11px;
+  padding:14px 26px;cursor:pointer;
+  box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 55%,#000);
+  transition:transform .08s;
+}
+.start:active{transform:translateY(3px);box-shadow:none}
+.start:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+.scoreline{display:flex;gap:26px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.scoreline div{display:flex;flex-direction:column;line-height:1}
+.scoreline b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:34px;letter-spacing:-.03em}
+.scoreline span{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);margin-top:5px}
+.weak{display:flex;flex-direction:column;gap:0;max-height:190px;overflow-y:auto}
+.weak li{
+  list-style:none;
+  font-size:13.5px;line-height:1.45;color:var(--ink-soft);
+  padding:9px 0;border-bottom:1px solid var(--rule);
+}
+.weak li:last-child{border-bottom:none}
+.weak li b{color:var(--ink)}
+.weak li code{font-family:"JetBrains Mono",monospace;font-size:12px;background:var(--panel-2);padding:1px 4px;border-radius:3px;color:var(--ink)}
+.section-label{
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  font-weight:800;color:var(--ink-faint);margin:0;
+}
+.foot{font-size:12px;color:var(--ink-faint);text-align:center;line-height:1.5}
+.foot kbd{font-family:"JetBrains Mono",monospace;border:1px solid var(--rule);border-radius:3px;padding:1px 4px;font-size:10.5px}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important}
+}
+</style>
+
+<div class="cabinet">
+  <div class="hud">
+    <h1 class="wordmark">Set or <em>Regret</em></h1>
+    <div class="hearts" id="hearts" aria-label="Lives"><i class="on">◆</i><i class="on">◆</i><i class="on">◆</i></div>
+    <div class="stats">
+      <div class="stat"><b id="score">0</b><span>Score</span></div>
+      <div class="stat"><b id="streak">0</b><span>Streak</span></div>
+    </div>
+  </div>
+
+  <div class="timer" id="timerWrap" hidden><div id="timerBar"></div></div>
+
+  <div class="card" id="card"></div>
+
+  <p class="foot" id="foot"><kbd>1</kbd>–<kbd>4</kbd> to answer · <kbd>Enter</kbd> to continue</p>
+</div>
+
+<script>
+const BANK = [
+  // ============ PICK ============
+  {t:"pick", q:"Everyone who RSVP'd to the party. Half of them submitted the form three times.", a:"set",
+   why:"A <b>set</b> throws duplicates away for free. <code>set(rsvps)</code> and the problem is gone — no loop, no <code>if x not in seen</code>."},
+  {t:"pick", q:"A city's <code>(latitude, longitude)</code>, which you'll use as a key in a cache.", a:"tuple",
+   why:"<b>Tuple</b>. It's fixed, it's a group that means one thing, and — the part that decides it — it's hashable, so it can be a dict key. A list can't."},
+  {t:"pick", q:"A shopping cart. Things get added, removed, reordered all day.", a:"list",
+   why:"<b>List</b>. Ordered and mutable is exactly the job. Don't overthink this one — most sequences are lists."},
+  {t:"pick", q:"Phone number, looked up by contact name.", a:"dict",
+   why:"<b>Dict</b>. The giveaway phrase is <i>\"by\"</i> — anything <i>by</i> name, <i>by</i> id, <i>by</i> date is a dict."},
+  {t:"pick", q:"Checking \"is this username taken?\" — 50,000 times a minute.", a:"set",
+   why:"<b>Set</b>. Membership in a set is instant no matter how big it gets. In a list it scans every item, every time. This is the whole lesson."},
+  {t:"pick", q:"How many times each word appears in a document.", a:"dict",
+   why:"<b>Dict</b> — word → count. (Later you'll learn <code>collections.Counter</code>, which is a dict wearing a hat.)"},
+  {t:"pick", q:"Which students are enrolled in <i>both</i> Chemistry and Physics.", a:"set",
+   why:"<b>Set</b>. <code>chem & physics</code> gives you the overlap in one character. Also <code>|</code> for either, <code>-</code> for only-the-first."},
+  {t:"pick", q:"The days of the week. They are not going to change.", a:"tuple",
+   why:"<b>Tuple</b>. When something is a fixed group, a tuple says so out loud — and Python enforces it."},
+  {t:"pick", q:"Tags on a blog post. No repeats, order is meaningless.", a:"set",
+   why:"<b>Set</b>. \"No repeats\" and \"order doesn't matter\" is the set definition, word for word."},
+  {t:"pick", q:"Every API response you've fetched, stored so you don't fetch it twice — found by its URL.", a:"dict",
+   why:"<b>Dict</b>. URL → response. A cache is always a dict; that's what a cache <i>is</i>."},
+  {t:"pick", q:"Game scores, in the order they were scored, so you can chart them.", a:"list",
+   why:"<b>List</b>. Order carries real information here, and you'll keep appending. Textbook list."},
+  {t:"pick", q:"Stripping duplicates out of 100,000 email addresses.", a:"set",
+   why:"<b>Set</b>. <code>list(set(emails))</code> — one line. Note it scrambles the order; if order matters, <code>list(dict.fromkeys(emails))</code> keeps it."},
+  {t:"pick", q:"An RGB color like <code>(255, 0, 128)</code>, passed between functions and never edited.", a:"tuple",
+   why:"<b>Tuple</b>. Three values that only mean something together, and nobody should be able to change the green channel by accident."},
+  {t:"pick", q:"A to-do list you sort by priority every morning.", a:"list",
+   why:"<b>List</b>. Sorting needs order and mutation. <code>todos.sort()</code> works in place; sets can't be sorted because they have no order to rearrange."},
+  {t:"pick", q:"Settings for your app: <code>debug</code>, <code>port</code>, <code>db_url</code>.", a:"dict",
+   why:"<b>Dict</b>. Named values you fetch by name. If you're numbering things to remember what slot 3 was, you wanted a dict."},
+
+  // ============ CRASH ============
+  {t:"crash", q:"Runs, or raises?", code:'d = {[1, 2]: "home"}', a:"crash",
+   why:"<code>TypeError: unhashable type: 'list'</code>. Dict keys must be hashable, and mutable things aren't. Swap the list for a tuple and it works."},
+  {t:"crash", q:"Runs, or raises?", code:'d = {(1, 2): "home"}', a:"run",
+   why:"Fine. Tuples are hashable, so they make excellent keys — coordinates, (row, col) grids, (year, month) buckets."},
+  {t:"crash", q:"Runs, or raises?", code:'t = (1, 2, 3)\nt[0] = 99', a:"crash",
+   why:"<code>TypeError: 'tuple' object does not support item assignment</code>. That's the entire point of a tuple. Build a new one instead."},
+  {t:"crash", q:"Runs, or raises?", code:'t = (1, [2, 3])\nt[1].append(4)', a:"run",
+   why:"Sneaky — this <b>works</b>. The tuple is frozen, but the list <i>inside</i> it isn't. The tuple holds the same list object; that list is still free to change."},
+  {t:"crash", q:"Runs, or raises?", code:'key = (1, [2])\nd = {key: "x"}', a:"crash",
+   why:"<code>unhashable type: 'list'</code>. A tuple is only hashable if <i>everything inside it</i> is. One list in there poisons the whole key."},
+  {t:"crash", q:"Runs, or raises?", code:'s = {[1], [2]}', a:"crash",
+   why:"<code>unhashable type: 'list'</code> again. Set <i>members</i> follow the same rule as dict keys — they're both hash tables underneath."},
+  {t:"crash", q:"Runs, or raises?", code:'s = {1, 2, 3}\nprint(s[0])', a:"crash",
+   why:"<code>TypeError: 'set' object is not subscriptable</code>. Sets have no order, so there is no \"first\" item to ask for."},
+  {t:"crash", q:"Runs, or raises?", code:'d = {"a": 1}\nprint(d["b"])', a:"crash",
+   why:"<code>KeyError: 'b'</code>. Use <code>d.get(\"b\")</code> for <code>None</code> instead of a crash, or <code>d.get(\"b\", 0)</code> for a default."},
+  {t:"crash", q:"Runs, or raises?", code:'fs = frozenset([1, 2])\nd = {fs: "ok"}', a:"run",
+   why:"Works. <code>frozenset</code> is the immutable set — the answer to \"I need a set as a dict key.\""},
+  {t:"crash", q:"Runs, or raises?", code:'s = {1, 2}\ns.add(3)\ns.add(3)', a:"run",
+   why:"Runs, and <code>s</code> is <code>{1, 2, 3}</code>. Adding a duplicate isn't an error — it's just quietly ignored. That's the feature."},
+  {t:"crash", q:"Runs, or raises?", code:'nums = [1, 2, 3]\nnums[0] = 99', a:"run",
+   why:"Of course. Lists are mutable — this is the difference from the tuple two questions ago, and it's the only difference that matters."},
+  {t:"crash", q:"Runs, or raises?", code:'d = {"a": 1}\nfor k in d:\n    d[k + "!"] = 2', a:"crash",
+   why:"<code>RuntimeError: dictionary changed size during iteration</code>. Never add or delete while looping over a dict. Loop over <code>list(d)</code> if you must."},
+
+  // ============ SPEED ============
+  {t:"speed", q:"You have 10,000 users. You check <code>user in users</code> once per request, 10,000 times.",
+   opts:[["A list of 10,000","list"],["A set of 10,000","set"]], a:"set",
+   why:"<b>Set.</b> The list scans up to 10,000 items on every single check — 100 million comparisons. The set jumps straight to the answer, ~10,000 times. Same code, one word changed."},
+  {t:"speed", q:"You have a plain list. You need to check membership <b>exactly once</b>, then never again.",
+   opts:[["Just use the list","list"],["Convert to a set first","set"]], a:"list",
+   why:"<b>The list.</b> Building the set already costs a full pass through every item — the same work the one check would have done. Sets win on <i>repeated</i> lookups, not single ones."},
+  {t:"speed", q:"Looking up <code>d[key]</code> in a dict with 1,000,000 keys, versus a dict with 10 keys.",
+   opts:[["The 10-key dict is way faster","small"],["Both are about the same","same"]], a:"same",
+   why:"<b>About the same.</b> A hash lookup jumps to the answer; it doesn't care how much else is in there. Size barely moves it — that's what \"constant time\" means."},
+  {t:"speed", q:"Removing duplicates from 100,000 items.",
+   opts:[["Loop with <code>if x not in result</code>","loop"],["<code>set(items)</code>","set"]], a:"set",
+   why:"<b><code>set(items)</code>.</b> The loop version does a list scan on every item — it gets slower and slower as <code>result</code> grows. This exact loop is the #1 cause of \"why is my script taking 4 minutes?\""},
+  {t:"speed", q:"You need to keep a running count per category, over a million rows.",
+   opts:[["A list of <code>[name, count]</code> pairs","list"],["A dict <code>{name: count}</code>","dict"]], a:"dict",
+   why:"<b>Dict.</b> With the list you have to hunt for the right pair before every update. The dict goes straight there. Counting is always a dict."},
+  {t:"speed", q:"Something in your dashboard got slow. Where do you look first?",
+   opts:[["A big list being searched in a loop","list"],["Too many f-strings","fstring"]], a:"list",
+   why:"<b>The list in the loop.</b> Half of \"slow Python\" is a list where a set belonged. Look for <code>in</code> or <code>.index()</code> inside a loop before you optimize anything else."}
+];
+
+const LABELS = {
+  list:  ['List',  '[1, 2, 3]'],
+  tuple: ['Tuple', '(1, 2, 3)'],
+  dict:  ['Dict',  '{"a": 1}'],
+  set:   ['Set',   '{1, 2, 3}']
+};
+const TYPE_META = {
+  pick:  ['pick',  'Which structure?'],
+  crash: ['crash', 'Does it survive?'],
+  speed: ['speed', 'Which is faster?']
+};
+const TIME_LIMIT = 11000;
+
+const card = document.getElementById('card');
+const foot = document.getElementById('foot');
+const timerWrap = document.getElementById('timerWrap');
+const timerBar = document.getElementById('timerBar');
+const scoreEl = document.getElementById('score');
+const streakEl = document.getElementById('streak');
+const heartsEl = document.getElementById('hearts');
+
+let queue = [], i = 0, score = 0, streak = 0, best = 0, lives = 3;
+let misses = [], locked = true, raf = null, deadline = 0, onKey = null;
+
+const best0 = (() => { try { return +localStorage.getItem('sor_best') || 0 } catch { return 0 } })();
+
+const shuffle = a => { for (let j = a.length - 1; j > 0; j--) { const k = Math.floor(Math.random() * (j + 1)); [a[j], a[k]] = [a[k], a[j]] } return a };
+
+function paintHud(){
+  scoreEl.textContent = score;
+  streakEl.textContent = streak;
+  [...heartsEl.children].forEach((h, n) => h.classList.toggle('on', n < lives));
+}
+
+/* ---------------- title ---------------- */
+function title(){
+  locked = true;
+  timerWrap.hidden = true;
+  foot.innerHTML = 'Press <kbd>Enter</kbd> to start';
+  card.style.minHeight = '';
+  card.innerHTML = `
+    <div class="screen">
+      <h2>Four structures.<br>One <em>right answer.</em></h2>
+      <p class="lede">Rapid-fire Python drills. Pick the structure, guess whether the code survives, and find out which one is quietly making your script slow. Three lives.</p>
+      <div class="legend">
+        <div><b>list</b> ordered · mutable · duplicates ok</div>
+        <div><b>tuple</b> ordered · frozen · hashable</div>
+        <div><b>dict</b> lookup by key · keys unique</div>
+        <div><b>set</b> no order · no duplicates · instant <code>in</code></div>
+      </div>
+      <button class="start" id="go">Start drilling</button>
+    </div>`;
+  document.getElementById('go').onclick = start;
+  bindKey(e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); start() } });
+}
+
+function bindKey(fn){
+  if (onKey) window.removeEventListener('keydown', onKey);
+  onKey = fn;
+  window.addEventListener('keydown', onKey);
+}
+
+/* ---------------- run ---------------- */
+function start(){
+  queue = shuffle(BANK.slice());
+  i = 0; score = 0; streak = 0; best = 0; lives = 3; misses = [];
+  paintHud();
+  ask();
+}
+
+function ask(){
+  if (i >= queue.length) queue = queue.concat(shuffle(BANK.slice()));
+  const q = queue[i];
+  const [cls, label] = TYPE_META[q.t];
+
+  let opts;
+  if (q.t === 'pick')       opts = ['list','tuple','dict','set'].map(k => [LABELS[k][0], k, LABELS[k][1]]);
+  else if (q.t === 'crash') opts = [['It runs fine','run',''], ['It raises','crash','']];
+  else                      opts = q.opts.map(([t,k]) => [t, k, '']);
+
+  card.style.minHeight = '232px';
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="eyebrow"><s class="${cls}">${label}</s> Question ${i + 1}</div>
+    <p class="prompt">${q.q}</p>
+    ${q.code ? `<pre class="code">${q.code.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</pre>` : ''}
+    <div class="answers ${opts.length === 4 ? 'four' : 'two'}" id="answers">
+      ${opts.map(([text, k, code], n) => `
+        <button class="ans" data-k="${q.t === 'pick' ? k : ''}" data-key="${k}" data-n="${n}">
+          <kbd>${n + 1}</kbd><span>${text}</span>${code ? `<code>${code.replace(/</g,'&lt;')}</code>` : ''}
+        </button>`).join('')}
+    </div>`;
+
+  foot.innerHTML = `<kbd>1</kbd>–<kbd>${opts.length}</kbd> to answer`;
+  [...document.getElementById('answers').children].forEach(b => b.onclick = () => answer(b.dataset.key, b));
+  bindKey(e => {
+    const n = +e.key;
+    if (n >= 1 && n <= opts.length){
+      const b = document.querySelector(`.ans[data-n="${n - 1}"]`);
+      if (b && !locked) answer(b.dataset.key, b);
+    }
+  });
+
+  locked = false;
+  runTimer();
+}
+
+function runTimer(){
+  timerWrap.hidden = false;
+  timerWrap.classList.remove('warn');
+  deadline = performance.now() + TIME_LIMIT;
+  cancelAnimationFrame(raf);
+  const tick = now => {
+    const left = Math.max(0, deadline - now);
+    timerBar.style.transform = `scaleX(${left / TIME_LIMIT})`;
+    timerWrap.classList.toggle('warn', left < 3200);
+    if (left <= 0){ answer(null, null); return }
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+}
+
+function answer(picked, btn){
+  if (locked) return;
+  locked = true;
+  cancelAnimationFrame(raf);
+  timerWrap.hidden = true;
+
+  const q = queue[i];
+  const right = picked === q.a;
+  const timedOut = picked === null;
+  const secsLeft = Math.max(0, (deadline - performance.now()) / 1000);
+
+  [...document.querySelectorAll('.ans')].forEach(b => {
+    b.disabled = true;
+    if (b.dataset.key === q.a) b.classList.add('right');
+    else if (b === btn) b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+
+  if (right){
+    const gained = 100 + Math.round(secsLeft * 10) + streak * 25;
+    score += gained;
+    streak++;
+    best = Math.max(best, streak);
+    card.classList.add('pop');
+  } else {
+    streak = 0;
+    lives--;
+    misses.push(q);
+    card.classList.add('shake');
+  }
+  paintHud();
+
+  const head = timedOut ? "Too slow." : right ? pickPraise() : "Nope.";
+  card.insertAdjacentHTML('beforeend', `
+    <div class="verdict">
+      <h4 class="${right ? 'right' : 'wrong'}">${head}</h4>
+      <p>${q.why}</p>
+      <button class="next" id="next">${lives <= 0 ? 'See the damage' : 'Next'} →</button>
+    </div>`);
+
+  const go = () => { if (lives <= 0) over(); else { i++; ask() } };
+  document.getElementById('next').onclick = go;
+  document.getElementById('next').focus({preventScroll:true});
+  bindKey(e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go() } });
+}
+
+const PRAISE = ["Correct.", "Yes.", "Clean.", "Exactly.", "Nailed it."];
+const pickPraise = () => streak >= 5 ? `${streak} in a row.` : PRAISE[Math.floor(Math.random() * PRAISE.length)];
+
+/* ---------------- game over ---------------- */
+function over(){
+  locked = true;
+  timerWrap.hidden = true;
+  const record = score > best0;
+  try { if (record) localStorage.setItem('sor_best', score) } catch {}
+
+  const seen = new Set();
+  const weak = misses.filter(m => seen.has(m.q) ? false : seen.add(m.q));
+
+  card.style.minHeight = '';
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="screen">
+      <h2>${record ? 'New <em>best.</em>' : 'Out of <em>lives.</em>'}</h2>
+      <div class="scoreline">
+        <div><b>${score}</b><span>Score</span></div>
+        <div><b>${best}</b><span>Best streak</span></div>
+        <div><b>${Math.max(best0, score)}</b><span>All-time</span></div>
+      </div>
+      ${weak.length ? `
+        <p class="section-label">Drill these before the interview</p>
+        <ul class="weak">${weak.map(m => `<li>${m.why}</li>`).join('')}</ul>`
+      : `<p class="lede">A perfect run — you didn't miss one. Play again for a higher score, or send me the next topic and I'll build its game.</p>`}
+      <button class="start" id="again">Run it back</button>
+    </div>`;
+  foot.innerHTML = 'Press <kbd>Enter</kbd> to play again';
+  document.getElementById('again').onclick = start;
+  bindKey(e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); start() } });
+}
+
+paintHud();
+title();
+</script>

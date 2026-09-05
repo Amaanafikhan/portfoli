@@ -1,0 +1,767 @@
+<title>The Reload Arcade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+
+<style>
+:root{
+  --ground:#E9E7F2; --panel:#FFFFFF; --panel-2:#F3F1F9;
+  --ink:#1A1726; --ink-soft:#5C5570; --ink-faint:#8B84A0; --rule:#D6D2E4;
+  --accent:#D91A63;
+  --s1:#2F5BEA; --s2:#0F9E76; --s3:#B96C05; --s4:#D9342B;
+  --s5:#7B3FE4; --s6:#0E8FA8; --s7:#D91A63; --s8:#5C5570;
+  --good:#0F9E76; --bad:#D9342B;
+  --console:#221E31; --console-ink:#EDEAF7;
+  --shadow:0 2px 0 rgba(26,23,38,.13), 0 14px 30px -16px rgba(26,23,38,.5);
+  --btn-shadow:0 4px 0 var(--rule);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+    --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+    --accent:#FF4B87;
+    --s1:#7C9BFF; --s2:#2FD3A0; --s3:#F0A93C; --s4:#FF6B60;
+    --s5:#B48CFF; --s6:#45C6DE; --s7:#FF4B87; --s8:#ADA5C2;
+    --good:#2FD3A0; --bad:#FF6B60;
+    --console:#0E0C16; --console-ink:#E6E1F5;
+    --shadow:0 2px 0 rgba(0,0,0,.45), 0 16px 32px -16px rgba(0,0,0,.9);
+    --btn-shadow:0 4px 0 #0F0D18;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+  --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+  --accent:#FF4B87;
+  --s1:#7C9BFF; --s2:#2FD3A0; --s3:#F0A93C; --s4:#FF6B60;
+  --s5:#B48CFF; --s6:#45C6DE; --s7:#FF4B87; --s8:#ADA5C2;
+  --good:#2FD3A0; --bad:#FF6B60;
+  --console:#0E0C16; --console-ink:#E6E1F5;
+  --shadow:0 2px 0 rgba(0,0,0,.45), 0 16px 32px -16px rgba(0,0,0,.9);
+  --btn-shadow:0 4px 0 #0F0D18;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  display:flex; justify-content:center; padding:24px 16px 40px;
+}
+.wrap{width:100%;max-width:720px;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+p{margin:0}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.86em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px}
+
+/* ---------- HUD ---------- */
+.hud{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;min-height:34px}
+.brand{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:18px;letter-spacing:-.02em;line-height:1;cursor:pointer;background:none;border:none;color:var(--ink);padding:0}
+.brand em{font-style:normal;color:var(--accent)}
+.brand:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
+.hud .mid{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--ink-faint);justify-self:center;text-align:center}
+.stats{display:flex;gap:15px;align-items:baseline;justify-self:end;font-variant-numeric:tabular-nums}
+.stat{display:flex;flex-direction:column;align-items:flex-end;line-height:1}
+.stat b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:19px}
+.stat span{font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin-top:3px}
+.hearts i{font-style:normal;opacity:.22;font-size:14px}
+.hearts i.on{opacity:1}
+
+.timer{height:6px;background:var(--rule);border-radius:99px;overflow:hidden}
+.timer > div{height:100%;width:100%;background:var(--accent);transform-origin:left center;border-radius:99px}
+.timer.warn > div{background:var(--bad)}
+
+/* ---------- card ---------- */
+.card{
+  background:var(--panel);border:1px solid var(--rule);border-radius:14px;
+  box-shadow:var(--shadow);padding:22px;display:flex;flex-direction:column;gap:15px;
+}
+.card.shake{animation:shake .34s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}45%{transform:translateX(6px)}70%{transform:translateX(-3px)}}
+
+.eyebrow{display:flex;align-items:center;gap:9px;font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:800;color:var(--ink-faint);flex-wrap:wrap}
+.eyebrow s{text-decoration:none;padding:3px 8px;border-radius:5px;color:#fff;letter-spacing:.09em}
+.prompt{font-family:"Bricolage Grotesque","Public Sans",sans-serif;font-weight:700;font-size:clamp(18px,3.6vw,23px);line-height:1.25;letter-spacing:-.02em;text-wrap:balance}
+pre.code{
+  font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.62;
+  background:var(--console);color:var(--console-ink);
+  border-radius:9px;padding:14px 16px;margin:0;overflow-x:auto;white-space:pre;
+}
+pre.code .cm{color:#8E86AB}
+
+.answers{display:grid;gap:8px}
+.ans{
+  font-family:"Public Sans",sans-serif;font-weight:700;font-size:14.5px;
+  color:var(--ink);background:var(--panel);
+  border:1.5px solid var(--rule);border-radius:10px;box-shadow:var(--btn-shadow);
+  padding:12px 14px;text-align:left;cursor:pointer;
+  display:flex;align-items:flex-start;gap:10px;line-height:1.4;
+  transition:transform .08s,background .12s,border-color .12s;
+}
+.ans kbd{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;color:var(--ink-faint);border:1px solid var(--rule);border-radius:4px;padding:2px 5px;flex:none;margin-top:1px}
+.ans span{flex:1}
+.ans span code{background:var(--panel-2);font-size:12.5px}
+.ans:hover:not(:disabled){transform:translateY(-1px);border-color:var(--ink-faint)}
+.ans:active:not(:disabled){transform:translateY(3px);box-shadow:none}
+.ans:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ans:disabled{cursor:default}
+.ans.right{background:color-mix(in srgb,var(--good) 15%,var(--panel));border-color:var(--good)}
+.ans.wrong{background:color-mix(in srgb,var(--bad) 14%,var(--panel));border-color:var(--bad)}
+.ans.dim{opacity:.4}
+
+.verdict{display:flex;flex-direction:column;gap:9px;border-top:1px solid var(--rule);padding-top:13px}
+.verdict h4{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:15.5px;letter-spacing:-.01em}
+.verdict h4.right{color:var(--good)} .verdict h4.wrong{color:var(--bad)}
+.verdict .why{font-size:14.5px;line-height:1.5;color:var(--ink-soft)}
+.verdict .why b{color:var(--ink)}
+.say{
+  border-left:3px solid var(--accent);padding:2px 0 2px 13px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.say h5{margin:0;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--accent)}
+.say p{font-size:14.5px;line-height:1.5;color:var(--ink);font-style:italic}
+.meet{font-size:13px;color:var(--ink-faint);line-height:1.45}
+.next{
+  align-self:flex-start;font-family:"Public Sans",sans-serif;font-weight:800;font-size:13px;
+  color:var(--panel);background:var(--ink);border:none;border-radius:8px;padding:9px 16px;cursor:pointer;
+}
+.next:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* ---------- menu ---------- */
+.menu{display:flex;flex-direction:column;gap:20px}
+.menu h1{font-size:clamp(31px,6.5vw,46px);font-weight:800;line-height:1}
+.menu h1 em{font-style:normal;color:var(--accent)}
+.menu .lede{font-size:16px;line-height:1.55;color:var(--ink-soft);max-width:56ch}
+.modes{display:flex;gap:8px;flex-wrap:wrap}
+.mode{
+  flex:1;min-width:190px;text-align:left;cursor:pointer;
+  background:var(--panel);border:1.5px solid var(--rule);border-radius:11px;
+  padding:13px 15px;display:flex;flex-direction:column;gap:3px;
+  transition:border-color .12s,transform .08s;
+}
+.mode:hover{transform:translateY(-1px)}
+.mode.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,var(--panel))}
+.mode:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.mode b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:16px;letter-spacing:-.02em;color:var(--ink)}
+.mode span{font-size:12.5px;line-height:1.4;color:var(--ink-soft)}
+
+.label{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.sections{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media (max-width:560px){.sections{grid-template-columns:1fr}}
+.sec{
+  text-align:left;cursor:pointer;background:var(--panel);
+  border:1.5px solid var(--rule);border-left-width:5px;border-radius:10px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:4px;
+  transition:transform .08s,border-color .12s;
+}
+.sec:hover{transform:translateY(-2px)}
+.sec:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.sec .top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.sec b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:15.5px;letter-spacing:-.02em;color:var(--ink)}
+.sec .n{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-faint);white-space:nowrap}
+.sec .desc{font-size:12.5px;line-height:1.4;color:var(--ink-soft)}
+.sec .bar{height:4px;border-radius:99px;background:var(--rule);overflow:hidden;margin-top:3px}
+.sec .bar i{display:block;height:100%;border-radius:99px;background:var(--good)}
+.sec .score{font-size:10.5px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+
+.big{
+  display:flex;gap:8px;flex-wrap:wrap;
+}
+.big button{
+  flex:1;min-width:200px;cursor:pointer;text-align:left;
+  border:none;border-radius:11px;padding:15px 17px;
+  display:flex;flex-direction:column;gap:3px;transition:transform .08s;
+}
+.big button:active{transform:translateY(2px)}
+.big button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.big b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:17px;letter-spacing:-.02em}
+.big span{font-size:12.5px;line-height:1.4;opacity:.82}
+#playAll{background:var(--ink);color:var(--ground);box-shadow:0 3px 0 color-mix(in srgb,var(--ink) 60%,#000)}
+#playStar{background:var(--accent);color:#fff;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+
+/* ---------- results ---------- */
+.scoreline{display:flex;gap:24px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.scoreline div{display:flex;flex-direction:column;line-height:1}
+.scoreline b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:32px;letter-spacing:-.03em}
+.scoreline span{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);margin-top:5px}
+.weak{display:flex;flex-direction:column;max-height:230px;overflow-y:auto;margin:0;padding:0}
+.weak li{list-style:none;font-size:13.5px;line-height:1.45;color:var(--ink-soft);padding:10px 0;border-bottom:1px solid var(--rule)}
+.weak li:last-child{border-bottom:none}
+.weak li b{color:var(--ink)}
+.weak li .q{display:block;font-weight:800;color:var(--ink);margin-bottom:2px}
+.start{
+  align-self:flex-start;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:16px;
+  color:#fff;background:var(--accent);border:none;border-radius:10px;padding:12px 22px;cursor:pointer;
+  box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);
+}
+.start:active{transform:translateY(2px);box-shadow:none}
+.start:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ghost{
+  font-family:"Public Sans",sans-serif;font-weight:800;font-size:13px;color:var(--ink);
+  background:none;border:1.5px solid var(--rule);border-radius:9px;padding:11px 16px;cursor:pointer;
+}
+.ghost:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.foot{font-size:11.5px;color:var(--ink-faint);text-align:center;line-height:1.5}
+.foot kbd{font-family:"JetBrains Mono",monospace;border:1px solid var(--rule);border-radius:3px;padding:1px 4px;font-size:10px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="hud">
+    <button class="brand" id="brand">Reload <em>Arcade</em></button>
+    <div class="mid" id="hudMid"></div>
+    <div class="stats" id="hudStats"></div>
+  </div>
+  <div class="timer" id="timerWrap" hidden><div id="timerBar"></div></div>
+  <div class="card" id="card"></div>
+  <p class="foot" id="foot"></p>
+</div>
+
+<script>
+/* =======================================================================
+   SECTIONS
+   ======================================================================= */
+const SECTIONS = [
+  {id:'env',   n:'Environment',      d:'venv, requirements.txt, why activation keeps biting you', v:'--s1'},
+  {id:'data',  n:'Data Structures',  d:'The four boxes, mutability, slicing, comprehensions',     v:'--s2'},
+  {id:'func',  n:'Functions',        d:'Arguments, the mutable default trap, *args, scope',        v:'--s3'},
+  {id:'err',   n:'Errors & Files',   d:'try/except order, which exception is which, with',         v:'--s4'}
+];
+const SEC = Object.fromEntries(SECTIONS.map(s => [s.id, s]));
+
+/* =======================================================================
+   QUESTION BANK
+   star: true  → appears in the Interview Round
+   ======================================================================= */
+const BANK = [
+
+/* ---------------- ENVIRONMENT ---------------- */
+{s:'env', q:"Why can't you just install every package globally?",
+ o:["Projects need different versions of the same package, and global installs make them fight",
+    "Global installs are slower to import",
+    "Python refuses to install packages globally"],
+ a:0, star:true,
+ why:"Project A needs requests 2.28, Project B needs 2.32 — with one shared set of packages, one of them breaks. And your system Python is used by the OS itself, so installing the wrong thing there can break system tools.",
+ say:"A venv is an isolated folder with its own interpreter and its own packages, so each project pins what it needs without fighting other projects or the system Python.",
+ meet:"Every single day. Docker on Day 6 is this same isolation, one level lower."},
+
+{s:'env', q:"You opened a new terminal and now imports fail. What happened?",
+ o:["You forgot to activate the venv in this terminal",
+    "The venv expired",
+    "requirements.txt needs regenerating"],
+ a:0, star:true,
+ why:"Activation is <b>per terminal session</b>. New terminal, new activation. The <code>(venv)</code> prefix in your prompt is the only reliable signal you're inside it.",
+ say:"Ninety percent of ModuleNotFoundError is a forgotten activation — first thing I check is whether the prompt shows the venv prefix.",
+ meet:"Constantly, and always at the worst moment."},
+
+{s:'env', q:"What does <code>pip freeze &gt; requirements.txt</code> actually write?",
+ o:["Every package currently installed, with exact pinned versions",
+    "Only the packages you typed pip install for",
+    "A list of packages your imports reference"],
+ a:0,
+ why:"It captures the whole installed environment — including sub-dependencies you never asked for. That's correct behaviour, not a bug: those sub-dependencies are real requirements of your real requirements.",
+ say:"pip freeze snapshots the exact environment so a server can recreate it; pip install -r reads it back.",
+ meet:"Your Dockerfile, and every onboarding README."},
+
+{s:'env', q:"Why does a Dockerfile copy <code>requirements.txt</code> and pip install <i>before</i> copying your code?",
+ o:["So changing your code doesn't invalidate the cached layer that downloaded every package",
+    "Because pip can't run after COPY",
+    "To keep the image smaller"],
+ a:0,
+ why:"Docker caches layers. Dependencies change rarely, code changes constantly. Put the slow, stable step first and edits to your code rebuild in seconds instead of minutes.",
+ say:"Order your Dockerfile from least-changing to most-changing, so the expensive layer stays cached.",
+ meet:"Day 6. This single trick is the difference between a 4-second and a 4-minute rebuild."},
+
+{s:'env', q:"What is the one reliable signal that you're inside a virtual environment?",
+ o:["The <code>(venv)</code> prefix on your shell prompt",
+    "A venv/ folder existing in the project",
+    "pip being installed"],
+ a:0,
+ why:"The folder existing means nothing — you have to activate it, in this terminal. Deactivate with <code>deactivate</code>.",
+ say:"I check the prompt prefix before I trust anything about which packages are available.",
+ meet:"Every session."},
+
+/* ---------------- DATA STRUCTURES ---------------- */
+{s:'data', q:"You check <code>x in collection</code> inside a loop, over 10,000 items. What should it be?",
+ o:["A set or dict", "A list", "A tuple"],
+ a:0, star:true,
+ why:"A list scans every item to answer — up to 10,000 comparisons, every time. A set hashes the value and jumps straight to the answer, effectively instantly, at any size.",
+ say:"Sets and dicts are hash tables, so membership is roughly constant time; a list is a linear scan. Repeated lookups belong in a set.",
+ meet:"Day 5, when things get slow. Half of 'slow Python' is a list where a set belonged."},
+
+{s:'data', q:"What prints?", code:'a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)',
+ o:["[1, 2, 3, 4]", "[1, 2, 3]", "TypeError"],
+ a:0, star:true,
+ why:"<code>b = a</code> did <b>not</b> copy the list — it created a second name pointing at the same list in memory. Both names see every change.",
+ say:"Assignment binds a name to an object; it never copies. For a real copy I use .copy(), or copy.deepcopy() when there are nested objects.",
+ meet:"The hour you lose when a 'read-only' function quietly modified your list."},
+
+{s:'data', q:"<code>b = a.copy()</code> where <code>a</code> is a list of dicts. You edit a dict inside <code>b</code>. What happens to <code>a</code>?",
+ o:["It changes too — the inner dicts are still shared",
+    "It's untouched, copy() is a full copy",
+    "TypeError: can't copy nested structures"],
+ a:0,
+ why:"<code>.copy()</code> is a <b>shallow</b> copy: it duplicates the outer list, but the inner objects are the same objects. Use <code>copy.deepcopy()</code> when the nested objects must be independent too.",
+ say:"Shallow copies duplicate the container, not the contents. Nested mutable data needs deepcopy.",
+ meet:"Any time you 'safely' copy a list of records before modifying it."},
+
+{s:'data', q:"What is <code>nums[1:4]</code> for <code>nums = [0, 1, 2, 3, 4, 5]</code>?",
+ o:["[1, 2, 3]", "[1, 2, 3, 4]", "[0, 1, 2, 3]"],
+ a:0,
+ why:"Start is included, stop is <b>excluded</b>. That's deliberate: <code>nums[:3]</code> and <code>nums[3:]</code> split the list with no overlap and no gap.",
+ say:"Slices are half-open — start inclusive, stop exclusive — which makes splitting and pagination line up exactly.",
+ meet:"Pagination: results[offset:offset + limit] is exactly this."},
+
+{s:'data', q:"What does <code>nums[::-1]</code> give you?",
+ o:["The whole sequence reversed", "The last item", "Every second item"],
+ a:0,
+ why:"The third slot is <code>step</code>. A step of -1 walks backwards through the whole thing. <code>nums[::2]</code> takes every second item.",
+ say:"[start:stop:step] — a negative step reverses. It works identically on strings, since strings are sequences.",
+ meet:"Reversing without importing anything."},
+
+{s:'data', q:"What is <code>[n * n for n in nums if n % 2 == 0]</code> doing?",
+ o:["Squaring only the even numbers into a new list",
+    "Squaring all numbers, then removing odd results",
+    "Modifying nums in place"],
+ a:0,
+ why:"Read it left to right: <b>what I want</b> — <b>where it comes from</b> — <b>which ones qualify</b>. It always builds a <i>new</i> collection; the original is untouched.",
+ say:"A comprehension is a map and a filter in one expression, and it reads what-from-which.",
+ meet:"Reshaping rows of data into the objects the rest of your code wants."},
+
+{s:'data', q:"When should you NOT write a comprehension?",
+ o:["When you need try/except inside, or it has several conditions plus a transformation",
+    "When the list has more than 100 items",
+    "When you're inside a function"],
+ a:0,
+ why:"Comprehensions can't hold a try/except, and readability collapses fast. A comprehension nobody can read is worse than four clear lines. Never nest more than two levels.",
+ say:"I use comprehensions for a single clear map or filter, and drop to a loop the moment error handling or branching is involved.",
+ meet:"Code review."},
+
+{s:'data', q:"What does <code>{u['id']: u['name'] for u in users}</code> give you, and why is it useful?",
+ o:["A dict that turns a list into an index you can look up by ID instantly",
+    "A set of user names",
+    "A list of tuples"],
+ a:0,
+ why:"It's a dict comprehension — one of the most useful lines in Python. You convert an O(n) search through a list into an instant lookup by key.",
+ say:"When I need repeated lookups against a list, I build an id-to-object dict once and index into it instead of searching each time.",
+ meet:"Joining data from two API calls without a database."},
+
+{s:'data', q:"What are <code>first</code> and <code>rest</code> after <code>first, *rest = [1, 2, 3, 4]</code>?",
+ o:["first = 1, rest = [2, 3, 4]", "first = [1], rest = [2, 3, 4]", "first = 1, rest = (2, 3, 4)"],
+ a:0,
+ why:"The starred name collects everything left over, always as a <b>list</b>. Also: <code>a, b = b, a</code> swaps two variables with no temp.",
+ say:"Star-unpacking splits head from tail in one line, and tuple assignment swaps without a temporary.",
+ meet:"Parsing the first row of a CSV as headers."},
+
+{s:'data', q:"What is <code>{**defaults, 'limit': 50}</code> when <code>defaults = {'limit': 10, 'offset': 0}</code>?",
+ o:["{'limit': 50, 'offset': 0} — the rightmost value wins",
+    "{'limit': 10, 'offset': 0} — defaults win",
+    "An error, duplicate key"],
+ a:0,
+ why:"<code>**</code> spreads a dict into another. On a conflict the <b>rightmost wins</b>. Defaults first, overrides second — that's how config is layered in nearly every real app.",
+ say:"I merge config as defaults, then file, then environment — each layer overriding the last, using dict spreading.",
+ meet:"Day 8, loading config where env vars override defaults."},
+
+{s:'data', q:"What does <code>print(f\"{count=}\")</code> print when <code>count = 5</code>?",
+ o:["count=5", "5", "{count=}"],
+ a:0,
+ why:"The <code>=</code> suffix prints the expression <i>and</i> its value. It's the fastest debugging tool in Python — no more <code>print('count', count)</code>.",
+ say:"f-strings take format specs too — :.2f for decimals, :>10 to right-align, and = for debug output.",
+ meet:"Every debugging session you'll ever have."},
+
+/* ---------------- FUNCTIONS ---------------- */
+{s:'func', q:"What does this do?", code:'def add_tag(tag, tags=[]):\n    tags.append(tag)\n    return tags\n\nadd_tag("urgent")\nadd_tag("bug")',
+ o:["The second call returns ['urgent', 'bug'] — the list is shared across calls",
+    "The second call returns ['bug'] — a fresh list each time",
+    "Raises ValueError on the second call"],
+ a:0, star:true,
+ why:"Default values are evaluated <b>once</b>, when the function is <i>defined</i> — not per call. That one list is shared by every call, forever. Fix: default to <code>None</code> and create the list inside.",
+ say:"Never use a mutable default. The default object is created once at definition time, so state leaks between calls. Use None as the sentinel.",
+ meet:"'Why is data from a previous request showing up in this one?' — genuinely hard to debug if you don't know the pattern."},
+
+{s:'func', q:"What's the correct fix for a mutable default argument?",
+ o:["Default to None, then create the list inside the function",
+    "Default to an empty tuple",
+    "Add a global reset before each call"],
+ a:0, star:true,
+ why:"<code>if tags is None: tags = []</code>. A fresh list per call, every call. Same rule for dicts and sets.",
+ say:"Use None as the sentinel and build the mutable object inside the body.",
+ meet:"Every function that takes an optional collection."},
+
+{s:'func', q:"What type do <code>*args</code> and <code>**kwargs</code> collect into?",
+ o:["args is a tuple, kwargs is a dict",
+    "Both are lists",
+    "args is a list, kwargs is a set"],
+ a:0,
+ why:"<code>*args</code> gathers extra positional arguments into a tuple; <code>**kwargs</code> gathers extra keyword arguments into a dict. The asterisks are the syntax — the names are just convention.",
+ say:"Star collects extra positional arguments into a tuple, double-star collects keywords into a dict — and both work in reverse to spread a collection into a call.",
+ meet:"Any wrapper or helper that has to forward arguments it doesn't know the shape of."},
+
+{s:'func', q:"What happens with <code>create_task(priority='high', 'Fix bug')</code>?",
+ o:["SyntaxError — positional arguments can't follow keyword arguments",
+    "It works, Python matches by name",
+    "TypeError at runtime"],
+ a:0,
+ why:"Once you use a keyword argument, everything after it must also be a keyword. Positional first, always.",
+ say:"I use keyword arguments for anything non-obvious — create_task('Fix bug', urgent=True) explains itself where three bare booleans don't.",
+ meet:"Any function anyone else has to call — including you, in three months."},
+
+{s:'func', q:"What is <code>result</code> here?", code:'def add_tag(tags, tag):\n    tags.append(tag)\n\nresult = add_tag(my_tags, "urgent")',
+ o:["None — the function mutates but returns nothing",
+    "The updated list",
+    "An empty list"],
+ a:0, star:true,
+ why:"A function with no explicit <code>return</code> returns <code>None</code>. The list <i>was</i> modified — but nothing came back. Decide deliberately: does this function mutate, or return a new value? Doing both is confusing; doing neither is a bug.",
+ say:"Python returns None implicitly, so I pick one contract per function — mutate in place, or return a new value.",
+ meet:"Right after you chain .sort() and get None."},
+
+{s:'func', q:"In what order does Python look up a name?",
+ o:["Local → Enclosing → Global → Built-in",
+    "Global → Local → Built-in",
+    "Local → Global → Enclosing → Built-in"],
+ a:0,
+ why:"LEGB. The <b>Enclosing</b> step is what lets a function defined inside another function see the outer one's variables — the rest of the time you only notice Local and Global.",
+ say:"Local, Enclosing, Global, Built-in — Python walks outward until it finds the name, and assignment always creates a local unless I say otherwise.",
+ meet:"The moment a nested function sees a variable you didn't pass it."},
+
+/* ---------------- ERRORS & FILES ---------------- */
+{s:'err', q:"What's wrong with putting <code>except Exception</code> first, above the specific handlers?",
+ o:["Python takes the first match, so every clause below it becomes dead code",
+    "Nothing, order doesn't matter",
+    "It raises a SyntaxError"],
+ a:0, star:true,
+ why:"Python checks <code>except</code> clauses top to bottom and takes the <b>first</b> match. <code>Exception</code> matches almost everything, so nothing after it can ever run.",
+ say:"Specific exceptions first, general last — otherwise the general handler shadows everything below it.",
+ meet:"Day 4, when a timeout, a rate limit and a bad response each need different handling."},
+
+{s:'err', q:"Why is a bare <code>except:</code> or <code>except Exception: pass</code> dangerous?",
+ o:["It silently swallows real bugs — including typos in your own code",
+    "It's slower than catching specific exceptions",
+    "It only catches the first error"],
+ a:0, star:true,
+ why:"A NameError from your own typo gets caught and discarded exactly like a network timeout. A five-minute fix becomes a three-hour hunt. If you must catch broadly, <b>log it and re-raise</b>.",
+ say:"I never swallow exceptions silently. Broad catches log the error and re-raise, so failures stay visible.",
+ meet:"The bug that takes an afternoon because the error never printed."},
+
+{s:'err', q:"In try/except/else/finally, when does <code>else</code> run?",
+ o:["Only when no exception was raised", "Always, after everything", "Only when an exception was raised"],
+ a:0,
+ why:"<code>else</code> = the happy path, and <code>finally</code> = always, exception or not. <code>finally</code> is where cleanup goes, because it runs even if you return or re-raise.",
+ say:"else is the no-exception path; finally always runs, which is why cleanup belongs there.",
+ meet:"Closing resources you opened manually."},
+
+{s:'err', q:"Which exception does <code>int(\"abc\")</code> raise?",
+ o:["ValueError — right type, wrong value",
+    "TypeError — wrong type",
+    "SyntaxError"],
+ a:0,
+ why:"<b>ValueError</b> = the type is fine but the value is unusable. <b>TypeError</b> = the type itself is wrong, like <code>\"a\" + 1</code>. That distinction is the one people fumble in interviews.",
+ say:"ValueError is right type wrong value; TypeError is wrong type entirely.",
+ meet:"Parsing anything a user sent you."},
+
+{s:'err', q:"You get <code>AttributeError: 'NoneType' object has no attribute 'title'</code>. What's the real cause?",
+ o:["Something returned None where you expected an object",
+    "You misspelled the class name",
+    "The attribute is private"],
+ a:0,
+ why:"AttributeError on NoneType almost always means a function returned <code>None</code> — a lookup that found nothing, or a function that mutated instead of returning. Trace back to what produced the value, not to where it broke.",
+ say:"NoneType AttributeError means look upstream at whatever produced that value.",
+ meet:"Right after Q on implicit None returns. These two bugs are the same bug."},
+
+{s:'err', q:"What does <code>with open(...)</code> guarantee that a plain <code>open()</code> doesn't?",
+ o:["The file is closed even if an exception is raised inside the block",
+    "The file is read faster",
+    "The file is locked against other processes"],
+ a:0, star:true,
+ why:"<code>with</code> is a context manager. Without it, a crash mid-function leaves the handle open, and enough of those exhaust your OS limits.",
+ say:"with guarantees cleanup on the way out, exception or not — and it's the same pattern for database sessions.",
+ meet:"Database sessions: open, use, guaranteed close."},
+
+{s:'err', q:"You open a file with mode <code>\"w\"</code> by mistake. What just happened?",
+ o:["The file was truncated to empty the moment it opened",
+    "Nothing until you call .write()",
+    "It appended to the end"],
+ a:0,
+ why:"<code>\"w\"</code> truncates <b>immediately on open</b>. <code>\"a\"</code> appends, <code>\"r\"</code> reads. Add <code>\"b\"</code> for binary.",
+ say:"w truncates on open, a appends, r reads.",
+ meet:"Once. You only do this once."},
+
+{s:'err', q:"What's the difference between <code>json.load</code> and <code>json.loads</code>?",
+ o:["load takes a file object; loads takes a string (the s is for string)",
+    "load is for lists, loads is for dicts",
+    "loads is the async version"],
+ a:0, star:true,
+ why:"<code>load</code>/<code>dump</code> work with <b>files</b>. <code>loads</code>/<code>dumps</code> work with <b>strings</b>. Mixing them up is a rite of passage.",
+ say:"The s stands for string — loads parses a string, load reads a file object.",
+ meet:"Day 4, parsing the LLM API response — that's a string, so it's loads."},
+
+{s:'err', q:"Why raise <code>ValueError</code> yourself at the top of a function?",
+ o:["Failing loudly at the boundary beats bad data flowing deeper and breaking somewhere unrelated",
+    "It makes the function faster",
+    "Python requires validation before use"],
+ a:0,
+ why:"If bad data gets three layers in before it breaks, the error message points at the wrong place entirely. Validate at the edge.",
+ say:"I validate at the boundary and fail fast, so the stack trace points at the actual cause.",
+ meet:"Day 4, when the LLM sends back something you didn't expect."}
+
+];
+
+BANK.forEach((q, n) => q.i = n);
+
+/* =======================================================================
+   STATE
+   ======================================================================= */
+const card = document.getElementById('card');
+const foot = document.getElementById('foot');
+const hudMid = document.getElementById('hudMid');
+const hudStats = document.getElementById('hudStats');
+const timerWrap = document.getElementById('timerWrap');
+const timerBar = document.getElementById('timerBar');
+
+let mode = 'revise';          // 'revise' | 'drill'
+let queue = [], i = 0, correct = 0, answered = 0, lives = 3, misses = [];
+let scope = null;             // section id | 'all' | 'star'
+let locked = true, raf = null, deadline = 0, onKey = null;
+const TIME = 14000;
+
+const store = {
+  get(k){ try { return JSON.parse(localStorage.getItem('rl_' + k)) } catch { return null } },
+  set(k, v){ try { localStorage.setItem('rl_' + k, JSON.stringify(v)) } catch {} }
+};
+const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const shuffle = a => { for (let j = a.length - 1; j > 0; j--){ const k = Math.floor(Math.random()*(j+1)); [a[j],a[k]]=[a[k],a[j]] } return a };
+
+function bindKey(fn){
+  if (onKey) window.removeEventListener('keydown', onKey);
+  onKey = fn;
+  window.addEventListener('keydown', onKey);
+}
+document.getElementById('brand').onclick = menu;
+
+/* =======================================================================
+   MENU
+   ======================================================================= */
+function menu(){
+  locked = true;
+  cancelAnimationFrame(raf);
+  timerWrap.hidden = true;
+  hudMid.textContent = '';
+  hudStats.innerHTML = '';
+  foot.innerHTML = 'Pick a section, or press <kbd>Enter</kbd> for the interview round';
+
+  const secTiles = SECTIONS.map(s => {
+    const n = BANK.filter(q => q.s === s.id).length;
+    const best = store.get('best_' + s.id);
+    return `
+      <button class="sec" data-sec="${s.id}" style="border-left-color:var(${s.v})">
+        <div class="top"><b>${s.n}</b><span class="n">${n}</span></div>
+        <div class="desc">${s.d}</div>
+        ${best !== null ? `<div class="bar"><i style="width:${best}%"></i></div><div class="score">best ${best}%</div>` : ''}
+      </button>`;
+  }).join('');
+
+  card.innerHTML = `
+    <div class="menu">
+      <h1>Day one.<br>Say it <em>out loud.</em></h1>
+      <p class="lede">Every Day 1 concept from the Reload Book, as a drill. Each answer gives you the reason <i>and</i> a sentence you can actually say in an interview — that line is the point of this thing.</p>
+
+      <div>
+        <p class="label" style="margin-bottom:7px">How you want it</p>
+        <div class="modes">
+          <button class="mode ${mode==='revise'?'on':''}" data-mode="revise">
+            <b>Revise</b><span>No timer, no lives. Walk the whole section and read every explanation.</span>
+          </button>
+          <button class="mode ${mode==='drill'?'on':''}" data-mode="drill">
+            <b>Drill</b><span>14 seconds a question, three lives. This is the one that makes it stick.</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="big">
+        <button id="playStar"><b>Interview round →</b><span>${BANK.filter(q=>q.star).length} questions they actually ask</span></button>
+        <button id="playAll"><b>Everything →</b><span>All ${BANK.length}, shuffled</span></button>
+      </div>
+
+      <div>
+        <p class="label" style="margin-bottom:7px">Or one section at a time</p>
+        <div class="sections">${secTiles}</div>
+      </div>
+    </div>`;
+
+  card.querySelectorAll('.mode').forEach(b => b.onclick = () => { mode = b.dataset.mode; menu() });
+  card.querySelectorAll('.sec').forEach(b => b.onclick = () => start(b.dataset.sec));
+  document.getElementById('playAll').onclick = () => start('all');
+  document.getElementById('playStar').onclick = () => start('star');
+  bindKey(e => { if (e.key === 'Enter'){ e.preventDefault(); start('star') } });
+}
+
+/* =======================================================================
+   PLAY
+   ======================================================================= */
+function start(which){
+  scope = which;
+  queue = shuffle(
+    which === 'all'  ? BANK.slice() :
+    which === 'star' ? BANK.filter(q => q.star) :
+                       BANK.filter(q => q.s === which)
+  );
+  i = 0; correct = 0; answered = 0; lives = 3; misses = [];
+  ask();
+}
+
+function scopeName(){
+  return scope === 'all' ? 'Everything' : scope === 'star' ? 'Interview round' : SEC[scope].n;
+}
+
+function paintHud(){
+  hudMid.textContent = `${scopeName()} · ${Math.min(i + 1, queue.length)}/${queue.length}`;
+  if (mode === 'drill'){
+    hudStats.innerHTML =
+      `<div class="hearts">${[0,1,2].map(n => `<i class="${n < lives ? 'on' : ''}">◆</i>`).join('')}</div>` +
+      `<div class="stat"><b>${correct}</b><span>Right</span></div>`;
+  } else {
+    hudStats.innerHTML = `<div class="stat"><b>${correct}/${answered}</b><span>Right</span></div>`;
+  }
+}
+
+function ask(){
+  if (i >= queue.length) return over();
+  const q = queue[i];
+  const sec = SEC[q.s];
+  paintHud();
+
+  const opts = q.o.map((text, n) => ({ text, n }));
+  const order = shuffle(opts.slice());
+
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="eyebrow">
+      <s style="background:var(${sec.v})">${sec.n}</s>
+      ${q.star ? 'Interview favourite' : ''}
+    </div>
+    <p class="prompt">${q.q}</p>
+    ${q.code ? `<pre class="code">${esc(q.code)}</pre>` : ''}
+    <div class="answers" id="answers">
+      ${order.map((o, pos) => `
+        <button class="ans" data-n="${o.n}" data-pos="${pos}">
+          <kbd>${pos + 1}</kbd><span>${o.text}</span>
+        </button>`).join('')}
+    </div>`;
+
+  foot.innerHTML = `<kbd>1</kbd>–<kbd>${order.length}</kbd> to answer`;
+  card.querySelectorAll('.ans').forEach(b => b.onclick = () => answer(+b.dataset.n, b));
+  bindKey(e => {
+    const n = +e.key;
+    if (!locked && n >= 1 && n <= order.length){
+      const b = card.querySelector(`.ans[data-pos="${n - 1}"]`);
+      if (b) answer(+b.dataset.n, b);
+    }
+  });
+
+  locked = false;
+  if (mode === 'drill') runTimer(); else timerWrap.hidden = true;
+}
+
+function runTimer(){
+  timerWrap.hidden = false;
+  timerWrap.classList.remove('warn');
+  deadline = performance.now() + TIME;
+  cancelAnimationFrame(raf);
+  const tick = now => {
+    const left = Math.max(0, deadline - now);
+    timerBar.style.transform = `scaleX(${left / TIME})`;
+    timerWrap.classList.toggle('warn', left < 4000);
+    if (left <= 0){ answer(-1, null); return }
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+}
+
+function answer(picked, btn){
+  if (locked) return;
+  locked = true;
+  cancelAnimationFrame(raf);
+  timerWrap.hidden = true;
+
+  const q = queue[i];
+  const right = picked === q.a;
+  const timedOut = picked === -1;
+  answered++;
+
+  card.querySelectorAll('.ans').forEach(b => {
+    b.disabled = true;
+    if (+b.dataset.n === q.a) b.classList.add('right');
+    else if (b === btn) b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+
+  if (right) correct++;
+  else {
+    misses.push(q);
+    if (mode === 'drill') lives--;
+    card.classList.add('shake');
+  }
+  paintHud();
+
+  const done = (mode === 'drill' && lives <= 0) || i + 1 >= queue.length;
+  card.insertAdjacentHTML('beforeend', `
+    <div class="verdict">
+      <h4 class="${right ? 'right' : 'wrong'}">${timedOut ? 'Too slow.' : right ? 'Correct.' : 'Not quite.'}</h4>
+      <p class="why">${q.why}</p>
+      ${q.say ? `<div class="say"><h5>Say this in the interview</h5><p>“${q.say}”</p></div>` : ''}
+      ${q.meet ? `<p class="meet"><b>Where you'll meet it:</b> ${q.meet}</p>` : ''}
+      <button class="next" id="next">${done ? 'Finish' : 'Next'} →</button>
+    </div>`);
+
+  const go = () => { if (done) over(); else { i++; ask() } };
+  const nx = document.getElementById('next');
+  nx.onclick = go;
+  nx.focus({preventScroll:true});
+  foot.innerHTML = 'Press <kbd>Enter</kbd> to continue';
+  bindKey(e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go() } });
+}
+
+/* =======================================================================
+   RESULTS
+   ======================================================================= */
+function over(){
+  locked = true;
+  timerWrap.hidden = true;
+  const pct = answered ? Math.round(correct / answered * 100) : 0;
+
+  if (scope !== 'all' && scope !== 'star'){
+    const prev = store.get('best_' + scope);
+    if (prev === null || pct > prev) store.set('best_' + scope, pct);
+  }
+
+  const seen = new Set();
+  const weak = misses.filter(m => seen.has(m.i) ? false : seen.add(m.i));
+
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="menu">
+      <h1>${pct === 100 ? 'Clean <em>sweep.</em>' : pct >= 70 ? 'Nearly <em>there.</em>' : 'Worth another <em>pass.</em>'}</h1>
+      <div class="scoreline">
+        <div><b>${pct}%</b><span>${scopeName()}</span></div>
+        <div><b>${correct}/${answered}</b><span>Correct</span></div>
+        <div><b>${weak.length}</b><span>To revisit</span></div>
+      </div>
+      ${weak.length ? `
+        <div>
+          <p class="label" style="margin-bottom:6px">Read these once more before you close the tab</p>
+          <ul class="weak">${weak.map(m => `
+            <li><span class="q">${m.q.replace(/<[^>]+>/g, '')}</span>${m.say ? `“${m.say}”` : m.why}</li>`).join('')}</ul>
+        </div>`
+      : `<p class="lede">Nothing missed. Switch to Drill mode and do it again under the timer — recall under pressure is the thing an interview actually tests.</p>`}
+      <div class="row">
+        <button class="start" id="again">Run it again</button>
+        <button class="ghost" id="back">All sections</button>
+      </div>
+    </div>`;
+
+  foot.innerHTML = 'Press <kbd>Enter</kbd> to run it again';
+  document.getElementById('again').onclick = () => start(scope);
+  document.getElementById('back').onclick = menu;
+  bindKey(e => { if (e.key === 'Enter'){ e.preventDefault(); start(scope) } });
+}
+
+menu();
+</script>

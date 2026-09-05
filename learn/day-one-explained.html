@@ -1,0 +1,780 @@
+<title>Day One, Explained</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+
+<style>
+:root{
+  --ground:#E9E7F2; --panel:#FFFFFF; --panel-2:#F3F1F9;
+  --ink:#1A1726; --ink-soft:#5C5570; --ink-faint:#8B84A0; --rule:#D6D2E4;
+  --accent:#D91A63;
+  --env:#2F5BEA; --data:#0F9E76; --func:#B96C05; --err:#D9342B;
+  --good:#0F9E76; --bad:#D9342B;
+  --console:#221E31; --console-ink:#EDEAF7;
+  --shadow:0 2px 0 rgba(26,23,38,.12), 0 14px 32px -18px rgba(26,23,38,.55);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+    --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+    --accent:#FF4B87;
+    --env:#7C9BFF; --data:#2FD3A0; --func:#F0A93C; --err:#FF6B60;
+    --good:#2FD3A0; --bad:#FF6B60;
+    --console:#0E0C16; --console-ink:#E6E1F5;
+    --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+  --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+  --accent:#FF4B87;
+  --env:#7C9BFF; --data:#2FD3A0; --func:#F0A93C; --err:#FF6B60;
+  --good:#2FD3A0; --bad:#FF6B60;
+  --console:#0E0C16; --console-ink:#E6E1F5;
+  --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:44px 20px 76px;display:flex;flex-direction:column;gap:50px}
+h1,h2,h3,h4{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1{font-size:clamp(37px,7.6vw,58px);font-weight:800;line-height:.97}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-size:clamp(24px,4.5vw,31px);font-weight:800;line-height:1.08}
+h3{font-size:20px;font-weight:800;letter-spacing:-.02em}
+p{margin:0}
+.lede{font-size:17.5px;line-height:1.6;color:var(--ink-soft);max-width:62ch}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px}
+b{font-weight:800}
+a{color:var(--accent)}
+
+section{display:flex;flex-direction:column;gap:17px}
+.step{display:flex;align-items:baseline;gap:11px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.step b{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--panel);background:var(--ink-faint);border-radius:4px;padding:2px 6px;letter-spacing:.06em}
+.step.env b{background:var(--env)} .step.data b{background:var(--data)}
+.step.func b{background:var(--func)} .step.err b{background:var(--err)}
+
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px 22px;display:flex;flex-direction:column;gap:16px}
+.rule-box{display:flex;flex-direction:column;gap:6px;border-left:4px solid var(--accent);padding:2px 0 2px 14px}
+.rule-box h4{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--accent)}
+.rule-box p{font-size:15.5px;color:var(--ink-soft)}
+.rule-box p b{color:var(--ink)}
+.trap{border-left-color:var(--bad)} .trap h4{color:var(--bad)}
+.win{border-left-color:var(--good)} .win h4{color:var(--good)}
+
+/* consoles */
+.moves{display:flex;flex-wrap:wrap;gap:7px}
+.move{font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:700;background:var(--panel);color:var(--ink);border:1.5px solid var(--rule);border-radius:7px;padding:7px 11px;cursor:pointer;transition:transform .08s,border-color .12s,background .12s}
+.move:hover{transform:translateY(-1px);border-color:var(--ink-faint)}
+.move:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.move.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.console{background:var(--console);color:var(--console-ink);border-radius:10px;padding:15px 17px;font-family:"JetBrains Mono",monospace;font-size:13.5px;line-height:1.65;display:flex;flex-direction:column;gap:3px;min-height:112px;overflow-x:auto}
+.console .ln{white-space:pre}
+.console .ps{color:#8E86AB}
+.console .out{color:#8CE0C0}
+.console .err{color:#FF8A7E}
+.console .note{color:#8E86AB;font-style:italic;white-space:pre-wrap;font-size:12.5px;padding-top:5px}
+.console .idle{color:#8E86AB;font-style:italic}
+
+/* generic controls */
+.btn{font-family:"Public Sans",sans-serif;font-weight:800;font-size:14px;color:#fff;background:var(--accent);border:none;border-radius:9px;padding:11px 18px;cursor:pointer;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.btn.quiet{background:none;color:var(--ink);border:1.5px solid var(--rule);box-shadow:none;font-size:13px;padding:10px 15px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* memory diagram */
+.mem{display:flex;flex-direction:column;gap:14px}
+.names{display:flex;gap:38px;padding-left:4px;min-height:26px}
+.tag{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:14px;color:#fff;background:var(--ink);border-radius:6px;padding:3px 10px;position:relative}
+.tag::after{content:"";position:absolute;left:50%;top:100%;width:2px;height:14px;background:var(--ink)}
+.boxes{display:flex;gap:30px;flex-wrap:wrap}
+.membox{
+  border:2px solid var(--ink);border-radius:9px;padding:11px 14px;
+  font-family:"JetBrains Mono",monospace;font-size:14.5px;font-weight:700;
+  background:var(--panel-2);display:flex;flex-direction:column;gap:5px;min-width:150px;
+}
+.membox .addr{font-size:10.5px;font-weight:400;color:var(--ink-faint);letter-spacing:.04em}
+.membox.hot{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--panel-2))}
+.memline{font-size:14.5px;color:var(--ink-soft);min-height:44px}
+.memline b{color:var(--ink)}
+.memline code{background:var(--panel-2)}
+
+/* slice ruler */
+.ruler{display:flex;gap:4px;flex-wrap:wrap}
+.rcell{
+  width:42px;height:46px;border-radius:7px;border:1.5px solid var(--rule);background:var(--panel-2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  font-family:"JetBrains Mono",monospace;font-weight:700;font-size:15px;transition:all .12s;
+}
+.rcell small{font-size:9px;font-weight:400;color:var(--ink-faint)}
+.rcell.in{background:color-mix(in srgb,var(--data) 22%,var(--panel));border-color:var(--data)}
+.slice-out{font-family:"JetBrains Mono",monospace;font-size:14px;color:var(--ink)}
+.slice-out span{color:var(--ink-faint)}
+
+/* accumulator */
+.acc{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.acc{grid-template-columns:1fr}}
+.accbox{border:1.5px solid var(--rule);border-radius:11px;padding:14px 15px;display:flex;flex-direction:column;gap:9px;background:var(--panel-2)}
+.accbox.broken{border-color:var(--bad)}
+.accbox.fixed{border-color:var(--good)}
+.accbox h5{margin:0;font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;letter-spacing:.02em}
+.accbox.broken h5{color:var(--bad)} .accbox.fixed h5{color:var(--good)}
+.accbox pre{margin:0;font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.55;color:var(--ink-soft);white-space:pre;overflow-x:auto}
+.accout{font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--console);color:var(--console-ink);border-radius:7px;padding:10px 12px;min-height:76px;display:flex;flex-direction:column;gap:2px;overflow-x:auto}
+.accout .ln{white-space:pre}
+.accout .idle{color:#8E86AB;font-style:italic}
+
+/* except stack */
+.stack{display:flex;flex-direction:column;gap:6px}
+.clause{
+  font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;
+  border:1.5px solid var(--rule);border-radius:8px;padding:10px 13px;background:var(--panel-2);
+  display:flex;align-items:center;gap:10px;transition:all .15s;
+}
+.clause .verdict{margin-left:auto;font-family:"Public Sans",sans-serif;font-size:11.5px;font-weight:800;letter-spacing:.03em}
+.clause.caught{background:color-mix(in srgb,var(--good) 18%,var(--panel));border-color:var(--good)}
+.clause.caught .verdict{color:var(--good)}
+.clause.dead{opacity:.5;text-decoration:line-through;text-decoration-color:var(--bad)}
+.clause.dead .verdict{color:var(--bad);text-decoration:none;display:inline-block}
+.toggle{display:flex;gap:0;border:1.5px solid var(--rule);border-radius:9px;overflow:hidden;align-self:flex-start}
+.toggle button{font-family:"Public Sans",sans-serif;font-weight:800;font-size:12.5px;background:none;border:none;color:var(--ink-soft);padding:9px 14px;cursor:pointer}
+.toggle button.on{background:var(--ink);color:var(--panel)}
+.toggle button:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+
+/* exception table */
+.extable{display:flex;flex-direction:column;border:1px solid var(--rule);border-radius:11px;overflow:hidden}
+.exrow{display:grid;grid-template-columns:minmax(140px,auto) 1fr;gap:14px;padding:11px 15px;border-bottom:1px solid var(--rule);align-items:baseline}
+.exrow:last-child{border-bottom:none}
+.exrow:nth-child(odd){background:var(--panel-2)}
+.exrow b{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;color:var(--err)}
+.exrow span{font-size:14px;color:var(--ink-soft)}
+.exrow span code{font-size:12.5px}
+
+/* venv diagram */
+.venv{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.venv{grid-template-columns:1fr}}
+.vcol{border:1.5px solid var(--rule);border-radius:11px;padding:15px;display:flex;flex-direction:column;gap:10px;background:var(--panel-2)}
+.vcol.bad{border-color:var(--bad)} .vcol.good{border-color:var(--good)}
+.vcol h5{margin:0;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
+.vcol.bad h5{color:var(--bad)} .vcol.good h5{color:var(--good)}
+.proj{font-family:"JetBrains Mono",monospace;font-size:12.5px;background:var(--panel);border:1px solid var(--rule);border-radius:7px;padding:8px 11px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.proj i{font-style:normal;color:var(--ink-faint);font-size:11.5px}
+.arrowdown{text-align:center;color:var(--ink-faint);font-size:15px;line-height:1}
+.shared{font-family:"JetBrains Mono",monospace;font-size:12.5px;border-radius:7px;padding:9px 11px;text-align:center;font-weight:700}
+.vcol.bad .shared{background:color-mix(in srgb,var(--bad) 16%,var(--panel));color:var(--ink);border:1px solid var(--bad)}
+.vcol.good .shared{background:color-mix(in srgb,var(--good) 14%,var(--panel));color:var(--ink);border:1px solid var(--good)}
+
+/* seven things */
+.seven{display:flex;flex-direction:column;counter-reset:s}
+.seven li{
+  list-style:none;counter-increment:s;display:grid;grid-template-columns:auto 1fr;gap:0 15px;
+  padding:13px 0;border-bottom:1px solid var(--rule);align-items:baseline;
+}
+.seven li:last-child{border-bottom:none}
+.seven li::before{
+  content:counter(s);font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:19px;
+  color:var(--ink-faint);letter-spacing:-.03em;
+}
+.seven li span{font-size:16px;line-height:1.5}
+.seven li code{font-size:14px}
+
+.cta{background:var(--ink);color:var(--ground);border-radius:14px;padding:26px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.cta h2{color:var(--ground)}
+.cta p{color:color-mix(in srgb,var(--ground) 72%,var(--ink));font-size:16px;max-width:52ch}
+.cta .row a{
+  text-decoration:none;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:16px;
+  background:var(--accent);color:#fff;border-radius:10px;padding:12px 20px;
+  box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);
+}
+.cta .row a.alt{background:none;color:var(--ground);border:1.5px solid color-mix(in srgb,var(--ground) 40%,var(--ink));box-shadow:none}
+.cta .row a:focus-visible{outline:3px solid var(--ground);outline-offset:3px}
+
+.toc{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+@media (max-width:560px){.toc{grid-template-columns:1fr}}
+.toc a{
+  text-decoration:none;color:var(--ink);background:var(--panel);
+  border:1.5px solid var(--rule);border-left-width:5px;border-radius:9px;
+  padding:10px 13px;font-size:13.5px;font-weight:700;display:flex;gap:9px;align-items:baseline;
+  transition:transform .1s;
+}
+.toc a:hover{transform:translateY(-2px)}
+.toc a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.toc a i{font-style:normal;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-faint)}
+hr{border:none;border-top:1px solid var(--rule);margin:0}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:19px">
+  <h1>The four things<br>that <em>actually bite.</em></h1>
+  <p class="lede">Day 1 has about thirty facts in it. Four of them cause almost every bug you'll write this month, and they're all the same kind of misunderstanding: something you thought was a copy turns out to be a shortcut to the original. This page explains those four properly, then covers the rest quickly.</p>
+  <div class="toc">
+    <a href="#env" style="border-left-color:var(--env)"><i>01</i> Why the venv keeps breaking</a>
+    <a href="#names" style="border-left-color:var(--data)"><i>02</i> Names are not boxes</a>
+    <a href="#slice" style="border-left-color:var(--data)"><i>03</i> Slicing, and the fence posts</a>
+    <a href="#comp" style="border-left-color:var(--data)"><i>04</i> Comprehensions</a>
+    <a href="#unpack" style="border-left-color:var(--data)"><i>05</i> Unpacking &amp; f-strings</a>
+    <a href="#args" style="border-left-color:var(--func)"><i>06</i> Arguments</a>
+    <a href="#default" style="border-left-color:var(--func)"><i>07</i> The famous trap</a>
+    <a href="#scope" style="border-left-color:var(--func)"><i>08</i> Scope &amp; return</a>
+    <a href="#errors" style="border-left-color:var(--err)"><i>09</i> Errors, in order</a>
+    <a href="#files" style="border-left-color:var(--err)"><i>10</i> Files, with, and JSON</a>
+  </div>
+</header>
+
+<hr>
+
+<!-- ============ 01 ENV ============ -->
+<section id="env">
+  <div class="step env"><b>01</b> Environment</div>
+  <h2>Why your imports break in a new terminal</h2>
+  <p class="lede">A virtual environment is a folder containing its own Python and its own packages. Without one, every project on your machine shares a single set — so two projects that need different versions of the same library cannot both work.</p>
+
+  <div class="card">
+    <div class="venv">
+      <div class="vcol bad">
+        <h5>No venv</h5>
+        <div class="proj">project-a <i>needs requests 2.28</i></div>
+        <div class="proj">project-b <i>needs requests 2.32</i></div>
+        <div class="arrowdown">↓ &nbsp; ↓</div>
+        <div class="shared">one global site-packages<br>only one version fits</div>
+      </div>
+      <div class="vcol good">
+        <h5>With venv</h5>
+        <div class="proj">project-a <i>venv/ → 2.28</i></div>
+        <div class="proj">project-b <i>venv/ → 2.32</i></div>
+        <div class="arrowdown">↓ &nbsp; ↓</div>
+        <div class="shared">separate folders<br>both projects work</div>
+      </div>
+    </div>
+    <div class="rule-box trap">
+      <h4>The ninety-percent bug</h4>
+      <p>Activation is <b>per terminal session</b>. Open a new tab, and you are outside the venv again — even though the folder still exists and you never closed the project. Nine out of ten <code>ModuleNotFoundError</code>s are this. The <code>(venv)</code> prefix on your prompt is the only thing that proves you're inside.</p>
+    </div>
+    <div class="moves" data-console="c-env"></div>
+    <div class="console" id="c-env"></div>
+  </div>
+
+  <p class="lede"><code>pip freeze</code> writes <i>everything</i> installed, including sub-dependencies you never asked for. That's correct — those are real requirements of your real requirements. And the reason a Dockerfile installs requirements <b>before</b> copying your code: dependencies change rarely, code changes constantly, so the slow step goes first and stays cached.</p>
+</section>
+
+<hr>
+
+<!-- ============ 02 NAMES ============ -->
+<section id="names">
+  <div class="step data"><b>02</b> The big one</div>
+  <h2>A name is a label, not a box</h2>
+  <p class="lede">This is the single most useful idea on this page. In Python, variables don't <i>contain</i> values — they're name tags stuck onto objects that live somewhere in memory. <code>b = a</code> sticks a second tag on the same object. It has never once made a copy.</p>
+
+  <div class="card">
+    <div class="mem">
+      <div class="names" id="memNames"></div>
+      <div class="boxes" id="memBoxes"></div>
+      <p class="memline" id="memLine"></p>
+    </div>
+    <div class="row">
+      <button class="btn" id="memNext">Next step →</button>
+      <button class="btn quiet" id="memReset">Start over</button>
+    </div>
+  </div>
+
+  <div class="rule-box">
+    <h4>How to tell them apart</h4>
+    <p><code>==</code> asks <b>are these equal?</b> &nbsp;<code>is</code> asks <b>are these the same object?</b> Two separate lists holding the same numbers are <code>==</code> but not <code>is</code>. That's the whole distinction, and it's why <code>x is None</code> is the correct way to check for None — there is only ever one None object.</p>
+  </div>
+
+  <div class="rule-box trap">
+    <h4>Shallow versus deep</h4>
+    <p><code>.copy()</code> duplicates the outer container but not what's inside it. If your list holds dictionaries, a copy gives you a new list pointing at <b>the same dictionaries</b> — edit one and both lists see it. <code>copy.deepcopy()</code> copies all the way down. Reach for it only when you need it; it's slower and it can't copy everything.</p>
+  </div>
+
+  <p class="lede">Immutable objects — <code>int</code>, <code>float</code>, <code>str</code>, <code>bool</code>, <code>tuple</code> — sidestep this entirely. You can't change them in place, so sharing a tag is harmless. That's also why they're safe as dict keys, and why <code>list</code>, <code>dict</code> and <code>set</code> are not.</p>
+</section>
+
+<hr>
+
+<!-- ============ 03 SLICING ============ -->
+<section id="slice">
+  <div class="step data"><b>03</b> Slicing</div>
+  <h2>Why the stop is excluded</h2>
+  <p class="lede">Everyone trips on <code>[start:stop:step]</code> once, because the stop is left out. It isn't arbitrary — think of the numbers as sitting <i>between</i> the items, like fence posts. Then a slice is just "from post 1 to post 4," and the arithmetic always works out.</p>
+
+  <div class="card">
+    <div class="ruler" id="ruler"></div>
+    <div class="moves" id="sliceMoves"></div>
+    <p class="slice-out" id="sliceOut"></p>
+    <div class="rule-box win">
+      <h4>The payoff</h4>
+      <p><code>nums[:3]</code> and <code>nums[3:]</code> split the list with <b>no overlap and no gap</b> — every item appears exactly once, and the length of <code>nums[a:b]</code> is simply <code>b - a</code>. Neither would be true if the stop were included. It also means an empty slice like <code>nums[2:2]</code> is well-defined rather than an error.</p>
+    </div>
+  </div>
+  <p class="lede">All of it works identically on strings, since a string is a sequence of characters. <code>name[::-1]</code> reverses it, <code>name[:1]</code> is the first letter as a string.</p>
+</section>
+
+<hr>
+
+<!-- ============ 04 COMPREHENSIONS ============ -->
+<section id="comp">
+  <div class="step data"><b>04</b> Comprehensions</div>
+  <h2>Three slots, always in the same order</h2>
+  <p class="lede">A comprehension is a loop that builds a new collection, written as one expression. Once you see it as three fixed slots, you can read any of them at a glance — and write them without thinking.</p>
+
+  <div class="card">
+    <div class="moves" data-console="c-comp"></div>
+    <div class="console" id="c-comp"></div>
+    <div class="rule-box">
+      <h4>Read it in this order</h4>
+      <p><b>What I want</b> → <b>where it comes from</b> → <b>which ones qualify.</b> <code>[n * n</code> <i>(what)</i> <code>for n in nums</code> <i>(where)</i> <code>if n % 2 == 0]</code> <i>(which)</i>. It always builds something new; the original is never touched.</p>
+    </div>
+    <div class="rule-box trap">
+      <h4>When to write the loop instead</h4>
+      <p>The moment you need a <code>try/except</code> — comprehensions can't hold one. Or when there's more than one condition <i>and</i> a transformation. Or any nesting past two levels. A comprehension nobody can read is worse than four clear lines, and you are one of the people who won't be able to read it in March.</p>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 05 UNPACKING ============ -->
+<section id="unpack">
+  <div class="step data"><b>05</b> Unpacking &amp; f-strings</div>
+  <h2>Two shorthands worth real memory</h2>
+  <p class="lede">Unpacking assigns several names at once from a sequence. The starred form catches "everything else," and the double-star form merges dictionaries — which is how nearly every real application layers its configuration.</p>
+
+  <div class="card">
+    <div class="moves" data-console="c-unpack"></div>
+    <div class="console" id="c-unpack"></div>
+    <div class="rule-box win">
+      <h4>The config pattern</h4>
+      <p><code>{**defaults, **from_file, **from_env}</code> — on a key conflict the <b>rightmost wins</b>, so each layer overrides the one before it. Defaults first, most specific last. That single line replaces a page of if-statements.</p>
+    </div>
+  </div>
+
+  <p class="lede">And f-strings: they embed expressions directly, they're the fastest option, and <code>f"{value=}"</code> prints both the name and the value at once — the quickest debugging tool Python has.</p>
+</section>
+
+<hr>
+
+<!-- ============ 06 ARGUMENTS ============ -->
+<section id="args">
+  <div class="step func"><b>06</b> Functions</div>
+  <h2>Parameters, arguments, and readable calls</h2>
+  <p class="lede">Parameters are the names in the definition. Arguments are the values you pass. Positional arguments are matched by order; keyword arguments by name — and once you use a keyword, everything after it must be a keyword too.</p>
+
+  <div class="card">
+    <div class="moves" data-console="c-args"></div>
+    <div class="console" id="c-args"></div>
+    <div class="rule-box">
+      <h4>The habit worth forming</h4>
+      <p>Use keyword arguments for anything not obvious at the call site. <code>create_task("Fix bug", True, False)</code> is unreadable in six months; <code>create_task("Fix bug", urgent=True, archived=False)</code> explains itself and survives someone reordering the parameters.</p>
+    </div>
+  </div>
+  <p class="lede"><code>*args</code> collects leftover positional arguments into a <b>tuple</b>; <code>**kwargs</code> collects leftover keyword arguments into a <b>dict</b>. The asterisks are the syntax — the names are only convention. Both also work in reverse, to spread a collection back into a call.</p>
+</section>
+
+<hr>
+
+<!-- ============ 07 DEFAULT TRAP ============ -->
+<section id="default">
+  <div class="step func"><b>07</b> The famous one</div>
+  <h2>The mutable default argument</h2>
+  <p class="lede">Default values are evaluated <b>once</b>, when the function is defined — not each time it's called. So a default list is created a single time and shared by every call, forever. Press the button on the left a few times and watch it happen.</p>
+
+  <div class="card">
+    <div class="acc">
+      <div class="accbox broken">
+        <h5>✗ tags=[]</h5>
+        <pre>def add_tag(tag, tags=[]):
+    tags.append(tag)
+    return tags</pre>
+        <div class="accout" id="accBad"></div>
+      </div>
+      <div class="accbox fixed">
+        <h5>✓ tags=None</h5>
+        <pre>def add_tag(tag, tags=None):
+    if tags is None:
+        tags = []
+    tags.append(tag)
+    return tags</pre>
+        <div class="accout" id="accGood"></div>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn" id="accCall">Call both once more</button>
+      <button class="btn quiet" id="accReset">Restart the program</button>
+    </div>
+    <div class="rule-box trap">
+      <h4>What it looks like in the wild</h4>
+      <p>"Why is data from a previous request appearing in this one?" The list isn't leaking between users because of threading or caching — it's the same list object every call has been appending to since the process started. Restarting the program appears to fix it, which sends you looking in exactly the wrong place.</p>
+    </div>
+    <div class="rule-box win">
+      <h4>The rule, with no exceptions</h4>
+      <p>Never use a <code>list</code>, <code>dict</code> or <code>set</code> as a default value. Default to <code>None</code> and build it inside the function. Immutable defaults — numbers, strings, <code>True</code>, <code>None</code>, tuples — are always safe, because there's nothing to accumulate.</p>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 08 SCOPE ============ -->
+<section id="scope">
+  <div class="step func"><b>08</b> Scope &amp; return</div>
+  <h2>Where names live, and what comes back</h2>
+  <p class="lede">Python resolves a name by looking outward through four layers: <b>Local</b>, then <b>Enclosing</b>, then <b>Global</b>, then <b>Built-in</b>. It stops at the first match. A name created inside a function dies when the function ends.</p>
+
+  <div class="card">
+    <div class="moves" data-console="c-scope"></div>
+    <div class="console" id="c-scope"></div>
+    <div class="rule-box trap">
+      <h4>The silent None</h4>
+      <p>A function with no explicit <code>return</code> returns <code>None</code>. So <code>result = my_list.sort()</code> gives you <code>None</code>, not a sorted list — <code>.sort()</code> sorts in place. Decide deliberately for every function you write: does it <b>mutate its input</b>, or <b>return a new value</b>? Doing both is confusing. Doing neither is a bug.</p>
+      <p style="margin-top:5px">This is also the real cause of most <code>AttributeError: 'NoneType' object has no attribute ...</code> messages. Don't debug where it broke — trace back to whatever handed you the None.</p>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 09 ERRORS ============ -->
+<section id="errors">
+  <div class="step err"><b>09</b> Errors</div>
+  <h2>Python takes the first match</h2>
+  <p class="lede">Except clauses are checked top to bottom, and the first one that matches wins. Since <code>Exception</code> matches almost everything, putting it first makes every clause below it unreachable. Flip the toggle and raise an error to see it.</p>
+
+  <div class="card">
+    <div class="toggle" id="excToggle">
+      <button data-order="specific" class="on">Specific first ✓</button>
+      <button data-order="general">General first ✗</button>
+    </div>
+    <div class="stack" id="excStack"></div>
+    <div class="row">
+      <button class="btn" data-raise="KeyError">raise KeyError</button>
+      <button class="btn" data-raise="FileNotFoundError">raise FileNotFoundError</button>
+      <button class="btn" data-raise="ValueError">raise ValueError</button>
+    </div>
+    <p class="memline" id="excLine"></p>
+  </div>
+
+  <div class="rule-box trap">
+    <h4>Never swallow</h4>
+    <p>A bare <code>except:</code> or <code>except Exception: pass</code> catches your own typos exactly like it catches a network timeout — a <code>NameError</code> vanishes silently and a five-minute fix becomes a three-hour hunt. If you must catch broadly: <b>log it, then re-raise.</b></p>
+  </div>
+
+  <h3 style="margin-top:6px">The seven you'll actually meet</h3>
+  <div class="extable">
+    <div class="exrow"><b>ValueError</b><span>Right type, wrong value — <code>int("abc")</code></span></div>
+    <div class="exrow"><b>TypeError</b><span>Wrong type entirely — <code>"a" + 1</code></span></div>
+    <div class="exrow"><b>KeyError</b><span>Dict key missing — use <code>.get()</code> to avoid it</span></div>
+    <div class="exrow"><b>IndexError</b><span>List index out of range</span></div>
+    <div class="exrow"><b>AttributeError</b><span>No such attribute — nearly always a <code>None</code> from upstream</span></div>
+    <div class="exrow"><b>FileNotFoundError</b><span>Missing file, or the path is relative to somewhere you didn't expect</span></div>
+    <div class="exrow"><b>ZeroDivisionError</b><span>Division by zero</span></div>
+  </div>
+
+  <div class="rule-box win">
+    <h4>Raise them yourself</h4>
+    <p><code>raise ValueError(f"Invalid priority: {priority}")</code> at the <i>top</i> of a function. Failing loudly at the boundary beats bad data flowing three layers deeper, where the eventual error points at somewhere completely innocent.</p>
+  </div>
+  <p class="lede"><code>else</code> runs only when no exception was raised. <code>finally</code> runs always — even if you return or re-raise — which is exactly why cleanup belongs there.</p>
+</section>
+
+<hr>
+
+<!-- ============ 10 FILES ============ -->
+<section id="files">
+  <div class="step err"><b>10</b> Files &amp; JSON</div>
+  <h2>What <code>with</code> is really for</h2>
+  <p class="lede"><code>with</code> guarantees cleanup on the way out of the block — whether you fall off the end, return early, or raise. Without it, a crash mid-function leaves the file handle open, and enough of those exhaust your operating system's limits.</p>
+
+  <div class="card">
+    <div class="moves" data-console="c-files"></div>
+    <div class="console" id="c-files"></div>
+    <div class="rule-box">
+      <h4>The s is for string</h4>
+      <p><code>load</code> and <code>dump</code> work with <b>file objects</b>. <code>loads</code> and <code>dumps</code> work with <b>strings</b>. So a response body you got back over the network is <code>json.loads</code>, and a file on disk is <code>json.load</code>. Mixing them up is a rite of passage; the error message is unhelpfully vague.</p>
+    </div>
+    <div class="rule-box trap">
+      <h4>Mode "w" truncates on open</h4>
+      <p>Not on write — <b>on open</b>. <code>open("data.json", "w")</code> empties the file the instant that line runs, before you've written anything. If the program then crashes, the file is simply gone. Use <code>"a"</code> to append, and write to a temporary file first when the data matters.</p>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ SUMMARY ============ -->
+<section>
+  <div class="step"><b>—</b> If you keep seven things</div>
+  <h2>The whole day, compressed</h2>
+  <ol class="seven">
+    <li><span><code>b = a</code> copies the <b>name</b>, not the list. Nothing in Python copies unless you ask.</span></li>
+    <li><span>Never use a mutable default argument. Default to <code>None</code> and build it inside.</span></li>
+    <li><span>Never write a bare <code>except</code>. Log and re-raise if you must catch broadly.</span></li>
+    <li><span>A slice's stop is excluded, so <code>[:n]</code> and <code>[n:]</code> tile the sequence exactly.</span></li>
+    <li><span>Specific exceptions before general ones, or the general one eats them all.</span></li>
+    <li><span>No <code>return</code> means it returns <code>None</code> — and that None will surface far away.</span></li>
+    <li><span>Activate the venv. In <i>this</i> terminal. Check the prompt.</span></li>
+  </ol>
+</section>
+
+<div class="cta">
+  <h2>Now make it automatic</h2>
+  <p>Understanding is what you just did. Recall under pressure is a different skill, and it's the one an interview measures. The Arcade has all of this as a timed drill, with a sentence you can say out loud for each answer.</p>
+  <div class="row">
+    <a href="https://claude.ai/code/artifact/1c759e0a-4535-4fb9-a223-2dbd0ad42765">Drill it in the Arcade →</a>
+    <a class="alt" href="https://claude.ai/code/artifact/b42031ed-1c95-44b1-823b-09ae36cd72c2">The Four Boxes</a>
+  </div>
+</div>
+
+</div>
+
+<script>
+const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+/* ================= consoles ================= */
+const DEMOS = {
+  'c-env': {
+    start: '$ cd my-project',
+    moves: [
+      {c:'python -m venv venv', o:'creates ./venv/ with its own interpreter', n:"Once per project. The folder is disposable — never commit it, just recreate it."},
+      {c:'source venv/bin/activate', o:'(venv) $', n:"The prompt prefix appears. On Windows it's venv\\Scripts\\activate. This is per terminal."},
+      {c:'pip install requests', o:'installed into ./venv, not your system Python', n:"Nothing outside this folder changed. That's the entire point."},
+      {c:'pip freeze > requirements.txt', o:'requests==2.32.3\ncharset-normalizer==3.3.2\nidna==3.7\nurllib3==2.2.2', n:"You asked for one package and got four — the other three are its dependencies. That's correct."},
+      {c:'pip install -r requirements.txt', o:'recreates the exact environment elsewhere', n:"This is how your deployment server and your teammates get the same setup."},
+      {c:'deactivate', o:'$', n:"Prefix gone. You're back on the system Python — and imports from your project will now fail."}
+    ]
+  },
+  'c-comp': {
+    start: 'nums = [1, 2, 3, 4]\nusers = [{"name": "ana", "active": True},\n         {"name": "bo",  "active": False}]',
+    moves: [
+      {c:'[n * n for n in nums]', o:'[1, 4, 9, 16]', n:"What I want, where it comes from. No filter."},
+      {c:'[n for n in nums if n % 2 == 0]', o:'[2, 4]', n:"Filter only — no transformation. The 'what' is just n."},
+      {c:'[u["name"].upper() for u in users if u["active"]]', o:"['ANA']", n:"Transform and filter together. This is the shape you'll write most often."},
+      {c:'{u["name"]: u["active"] for u in users}', o:"{'ana': True, 'bo': False}", n:"Dict comprehension — turns a list into something you can look up instantly."},
+      {c:'{u["active"] for u in users}', o:'{True, False}', n:"Set comprehension. Same syntax, curly braces, no colon."},
+      {c:'(n * n for n in nums)', o:'<generator object at 0x...>', n:"Round brackets give a generator — computed lazily, one item at a time. Useful for huge data."}
+    ]
+  },
+  'c-unpack': {
+    start: 'nums = [1, 2, 3, 4]\ndefaults = {"limit": 10, "offset": 0}',
+    moves: [
+      {c:'a, b, c, d = nums', o:'a=1  b=2  c=3  d=4', n:"Counts must match exactly, or you get a ValueError."},
+      {c:'first, *rest = nums', o:'first=1   rest=[2, 3, 4]', n:"The starred name catches everything left over — always as a list."},
+      {c:'*most, last = nums', o:'most=[1, 2, 3]   last=4', n:"It works from the other end too."},
+      {c:'a, b = b, a', o:'the two values swap', n:"The right side is built as a tuple first, then unpacked. No temp variable needed."},
+      {c:'{**defaults, "limit": 50}', o:"{'limit': 50, 'offset': 0}", n:"Rightmost wins on a conflict. This is how config layering works."},
+      {c:'def f(**kw): ...\nf(**defaults)', o:'kw = {"limit": 10, "offset": 0}', n:"Double-star spreads a dict into keyword arguments, and collects them on the other side."}
+    ]
+  },
+  'c-args': {
+    start: 'def create_task(title, priority="normal", urgent=False):\n    ...',
+    moves: [
+      {c:'create_task("Fix bug")', o:"title='Fix bug'  priority='normal'  urgent=False", n:"Defaults fill in everything you didn't pass."},
+      {c:'create_task("Fix bug", "high")', o:"priority='high'", n:"Positional — matched by order. Fine here, risky as the list grows."},
+      {c:'create_task("Fix bug", urgent=True)', o:"priority='normal'  urgent=True", n:"Keyword — you can skip over a middle parameter entirely."},
+      {c:'create_task(priority="high", title="Fix bug")', o:'works — order is irrelevant for keywords', n:"Once everything is a keyword, order stops mattering."},
+      {c:'create_task(priority="high", "Fix bug")', e:'SyntaxError: positional argument follows\nkeyword argument', n:"Once you use a keyword, everything after it must be a keyword."},
+      {c:'def f(*args, **kwargs): ...\nf(1, 2, x=3)', o:"args = (1, 2)     kwargs = {'x': 3}", n:"Star collects positionals into a tuple, double-star collects keywords into a dict."}
+    ]
+  },
+  'c-scope': {
+    start: 'total = 100          # global',
+    moves: [
+      {c:'def f():\n    x = 10\n    return x\nf()', o:'10', n:"x is local. It exists only while f is running."},
+      {c:'print(x)', e:"NameError: name 'x' is not defined", n:"The local name died with the function. This is a feature, not a limitation."},
+      {c:'def g():\n    return total\ng()', o:'100', n:"Reading a global from inside a function is fine — Python looks outward and finds it."},
+      {c:'def h():\n    total = 5      # new local!\nh()\nprint(total)', o:'100', n:"Assigning creates a LOCAL name that shadows the global. The global is untouched."},
+      {c:'def outer():\n    msg = "hi"\n    def inner():\n        return msg\n    return inner()', o:"'hi'", n:"The Enclosing scope: an inner function can see the outer function's names."},
+      {c:'def add(items, x):\n    items.append(x)\nresult = add([1], 2)', o:'result is None', n:"No return statement means None comes back — even though the list really was modified."}
+    ]
+  },
+  'c-files': {
+    start: 'import json',
+    moves: [
+      {c:'with open("data.json") as f:\n    text = f.read()', o:'file is closed automatically at the end of the block', n:"Even if an exception is raised inside. That guarantee is the whole reason 'with' exists."},
+      {c:'with open("data.json") as f:\n    data = json.load(f)', o:"{'tasks': [...]}", n:"load takes a FILE object. Straight from disk to Python."},
+      {c:'json.loads(\'{"a": 1}\')', o:"{'a': 1}", n:"loads takes a STRING. This is the one you use on an API response body."},
+      {c:'with open("out.json", "w") as f:\n    json.dump(data, f, indent=2)', o:'written, and pretty-printed', n:"dump writes to a file; dumps returns a string. indent=2 makes it human-readable."},
+      {c:'open("notes.txt", "w")', o:'the file is now EMPTY', n:"Mode 'w' truncates the moment it opens — before you write a single byte."},
+      {c:'open("notes.txt", "a")', o:'existing content kept, new writes go on the end', n:"'a' appends. Use it whenever losing the old content would hurt."}
+    ]
+  }
+};
+
+for (const [id, demo] of Object.entries(DEMOS)){
+  const box = document.getElementById(id);
+  const bar = document.querySelector(`.moves[data-console="${id}"]`);
+  if (!box || !bar) continue;
+
+  const head = demo.start.split('\n')
+    .map(l => `<div class="ln"><span class="ps">&gt;&gt;&gt; </span>${esc(l)}</div>`).join('');
+  box.innerHTML = head + `<div class="ln idle">pick a line below to run it</div>`;
+
+  demo.moves.forEach(m => {
+    const b = document.createElement('button');
+    b.className = 'move'; b.type = 'button';
+    b.textContent = m.c.split('\n')[0];
+    b.onclick = () => {
+      bar.querySelectorAll('.move').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+      const lines = m.c.split('\n').map(l => `<div class="ln"><span class="ps">&gt;&gt;&gt; </span>${esc(l)}</div>`).join('');
+      const res = m.e
+        ? m.e.split('\n').map(l => `<div class="ln err">${esc(l)}</div>`).join('')
+        : m.o.split('\n').map(l => `<div class="ln out">${esc(l)}</div>`).join('');
+      box.innerHTML = head + lines + res + `<div class="note">${m.n}</div>`;
+    };
+    bar.appendChild(b);
+  });
+}
+
+/* ================= memory diagram ================= */
+const MEM = [
+  {names:[['a', 0]], boxes:[{v:'[1, 2, 3]', addr:'0x7f2a', hot:false}],
+   line:'<b>a = [1, 2, 3]</b> — one list object exists in memory, and the name <code>a</code> is a tag pointing at it.'},
+  {names:[['a', 0], ['b', 0]], boxes:[{v:'[1, 2, 3]', addr:'0x7f2a', hot:true}],
+   line:'<b>b = a</b> — no new list was made. A second tag now points at the <i>same</i> object. <code>a is b</code> → <code>True</code>.'},
+  {names:[['a', 0], ['b', 0]], boxes:[{v:'[1, 2, 3, 4]', addr:'0x7f2a', hot:true}],
+   line:'<b>b.append(4)</b> — the object changed, and both tags are on it. <code>print(a)</code> now shows <code>[1, 2, 3, 4]</code>. This is the bug.'},
+  {names:[['a', 0], ['b', 0], ['c', 1]], boxes:[{v:'[1, 2, 3, 4]', addr:'0x7f2a', hot:false}, {v:'[1, 2, 3, 4]', addr:'0x9c11', hot:true}],
+   line:'<b>c = a.copy()</b> — now there really is a second object, at a different address. <code>a == c</code> is True, but <code>a is c</code> is False.'},
+  {names:[['a', 0], ['b', 0], ['c', 1]], boxes:[{v:'[1, 2, 3, 4]', addr:'0x7f2a', hot:false}, {v:'[1, 2, 3, 4, 5]', addr:'0x9c11', hot:true}],
+   line:'<b>c.append(5)</b> — only <code>c</code> changed this time. That is what a copy buys you, and <code>b = a</code> never bought it.'}
+];
+let memStep = 0;
+const memNames = document.getElementById('memNames');
+const memBoxes = document.getElementById('memBoxes');
+const memLine  = document.getElementById('memLine');
+const memNext  = document.getElementById('memNext');
+
+function paintMem(){
+  const s = MEM[memStep];
+  const cols = [[], []];
+  s.names.forEach(([n, idx]) => cols[idx].push(n));
+  memBoxes.innerHTML = s.boxes.map((b, idx) => `
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div class="names" style="gap:8px">${(cols[idx]||[]).map(n => `<span class="tag">${n}</span>`).join('')}</div>
+      <div class="membox ${b.hot ? 'hot' : ''}">${b.v}<span class="addr">at ${b.addr}</span></div>
+    </div>`).join('');
+  memNames.innerHTML = '';
+  memLine.innerHTML = s.line;
+  memNext.textContent = memStep >= MEM.length - 1 ? 'That’s the whole idea' : 'Next step →';
+  memNext.disabled = memStep >= MEM.length - 1;
+}
+memNext.onclick = () => { if (memStep < MEM.length - 1){ memStep++; paintMem() } };
+document.getElementById('memReset').onclick = () => { memStep = 0; paintMem() };
+paintMem();
+
+/* ================= slice ruler ================= */
+const NUMS = [0, 1, 2, 3, 4, 5];
+const SLICES = [
+  {c:'nums[1:4]',  keep:[1,2,3],       out:'[1, 2, 3]',          n:'start included, stop excluded'},
+  {c:'nums[:3]',   keep:[0,1,2],       out:'[0, 1, 2]',          n:'no start means from the beginning'},
+  {c:'nums[3:]',   keep:[3,4,5],       out:'[3, 4, 5]',          n:'no stop means all the way to the end'},
+  {c:'nums[-2:]',  keep:[4,5],         out:'[4, 5]',             n:'negative counts back from the end'},
+  {c:'nums[::2]',  keep:[0,2,4],       out:'[0, 2, 4]',          n:'step of 2 — every second item'},
+  {c:'nums[::-1]', keep:[0,1,2,3,4,5], out:'[5, 4, 3, 2, 1, 0]', n:'negative step walks backwards'},
+  {c:'nums[2:2]',  keep:[],            out:'[]',                 n:'start equals stop — empty, and not an error'}
+];
+const ruler = document.getElementById('ruler');
+const sliceMoves = document.getElementById('sliceMoves');
+const sliceOut = document.getElementById('sliceOut');
+
+function paintRuler(keep){
+  ruler.innerHTML = NUMS.map((v, i) =>
+    `<div class="rcell ${keep && keep.includes(i) ? 'in' : ''}">${v}<small>${i} · ${i - NUMS.length}</small></div>`
+  ).join('');
+}
+SLICES.forEach(s => {
+  const b = document.createElement('button');
+  b.className = 'move'; b.type = 'button'; b.textContent = s.c;
+  b.onclick = () => {
+    sliceMoves.querySelectorAll('.move').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    paintRuler(s.keep);
+    sliceOut.innerHTML = `${esc(s.c)} &nbsp;→&nbsp; <b>${esc(s.out)}</b> &nbsp;<span>— ${s.n}</span>`;
+  };
+  sliceMoves.appendChild(b);
+});
+paintRuler([]);
+sliceOut.innerHTML = `<span>nums = [0, 1, 2, 3, 4, 5] — pick a slice above. Small numbers are the index, forwards and backwards.</span>`;
+
+/* ================= default-arg accumulator ================= */
+let accN = 0, accShared = [];
+const TAGS = ['urgent', 'bug', 'later', 'review', 'blocked', 'done'];
+const accBad = document.getElementById('accBad');
+const accGood = document.getElementById('accGood');
+
+function paintAcc(){
+  if (!accN){
+    accBad.innerHTML  = '<div class="idle">not called yet</div>';
+    accGood.innerHTML = '<div class="idle">not called yet</div>';
+    return;
+  }
+  const calls = TAGS.slice(0, accN);
+  accBad.innerHTML = calls.map((t, i) =>
+    `<div class="ln">add_tag("${t}") → [${accShared.slice(0, i + 1).map(x => `'${x}'`).join(', ')}]</div>`).join('');
+  accGood.innerHTML = calls.map(t =>
+    `<div class="ln">add_tag("${t}") → ['${t}']</div>`).join('');
+}
+document.getElementById('accCall').onclick = () => {
+  if (accN >= TAGS.length) return;
+  accShared.push(TAGS[accN]);
+  accN++;
+  paintAcc();
+  document.getElementById('accCall').disabled = accN >= TAGS.length;
+};
+document.getElementById('accReset').onclick = () => {
+  accN = 0; accShared = [];
+  document.getElementById('accCall').disabled = false;
+  paintAcc();
+};
+paintAcc();
+
+/* ================= except order ================= */
+const ORDERS = {
+  specific: ['KeyError', 'FileNotFoundError', 'Exception'],
+  general:  ['Exception', 'KeyError', 'FileNotFoundError']
+};
+let excOrder = 'specific';
+const excStack = document.getElementById('excStack');
+const excLine = document.getElementById('excLine');
+
+function paintExc(raised){
+  const clauses = ORDERS[excOrder];
+  let caught = null;
+  excStack.innerHTML = clauses.map(c => {
+    const matches = (c === 'Exception') || (c === raised);
+    let cls = '';
+    if (raised && matches && caught === null){ cls = 'caught'; caught = c; }
+    const dead = excOrder === 'general' && c !== 'Exception';
+    if (dead) cls = 'dead';
+    return `<div class="clause ${cls}">except ${c}:
+      <span class="verdict">${cls === 'caught' ? 'CAUGHT IT' : dead ? 'UNREACHABLE' : ''}</span></div>`;
+  }).join('');
+
+  if (!raised){
+    excLine.innerHTML = excOrder === 'specific'
+      ? 'Specific clauses sit above the general one. Raise something to see which clause takes it.'
+      : '<b>Every clause below <code>except Exception</code> is dead code.</b> Python never reaches them — and it will not warn you.';
+  } else {
+    excLine.innerHTML = excOrder === 'specific'
+      ? `A <code>${raised}</code> was raised, and <b>except ${caught}</b> handled it — the specific clause you wrote for it.`
+      : `A <code>${raised}</code> was raised and <b>except Exception</b> swallowed it, even though you wrote a handler for exactly this case further down.`;
+  }
+}
+document.querySelectorAll('#excToggle button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('#excToggle button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    excOrder = b.dataset.order;
+    paintExc(null);
+  };
+});
+document.querySelectorAll('[data-raise]').forEach(b => {
+  b.onclick = () => paintExc(b.dataset.raise);
+});
+paintExc(null);
+</script>
