@@ -153,6 +153,29 @@ hr{border:none;border-top:1px solid var(--rule);margin:0}
 .cta .row a{text-decoration:none;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:15.5px;background:var(--accent);color:#fff;border-radius:10px;padding:11px 18px;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000)}
 .cta .row a.alt{background:none;color:var(--ground);border:1.5px solid color-mix(in srgb,var(--ground) 40%,var(--ink));box-shadow:none}
 .cta .row a:focus-visible{outline:3px solid var(--ground);outline-offset:3px}
+
+/* interviewer asks */
+.asks{
+  border:1.5px solid color-mix(in srgb,var(--accent) 32%,var(--rule));
+  background:color-mix(in srgb,var(--accent) 6%,var(--panel));
+  border-radius:11px;padding:13px 16px;display:flex;flex-direction:column;gap:9px;
+}
+.asks .hdr{
+  display:flex;align-items:center;gap:8px;
+  font-size:9.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:800;color:var(--accent);
+}
+.asks .hdr b{
+  font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:0;
+  background:var(--accent);color:#fff;border-radius:4px;padding:1px 6px;
+}
+.asks .qa{display:flex;flex-direction:column;gap:4px}
+.asks .q{font-size:15px;line-height:1.45;font-weight:800;color:var(--ink)}
+.asks .q::before{content:"“"} .asks .q::after{content:"”"}
+.asks .a{font-size:14.5px;line-height:1.5;color:var(--ink-soft)}
+.asks .a::before{content:"→ ";color:var(--accent);font-weight:800}
+.asks .a code{font-size:13px;background:var(--panel-2)}
+.asks .a b{color:var(--ink)}
+.asks .idle{font-size:14px;color:var(--ink-faint);font-style:italic}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 
@@ -200,6 +223,11 @@ print(solve(nums))</pre>
     <h4>The habit that keeps them separate</h4>
     <p>Write the <b>function</b> first — parameters in, <code>return</code> out, no printing. Then add the reading and printing <i>underneath</i> as a separate few lines. Now the same function works in an interview, in a test, and on a practice site, and you never have to rewrite it.</p>
   </div>
+  <div class="asks">
+    <div class="hdr"><b>Q</b> The interviewer asks, at this stage</div>
+    <div class="qa"><p class="q">Before you write anything — what does this function take, and what does it give back?</p><p class="a">Answer this <i>out loud before coding</i>, every time: <b>"It takes a list of ints and a target int, and returns an index, or -1 if it isn't there."</b> It costs ten seconds and it frames everything you write next.</p></div>
+    <div class="qa"><p class="q">Would you read this from standard input, or take it as a parameter?</p><p class="a"><b>"Parameter — I'd keep the function pure and do any reading outside it."</b> Candidates who wire <code>input()</code> into the middle of their solution look like they've only ever used practice sites.</p></div>
+  </div>
 </section>
 
 <hr>
@@ -212,6 +240,7 @@ print(solve(nums))</pre>
   <div class="card">
     <div class="moves" data-console="c-in"></div>
     <div class="console" id="c-in"></div>
+    <div class="asks" id="c-in-ask"></div>
   </div>
 
   <div class="rule-box trap">
@@ -221,6 +250,11 @@ print(solve(nums))</pre>
   <div class="rule-box">
     <h4>Where the values actually live</h4>
     <p>A parameter is just a name that gets pointed at whatever the caller passed. <code>def f(nums)</code> then <code>f(scores)</code> means <b>inside the function, <code>nums</code> and <code>scores</code> are two names for the same list</b> — so if you mutate it inside, the caller sees the change. That's the same "names are labels" rule from the Day One page, and it's why "in place" questions work at all.</p>
+  </div>
+  <div class="asks">
+    <div class="hdr"><b>Q</b> The interviewer asks, at this stage</div>
+    <div class="qa"><p class="q">If I pass a list into your function and you change it, does my list change?</p><p class="a"><b>"Yes — the parameter is another name for the same list, so mutations are visible to the caller."</b> Then say what you'd do about it: copy first if the caller shouldn't see it, or document that it's in place.</p></div>
+    <div class="qa"><p class="q">How would you handle input that might be malformed?</p><p class="a"><b>"Validate at the boundary and fail loudly."</b> <code>int()</code> raising <code>ValueError</code> at the top beats bad data flowing three functions deep and breaking somewhere unrelated.</p></div>
   </div>
 </section>
 
@@ -234,6 +268,7 @@ print(solve(nums))</pre>
   <div class="card">
     <div class="moves" data-console="c-conv"></div>
     <div class="console" id="c-conv"></div>
+    <div class="asks" id="c-conv-ask"></div>
   </div>
 
   <div class="tbl">
@@ -251,6 +286,11 @@ print(solve(nums))</pre>
   <div class="rule-box trap">
     <h4><code>join</code> only accepts strings</h4>
     <p><code>" ".join([3, 1, 4])</code> raises <code>TypeError: sequence item 0: expected str instance, int found</code>. You must convert first — that's why the last row above has <code>str(x)</code> in it. Or skip join entirely and use <code>print(*nums)</code>, which does the same thing for output.</p>
+  </div>
+  <div class="asks">
+    <div class="hdr"><b>Q</b> The interviewer asks, at this stage</div>
+    <div class="qa"><p class="q">The input line is <code>"3 1 4"</code> and you need to sum it. Talk me through it.</p><p class="a">Three steps, said in order: <b>"split into strings, convert each to int, then sum."</b> <code>sum(int(x) for x in line.split())</code>. Naming the steps matters more than the one-liner.</p></div>
+    <div class="qa"><p class="q">Why does Python make you convert at all?</p><p class="a"><b>"Because implicit conversion hides bugs."</b> Languages that guess give you <code>"5" + 1 == "51"</code>. Python raises instead, so the mistake surfaces at the line that caused it.</p></div>
   </div>
 </section>
 
@@ -301,6 +341,12 @@ print("result is", result)</pre>
   <div class="card">
     <div class="moves" data-console="c-out"></div>
     <div class="console" id="c-out"></div>
+    <div class="asks" id="c-out-ask"></div>
+  </div>
+  <div class="asks">
+    <div class="hdr"><b>Q</b> The interviewer asks, at this stage</div>
+    <div class="qa"><p class="q">Your function returns None. Why?</p><p class="a">Three causes, and you should be able to name all three: <b>it printed instead of returning</b>; <b>a path through the code falls off the end</b>; or <b>you assigned the result of a method that mutates in place</b>, like <code>.sort()</code> or <code>.append()</code>.</p></div>
+    <div class="qa"><p class="q">What does a function return if it has no return statement?</p><p class="a"><b><code>None</code>, implicitly.</b> Every Python function returns something — if you don't say what, it's None. That None then travels and crashes somewhere far from the real cause, usually as <code>AttributeError: 'NoneType' object has no attribute ...</code></p></div>
   </div>
 </section>
 
@@ -317,6 +363,7 @@ print("result is", result)</pre>
     <div class="answerbox">
       <p class="shape" id="shapeLine"></p>
       <div class="console" id="travOut"></div>
+      <div class="asks" id="travOut-ask"></div>
     </div>
   </div>
 
@@ -339,6 +386,11 @@ print("result is", result)</pre>
     <p><b>Never delete from a list you're looping over</b> — the indexes shift under you and items get silently skipped. Build a new list instead.<br><br>
       <b><code>zip</code> stops at the shorter list.</b> No error, no warning — the extra items are simply ignored.<br><br>
       <b><code>sorted(arr)</code> returns a new list; <code>arr.sort()</code> returns <code>None</code></b> and reorders in place. Writing <code>arr = arr.sort()</code> destroys your list.</p>
+  </div>
+  <div class="asks">
+    <div class="hdr"><b>Q</b> The interviewer asks, at this stage</div>
+    <div class="qa"><p class="q">Which loop would you use here, and why?</p><p class="a">Answer with the <i>reason</i>, not just the form: <b>"A for-with-enumerate, because I need the index to write back."</b> The reason is what they're grading — anyone can type a loop.</p></div>
+    <div class="qa"><p class="q">What's the time complexity of that loop?</p><p class="a">One pass over n items is <b>O(n)</b>; a loop inside a loop over the same data is <b>O(n²)</b>. Be ready to say it unprompted after you finish coding — it's the standard follow-up and volunteering it looks strong.</p></div>
   </div>
 </section>
 
@@ -371,6 +423,11 @@ print("result is", result)</pre>
   <div class="rule-box win">
     <h4>Why the three test calls matter more than they look</h4>
     <p>Normal case, empty input, single item. Those three catch most off-by-one and crash bugs before anyone else sees them — and running them takes four seconds. Never trust code you haven't run.</p>
+  </div>
+  <div class="asks">
+    <div class="hdr"><b>Q</b> The interviewer asks, at this stage</div>
+    <div class="qa"><p class="q">What edge cases would you test?</p><p class="a">Say them before you're asked: <b>empty input, one element, all identical, all negative, target not present.</b> Naming edge cases unprompted is one of the clearest signals of a candidate who has shipped real code.</p></div>
+    <div class="qa"><p class="q">Walk me through your code with this input.</p><p class="a">Trace it out loud on <b>three items</b>, pointing at each variable as it changes. Every off-by-one you'll ever write shows up in the first three steps — this is exactly what the traces on the Eight Techniques page are training.</p></div>
   </div>
 </section>
 
@@ -487,12 +544,98 @@ const DEMOS = {
   ]
 };
 
+/* =====================================================================
+   WHAT THE INTERVIEWER ASKS — keyed by the button label
+   ===================================================================== */
+const ASKS = {
+  /* ---- taking data in ---- */
+  'parameters':{q:"Walk me through your function signature. What does it take?",
+    a:"Name each parameter and its type out loud: <b>\"It takes nums, a list of integers, and target, an integer, and returns the index or -1.\"</b> Saying the shape of the input and output before you write anything is the single strongest opening move in a coding interview."},
+  'hardcoded':{q:"How do you know your code works?",
+    a:"<b>\"I run it against three cases — a normal one, an empty input, and a single element.\"</b> Hardcoding the inputs at the bottom of the file is how you do that in four seconds. Interviewers notice immediately when a candidate tests without being asked."},
+  'input()':{q:"What type does input() return?",
+    a:"<b>Always a string</b>, no matter what the person typed. There is no automatic conversion anywhere in Python."},
+  'int(input())':{q:"What happens if the user types letters instead of a number?",
+    a:"<code>int()</code> raises <code>ValueError</code>. If they want it handled: wrap it in <code>try/except ValueError</code> and re-prompt. Say the exception <i>by name</i> — that's what separates a confident answer from a vague one."},
+  'input().split()':{q:"What does split() give you back, and what if the line is empty?",
+    a:"A <b>list of strings</b>, split on any run of whitespace. An empty line gives <code>[]</code>, not <code>['']</code> — so a loop over it simply does nothing rather than crashing."},
+  'a list of numbers':{q:"The input is one line of space-separated integers. Read it.",
+    a:"They want to see this typed without hesitation: <code>nums = [int(x) for x in input().split()]</code>. Say why as you type it: <b>\"split gives me strings, so I convert each one.\"</b>"},
+  'two values on one line':{q:"What if the line has three values but you unpack into two names?",
+    a:"<code>ValueError: too many values to unpack</code>. If the count can vary, use <code>first, *rest = ...</code> instead so the extras are collected rather than crashing."},
+  'several lines':{q:"Why did you write an underscore there instead of i?",
+    a:"<b>\"Because I don't use the loop variable — the underscore signals that on purpose.\"</b> It's a small thing that tells a reviewer you write code for other people to read."},
+  'from a file':{q:"Why <code>with open</code> rather than just <code>open</code>?",
+    a:"<b>\"Because <code>with</code> closes the file even if an exception is raised inside the block.\"</b> Without it a crash leaks the handle, and enough leaked handles exhaust the OS limit."},
+
+  /* ---- converting ---- */
+  'str → int':{q:"What's the difference between ValueError and TypeError here?",
+    a:"<b>ValueError</b> = correct type, unusable value — <code>int(\"abc\")</code>. <b>TypeError</b> = wrong type entirely — <code>\"a\" + 1</code>. Interviewers ask this constantly and most candidates blur the two."},
+  'int → str':{q:"Why doesn't Python just convert the number for you?",
+    a:"<b>\"Because it refuses to guess.\"</b> Silent coercion is how other languages produce bugs like <code>\"5\" + 1 == \"51\"</code>. Python raises instead, and f-strings are the clean way to build the text."},
+  'split()':{q:"When would <code>split()</code> and <code>split(' ')</code> behave differently?",
+    a:"On <b>repeated or leading spaces</b>. Bare <code>split()</code> collapses any run of whitespace and trims the ends; <code>split(' ')</code> splits on every single space and leaves empty strings behind. For keyboard input, always the bare one."},
+  'list(string)':{q:"Can you modify a string in place?",
+    a:"<b>No — strings are immutable.</b> You can read <code>s[0]</code> but <code>s[0] = \"x\"</code> raises TypeError. Convert with <code>list(s)</code>, change it, then <code>\"\".join(chars)</code> to come back."},
+  'join()':{q:"Why does <code>\" \".join([1, 2, 3])</code> fail?",
+    a:"<b>join only accepts strings.</b> The error is <code>expected str instance, int found</code>. Fix with <code>\" \".join(str(x) for x in nums)</code>, or sidestep it with <code>print(*nums)</code>."},
+  'the reverse trip':{q:"The expected output is <code>3 1 4</code> but yours shows <code>[3, 1, 4]</code>. Why?",
+    a:"<b>\"<code>print(nums)</code> prints Python's own repr, brackets and commas included.\"</b> Judges want bare values — that's <code>print(*nums)</code>. This one detail fails more practice submissions than any algorithm mistake."},
+
+  /* ---- returning ---- */
+  'return a value':{q:"What's the difference between returning and printing?",
+    a:"<b>\"Printing shows a value and hands back None. Returning gives the caller something they can use.\"</b> A returned value can go straight into another expression; a printed one is gone."},
+  'return early':{q:"Do you need a break there?",
+    a:"<b>No — <code>return</code> exits the entire function immediately</b>, loop included. And say what the final <code>return -1</code> is for: the not-found case. Forgetting it is the most common bug in search functions."},
+  'return several values':{q:"Can a Python function return more than one value?",
+    a:"<b>\"Technically no — it returns one tuple, and you unpack it.\"</b> <code>return lo, hi</code> then <code>lo, hi = stats(...)</code>. Phrasing it that way shows you know what's really happening."},
+  'return nothing':{q:"Should this function change the list it was given, or give back a new one?",
+    a:"<b>\"Pick one and be consistent.\"</b> Mutating returns None by convention (like <code>.sort()</code>); returning a new object leaves the input untouched (like <code>sorted()</code>). Doing both confuses every caller."},
+  'the sort trap':{q:"What does <code>list.sort()</code> return?",
+    a:"<b><code>None</code></b> — it sorts in place. <code>sorted(list)</code> is the one that returns a new sorted list. So <code>nums = nums.sort()</code> silently destroys your data, and it's a favourite gotcha question."},
+  'return a list':{q:"Why build a new list instead of modifying the one passed in?",
+    a:"<b>\"Because the caller still holds that list.\"</b> Mutating it is a side effect they didn't ask for. Unless the question says <i>in place</i>, returning a new collection is the safer default."},
+  'print vs return, side by side':{q:"Your function works when you run it, but the tests all fail. Why?",
+    a:"<b>\"It prints instead of returning, so the test gets None.\"</b> The test harness calls your function and checks what came <i>back</i> — it never looks at the screen. If you learn one thing on this page, learn this answer."},
+
+  /* ---- traversal ---- */
+  'A list, values only':{q:"Can you change the list from inside <code>for x in nums</code>?",
+    a:"<b>No.</b> <code>x</code> is a copy of the reference — reassigning it just repoints the loop variable and the list is untouched. To write back you need the index."},
+  'A list, with position':{q:"Why enumerate instead of <code>range(len(nums))</code>?",
+    a:"<b>\"It gives me the index and the value together, and I can't build an index that doesn't exist.\"</b> Mention <code>start=1</code> if the output is numbered for humans."},
+  'A list, writing into it':{q:"Double every element of this list in place.",
+    a:"<code>for i in range(len(nums)): nums[i] = nums[i] * 2</code>. Narrate the assignment: <b>\"left side writes, right side reads.\"</b> If they say <i>in place</i>, they are testing whether you know this is the only loop form that can do it."},
+  'A string':{q:"How would you reverse a string?",
+    a:"<code>s[::-1]</code> for the one-liner. If they want the manual version, it's two pointers on <code>list(s)</code>, then join — and mention that strings are immutable, which is <i>why</i> you convert first."},
+  'A dict':{q:"What do you get when you loop over a dictionary?",
+    a:"<b>The keys</b> — which surprises people who expect pairs. Use <code>.items()</code> for both, <code>.values()</code> for just values. Also worth saying: since 3.7 the order is insertion order."},
+  'Two lists together':{q:"What happens if the two lists have different lengths?",
+    a:"<b><code>zip</code> stops at the shorter one, silently.</b> No error, no warning, extra items ignored. If that would be a bug, check the lengths first or use <code>itertools.zip_longest</code>."},
+  'A grid':{q:"How do you get the row and column index of every cell?",
+    a:"Nested enumerate: <code>for r, row in enumerate(grid): for c, cell in enumerate(row):</code>. And be ready for <b>\"what is grid[2][0]?\"</b> — row 2, column 0. Row always comes first."},
+  'Backwards':{q:"<code>reversed(nums)</code> or <code>nums[::-1]</code> — which and why?",
+    a:"<b>\"<code>reversed()</code> is a lazy iterator and copies nothing; the slice builds a whole new list.\"</b> For a plain loop, prefer <code>reversed()</code>. If you need an actual reversed list back, the slice."},
+  'Uneven movement':{q:"When do you reach for a while loop instead of a for loop?",
+    a:"<b>\"When the step isn't always one — pointers moving at different speeds, or advancing only on a condition.\"</b> Then add the safety line unprompted: <b>\"and I check that every branch moves the variable, otherwise it never terminates.\"</b>"}
+};
+
+function paintAsk(id, label){
+  const host = document.getElementById(id + '-ask');
+  if (!host) return;
+  const A = ASKS[label];
+  host.innerHTML = A
+    ? `<div class="hdr"><b>Q</b> The interviewer asks</div>
+       <div class="qa"><p class="q">${A.q}</p><p class="a">${A.a}</p></div>`
+    : `<div class="hdr"><b>Q</b> The interviewer asks</div><p class="idle">pick one above</p>`;
+}
+
 for (const [id, moves] of Object.entries(DEMOS)){
   const box = document.getElementById(id);
   const bar = document.querySelector(`.moves[data-console="${id}"]`);
   if (!box || !bar) continue;
 
   box.innerHTML = '<div class="ln idle">pick one below to run it</div>';
+  paintAsk(id, null);
 
   moves.forEach(m => {
     const btn = document.createElement('button');
@@ -508,6 +651,7 @@ for (const [id, moves] of Object.entries(DEMOS)){
         return `<div class="ln cm">${esc(text)}</div>`;
       }).join('');
       box.innerHTML = body + `<div class="note">${m.n}</div>`;
+      paintAsk(id, m.b);
     };
     bar.appendChild(btn);
   });
@@ -580,6 +724,7 @@ function paintShape(n){
     if (kind === 'e') return `<div class="ln err">${esc(text)}</div>`;
     return `<div class="ln cm">${esc(text)}</div>`;
   }).join('') + `<div class="note">${S.n}</div>`;
+  paintAsk('travOut', S.b);
 }
 SHAPES.forEach((S, n) => {
   const b = document.createElement('button');
