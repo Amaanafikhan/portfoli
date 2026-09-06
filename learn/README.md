@@ -1,6 +1,6 @@
 # Python revision pages
 
-Five interactive pages built as a learn-then-drill shelf. Source is here; the
+Six interactive pages built as a learn-then-drill shelf. Source is here; the
 published, shareable versions are linked below.
 
 | Page | What it's for | Live |
@@ -10,9 +10,17 @@ published, shareable versions are linked below.
 | `day-one-explained.html` | the rest of Day 1, explained | https://claude.ai/code/artifact/64f95123-a9ed-4a95-9c5e-3a84b1b73646 |
 | `reload-arcade.html` | all of Day 1, drilled + interview lines | https://claude.ai/code/artifact/1c759e0a-4535-4fb9-a223-2dbd0ad42765 |
 | `eight-techniques.html` | the 8 patterns, with steppable traces | https://claude.ai/code/artifact/558e35f2-a737-4fa4-9a01-b986ceef0816 |
+| `the-plumbing.html` | taking input, returning answers, looping through data | https://claude.ai/code/artifact/eb421301-3ce0-47f3-bab6-01509dbe20f8 |
 
 Read order: **Four Boxes → Set or Regret → Day One, Explained → Reload Arcade**
-for the language, then **Eight Techniques** for problem-solving.
+for the language, then **The Plumbing** (how data gets in and answers get out),
+then **Eight Techniques** for problem-solving.
+
+`the-plumbing.html` covers every way to take input (parameters, hardcoded,
+`input()`, `split()`, multi-line, files), every form of `return` — including the
+`return` vs `print` side-by-side runner — and nine data shapes with the right
+loop for each. Every Python claim and error message in it was verified against a
+real interpreter.
 
 ## Scope
 

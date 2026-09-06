@@ -1,0 +1,591 @@
+<title>The Plumbing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+
+<style>
+:root{
+  --ground:#E9E7F2; --panel:#FFFFFF; --panel-2:#F3F1F9;
+  --ink:#1A1726; --ink-soft:#5C5570; --ink-faint:#8B84A0; --rule:#D6D2E4;
+  --accent:#D91A63;
+  --in:#2F5BEA; --out:#0F9E76; --thru:#B96C05; --conv:#7B3FE4;
+  --good:#0F9E76; --bad:#D9342B;
+  --console:#221E31; --console-ink:#EDEAF7;
+  --shadow:0 2px 0 rgba(26,23,38,.12), 0 14px 32px -18px rgba(26,23,38,.55);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+    --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+    --accent:#FF4B87;
+    --in:#7C9BFF; --out:#2FD3A0; --thru:#F0A93C; --conv:#B48CFF;
+    --good:#2FD3A0; --bad:#FF6B60;
+    --console:#0E0C16; --console-ink:#E6E1F5;
+    --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+  --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+  --accent:#FF4B87;
+  --in:#7C9BFF; --out:#2FD3A0; --thru:#F0A93C; --conv:#B48CFF;
+  --good:#2FD3A0; --bad:#FF6B60;
+  --console:#0E0C16; --console-ink:#E6E1F5;
+  --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6}
+.wrap{max-width:780px;margin:0 auto;padding:44px 20px 76px;display:flex;flex-direction:column;gap:48px}
+h1,h2,h3,h4{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1{font-size:clamp(37px,7.5vw,57px);font-weight:800;line-height:.97}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-size:clamp(23px,4.4vw,30px);font-weight:800;line-height:1.09}
+h3{font-size:18.5px;font-weight:800;letter-spacing:-.02em}
+p{margin:0}
+.lede{font-size:17px;line-height:1.6;color:var(--ink-soft);max-width:63ch}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px}
+b{font-weight:800}
+section{display:flex;flex-direction:column;gap:16px}
+.step{display:flex;align-items:baseline;gap:11px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.step b{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--panel);background:var(--ink-faint);border-radius:4px;padding:2px 6px;letter-spacing:.06em}
+.step.in b{background:var(--in)} .step.out b{background:var(--out)}
+.step.thru b{background:var(--thru)} .step.conv b{background:var(--conv)}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px 22px;display:flex;flex-direction:column;gap:15px}
+hr{border:none;border-top:1px solid var(--rule);margin:0}
+
+.rule-box{display:flex;flex-direction:column;gap:6px;border-left:4px solid var(--accent);padding:2px 0 2px 14px}
+.rule-box h4{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--accent)}
+.rule-box p{font-size:15px;color:var(--ink-soft)}
+.rule-box p b{color:var(--ink)}
+.rule-box code{font-size:13px}
+.trap{border-left-color:var(--bad)} .trap h4{color:var(--bad)}
+.win{border-left-color:var(--good)} .win h4{color:var(--good)}
+
+/* two worlds */
+.worlds{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+@media (max-width:600px){.worlds{grid-template-columns:1fr}}
+.world{border:1.5px solid var(--rule);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:9px;background:var(--panel-2)}
+.world.iv{border-color:var(--in)}
+.world.pr{border-color:var(--thru)}
+.world h4{margin:0;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
+.world.iv h4{color:var(--in)} .world.pr h4{color:var(--thru)}
+.world pre{margin:0;font-family:"JetBrains Mono",monospace;font-size:12px;line-height:1.6;color:var(--ink);white-space:pre;overflow-x:auto}
+.world p{font-size:13.5px;line-height:1.45;color:var(--ink-soft)}
+
+/* consoles */
+.moves{display:flex;flex-wrap:wrap;gap:7px}
+.move{font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:700;background:var(--panel);color:var(--ink);border:1.5px solid var(--rule);border-radius:7px;padding:7px 11px;cursor:pointer;transition:transform .08s,border-color .12s,background .12s}
+.move:hover{transform:translateY(-1px);border-color:var(--ink-faint)}
+.move:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.move.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.console{background:var(--console);color:var(--console-ink);border-radius:10px;padding:15px 17px;font-family:"JetBrains Mono",monospace;font-size:13.3px;line-height:1.66;display:flex;flex-direction:column;gap:2px;min-height:132px;overflow-x:auto}
+.console .ln{white-space:pre}
+.console .ps{color:#8E86AB}
+.console .out{color:#8CE0C0}
+.console .err{color:#FF8A7E}
+.console .typed{color:#FFD479}
+.console .cm{color:#8E86AB}
+.console .note{color:#8E86AB;font-style:italic;white-space:pre-wrap;font-size:12.5px;padding-top:6px;border-top:1px solid rgba(255,255,255,.09);margin-top:5px}
+.console .idle{color:#8E86AB;font-style:italic}
+
+/* return vs print */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:600px){.vs{grid-template-columns:1fr}}
+.vsbox{border:1.5px solid var(--rule);border-radius:11px;padding:14px 15px;display:flex;flex-direction:column;gap:9px;background:var(--panel-2)}
+.vsbox.p{border-color:var(--bad)} .vsbox.r{border-color:var(--good)}
+.vsbox h5{margin:0;font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700}
+.vsbox.p h5{color:var(--bad)} .vsbox.r h5{color:var(--good)}
+.vsbox pre{margin:0;font-family:"JetBrains Mono",monospace;font-size:11.8px;line-height:1.58;color:var(--ink-soft);white-space:pre;overflow-x:auto}
+.vsout{font-family:"JetBrains Mono",monospace;font-size:12.5px;background:var(--console);color:var(--console-ink);border-radius:7px;padding:11px 12px;min-height:92px;display:flex;flex-direction:column;gap:2px;overflow-x:auto}
+.vsout .ln{white-space:pre}
+.vsout .out{color:#8CE0C0}
+.vsout .err{color:#FF8A7E}
+.vsout .idle{color:#8E86AB;font-style:italic}
+.btn{font-family:"Public Sans",sans-serif;font-weight:800;font-size:13.5px;color:#fff;background:var(--accent);border:none;border-radius:9px;padding:11px 17px;cursor:pointer;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.btn.quiet{background:none;color:var(--ink);border:1.5px solid var(--rule);box-shadow:none}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* traversal picker */
+.picker{display:flex;flex-wrap:wrap;gap:7px}
+.pick{font-family:"Public Sans",sans-serif;font-weight:800;font-size:13px;background:var(--panel);color:var(--ink);border:1.5px solid var(--rule);border-radius:8px;padding:9px 13px;cursor:pointer;transition:transform .08s,border-color .12s}
+.pick:hover{transform:translateY(-1px)}
+.pick.on{background:var(--thru);border-color:var(--thru);color:#fff}
+.pick:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.answerbox{display:flex;flex-direction:column;gap:11px}
+.shape{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink-soft)}
+.shape b{color:var(--ink)}
+
+/* tables */
+.tbl{display:flex;flex-direction:column;border:1px solid var(--rule);border-radius:11px;overflow:hidden}
+.trow{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:11px 15px;border-bottom:1px solid var(--rule);align-items:baseline}
+.trow:last-child{border-bottom:none}
+.trow:nth-child(odd){background:var(--panel-2)}
+.trow .l{font-size:14px;color:var(--ink-soft)}
+.trow .r{font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:700;color:var(--ink)}
+.trow.head{background:var(--ink)!important;color:var(--ground)}
+.trow.head .l,.trow.head .r{color:var(--ground);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;font-weight:800;font-family:"Public Sans",sans-serif}
+
+.recipe{background:var(--console);color:var(--console-ink);border-radius:12px;padding:18px 20px;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.72;overflow-x:auto;white-space:pre}
+.recipe .cm{color:#8E86AB}
+.recipe .kw{color:#FF9ec1}
+.recipe .st{color:#8CE0C0}
+
+.seven{display:flex;flex-direction:column;counter-reset:s}
+.seven li{list-style:none;counter-increment:s;display:grid;grid-template-columns:auto 1fr;gap:0 14px;padding:12px 0;border-bottom:1px solid var(--rule);align-items:baseline}
+.seven li:last-child{border-bottom:none}
+.seven li::before{content:counter(s);font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:18px;color:var(--ink-faint)}
+.seven li span{font-size:15.5px;line-height:1.5}
+.seven li code{font-size:13.5px}
+
+.toc{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+@media (max-width:560px){.toc{grid-template-columns:1fr}}
+.toc a{text-decoration:none;color:var(--ink);background:var(--panel);border:1.5px solid var(--rule);border-left-width:5px;border-radius:9px;padding:10px 13px;font-size:13.5px;font-weight:700;display:flex;gap:9px;align-items:baseline;transition:transform .1s}
+.toc a:hover{transform:translateY(-2px)}
+.toc a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.toc a i{font-style:normal;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-faint)}
+
+.cta{background:var(--ink);color:var(--ground);border-radius:14px;padding:26px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.cta h2{color:var(--ground)}
+.cta p{color:color-mix(in srgb,var(--ground) 72%,var(--ink));font-size:15.5px;max-width:52ch}
+.cta .row a{text-decoration:none;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:15.5px;background:var(--accent);color:#fff;border-radius:10px;padding:11px 18px;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+.cta .row a.alt{background:none;color:var(--ground);border:1.5px solid color-mix(in srgb,var(--ground) 40%,var(--ink));box-shadow:none}
+.cta .row a:focus-visible{outline:3px solid var(--ground);outline-offset:3px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:18px">
+  <h1>Getting data <em>in.</em><br>Getting answers <em>out.</em></h1>
+  <p class="lede">Not algorithms — plumbing. How values reach your code, how results come back, and every way to walk through what you're holding. Nobody teaches this properly because everyone assumes you picked it up somewhere. Every console below runs; press the buttons.</p>
+  <div class="toc">
+    <a href="#in" style="border-left-color:var(--in)"><i>01</i> Every way to take data in</a>
+    <a href="#convert" style="border-left-color:var(--conv)"><i>02</i> Converting what you got</a>
+    <a href="#out" style="border-left-color:var(--out)"><i>03</i> Every way to give it back</a>
+    <a href="#thru" style="border-left-color:var(--thru)"><i>04</i> Every way to go through it</a>
+    <a href="#recipe" style="border-left-color:var(--accent)"><i>05</i> The template to memorise</a>
+    <a href="#rules" style="border-left-color:var(--ink-faint)"><i>06</i> Seven rules</a>
+  </div>
+</header>
+
+<hr>
+
+<!-- ================= THE TWO WORLDS ================= -->
+<section>
+  <div class="step"><b>00</b> Read this first</div>
+  <h2>There are two different worlds</h2>
+  <p class="lede">Half your confusion is that these get taught mixed together. They are not the same, and knowing which one you're in tells you exactly what to write.</p>
+
+  <div class="worlds">
+    <div class="world iv">
+      <h4>Interview &amp; real code</h4>
+      <pre>def two_sum(nums, target):
+    ...
+    return [i, j]</pre>
+      <p>Values arrive as <b>parameters</b>, already the right type. You hand the answer back with <b>return</b>. Nobody types anything. There is no <code>input()</code> anywhere.</p>
+    </div>
+    <div class="world pr">
+      <h4>Practice sites &amp; exercises</h4>
+      <pre>n = int(input())
+nums = list(map(int, input().split()))
+print(solve(nums))</pre>
+      <p>You read from the keyboard, and <b>everything arrives as a string</b>, so you convert. You show the answer with <b>print</b>. This layer wraps the function — it isn't the function.</p>
+    </div>
+  </div>
+
+  <div class="rule-box win">
+    <h4>The habit that keeps them separate</h4>
+    <p>Write the <b>function</b> first — parameters in, <code>return</code> out, no printing. Then add the reading and printing <i>underneath</i> as a separate few lines. Now the same function works in an interview, in a test, and on a practice site, and you never have to rewrite it.</p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ================= 01 TAKE ================= -->
+<section id="in">
+  <div class="step in"><b>01</b> Taking data in</div>
+  <h2>Every way values reach your code</h2>
+  <p class="lede">Six ways, in the order you'll need them. The first two cover almost everything you'll actually write; the rest are for practice sites and files.</p>
+  <div class="card">
+    <div class="moves" data-console="c-in"></div>
+    <div class="console" id="c-in"></div>
+  </div>
+
+  <div class="rule-box trap">
+    <h4>The one that catches everyone</h4>
+    <p><code>input()</code> <b>always returns a string</b>. Always. Type <code>5</code> and you get <code>"5"</code>, and <code>"5" + 1</code> is a <code>TypeError</code>. Nothing warns you — the program just breaks somewhere later. If a number came from <code>input()</code>, it needs <code>int()</code> around it.</p>
+  </div>
+  <div class="rule-box">
+    <h4>Where the values actually live</h4>
+    <p>A parameter is just a name that gets pointed at whatever the caller passed. <code>def f(nums)</code> then <code>f(scores)</code> means <b>inside the function, <code>nums</code> and <code>scores</code> are two names for the same list</b> — so if you mutate it inside, the caller sees the change. That's the same "names are labels" rule from the Day One page, and it's why "in place" questions work at all.</p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ================= 02 CONVERT ================= -->
+<section id="convert">
+  <div class="step conv"><b>02</b> Converting</div>
+  <h2>Turning what you got into what you need</h2>
+  <p class="lede">This is the join between taking data in and using it. Nearly every "why doesn't this work" on a practice site is a missing conversion.</p>
+  <div class="card">
+    <div class="moves" data-console="c-conv"></div>
+    <div class="console" id="c-conv"></div>
+  </div>
+
+  <div class="tbl">
+    <div class="trow head"><span class="l">You have → you want</span><span class="r">Write this</span></div>
+    <div class="trow"><span class="l">"42" → number</span><span class="r">int("42")</span></div>
+    <div class="trow"><span class="l">"3.5" → decimal</span><span class="r">float("3.5")</span></div>
+    <div class="trow"><span class="l">42 → text</span><span class="r">str(42)</span></div>
+    <div class="trow"><span class="l">"3 1 4" → list of strings</span><span class="r">s.split()</span></div>
+    <div class="trow"><span class="l">"3 1 4" → list of numbers</span><span class="r">[int(x) for x in s.split()]</span></div>
+    <div class="trow"><span class="l">"a,b,c" → list on commas</span><span class="r">s.split(",")</span></div>
+    <div class="trow"><span class="l">"hello" → list of letters</span><span class="r">list("hello")</span></div>
+    <div class="trow"><span class="l">["a","b"] → one string</span><span class="r">" ".join(parts)</span></div>
+    <div class="trow"><span class="l">[3,1,4] → one string</span><span class="r">" ".join(str(x) for x in nums)</span></div>
+  </div>
+  <div class="rule-box trap">
+    <h4><code>join</code> only accepts strings</h4>
+    <p><code>" ".join([3, 1, 4])</code> raises <code>TypeError: sequence item 0: expected str instance, int found</code>. You must convert first — that's why the last row above has <code>str(x)</code> in it. Or skip join entirely and use <code>print(*nums)</code>, which does the same thing for output.</p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ================= 03 RETURN ================= -->
+<section id="out">
+  <div class="step out"><b>03</b> Giving it back</div>
+  <h2><code>return</code> versus <code>print</code></h2>
+  <p class="lede">If one thing on this page fixes your confusion, it's this. Both functions below look like they work. Press the button and watch what <code>result</code> actually holds afterwards.</p>
+
+  <div class="card">
+    <div class="vs">
+      <div class="vsbox p">
+        <h5>✗ prints the answer</h5>
+        <pre>def double(n):
+    print(n * 2)
+
+result = double(5)
+print("result is", result)</pre>
+        <div class="vsout" id="vsPrint"></div>
+      </div>
+      <div class="vsbox r">
+        <h5>✓ returns the answer</h5>
+        <pre>def double(n):
+    return n * 2
+
+result = double(5)
+print("result is", result)</pre>
+        <div class="vsout" id="vsReturn"></div>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn" id="vsRun">Run both</button>
+      <button class="btn quiet" id="vsReset">Clear</button>
+    </div>
+    <div class="rule-box trap">
+      <h4>Why the left one is useless</h4>
+      <p><code>print</code> <b>shows</b> a value on screen and hands back nothing. So <code>result</code> is <code>None</code> — you cannot add it, store it, sort it, or return it from the function that called it. On screen both look identical, which is exactly why this bug survives so long. A test harness calls your function and checks what came <i>back</i>; it never looks at the screen.</p>
+    </div>
+    <div class="rule-box win">
+      <h4>The rule</h4>
+      <p><b>Functions return. Only the outermost layer prints.</b> If you want to see a returned value, wrap the call: <code>print(double(5))</code>.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:6px">Every form <code>return</code> takes</h3>
+  <div class="card">
+    <div class="moves" data-console="c-out"></div>
+    <div class="console" id="c-out"></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ================= 04 TRAVERSE ================= -->
+<section id="thru">
+  <div class="step thru"><b>04</b> Going through it</div>
+  <h2>Pick your loop by what you're holding</h2>
+  <p class="lede">You never have to guess. Two questions — <b>what shape is my data</b>, and <b>do I need the position</b> — pick the loop for you every time. Click a shape.</p>
+
+  <div class="card">
+    <div class="picker" id="picker"></div>
+    <div class="answerbox">
+      <p class="shape" id="shapeLine"></p>
+      <div class="console" id="travOut"></div>
+    </div>
+  </div>
+
+  <div class="tbl">
+    <div class="trow head"><span class="l">What you have and need</span><span class="r">The loop</span></div>
+    <div class="trow"><span class="l">List — just the values</span><span class="r">for x in arr</span></div>
+    <div class="trow"><span class="l">List — position and value</span><span class="r">for i, x in enumerate(arr)</span></div>
+    <div class="trow"><span class="l">List — writing back into it</span><span class="r">for i in range(len(arr))</span></div>
+    <div class="trow"><span class="l">String — each character</span><span class="r">for ch in s</span></div>
+    <div class="trow"><span class="l">Dict — the keys</span><span class="r">for k in d</span></div>
+    <div class="trow"><span class="l">Dict — keys and values</span><span class="r">for k, v in d.items()</span></div>
+    <div class="trow"><span class="l">Two lists, side by side</span><span class="r">for a, b in zip(xs, ys)</span></div>
+    <div class="trow"><span class="l">Grid / list of lists</span><span class="r">for row in grid: for cell in row</span></div>
+    <div class="trow"><span class="l">Backwards</span><span class="r">for x in reversed(arr)</span></div>
+    <div class="trow"><span class="l">Pointers moving unevenly</span><span class="r">while cond</span></div>
+  </div>
+
+  <div class="rule-box trap">
+    <h4>Three things that will bite while looping</h4>
+    <p><b>Never delete from a list you're looping over</b> — the indexes shift under you and items get silently skipped. Build a new list instead.<br><br>
+      <b><code>zip</code> stops at the shorter list.</b> No error, no warning — the extra items are simply ignored.<br><br>
+      <b><code>sorted(arr)</code> returns a new list; <code>arr.sort()</code> returns <code>None</code></b> and reorders in place. Writing <code>arr = arr.sort()</code> destroys your list.</p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ================= 05 RECIPE ================= -->
+<section id="recipe">
+  <div class="step"><b>05</b> The template</div>
+  <h2>Type this from memory until it's automatic</h2>
+  <p class="lede">This shape works for every practice problem you'll meet. The function is the part an interviewer wants; the bottom half is the part that lets you run it.</p>
+  <div class="recipe"><span class="cm"># ---- the function: values in, answer out. No printing. ----</span>
+<span class="kw">def</span> solve(nums, target):
+    <span class="kw">for</span> i, n <span class="kw">in</span> enumerate(nums):
+        <span class="kw">if</span> n == target:
+            <span class="kw">return</span> i          <span class="cm"># leaves the function immediately</span>
+    <span class="kw">return</span> -1                <span class="cm"># the "not found" case — never forget this</span>
+
+
+<span class="cm"># ---- your own tests: run the file and read the output ----</span>
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    print(solve([<span class="st">4</span>, <span class="st">9</span>, <span class="st">2</span>], <span class="st">9</span>))    <span class="cm"># expect 1</span>
+    print(solve([], <span class="st">9</span>))           <span class="cm"># expect -1  (empty)</span>
+    print(solve([<span class="st">9</span>], <span class="st">9</span>))          <span class="cm"># expect 0   (one item)</span>
+
+
+<span class="cm"># ---- only if a practice site feeds you keyboard input ----</span>
+<span class="cm"># n      = int(input())</span>
+<span class="cm"># nums   = [int(x) for x in input().split()]</span>
+<span class="cm"># print(solve(nums, n))</span></div>
+  <div class="rule-box win">
+    <h4>Why the three test calls matter more than they look</h4>
+    <p>Normal case, empty input, single item. Those three catch most off-by-one and crash bugs before anyone else sees them — and running them takes four seconds. Never trust code you haven't run.</p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ================= 06 RULES ================= -->
+<section id="rules">
+  <div class="step"><b>06</b> Keep these</div>
+  <h2>Seven rules that cover the plumbing</h2>
+  <ol class="seven">
+    <li><span><b>Functions <code>return</code>. Only the outer layer <code>print</code>s.</b> A function that prints its answer hands back <code>None</code>.</span></li>
+    <li><span><b><code>input()</code> is always a string.</b> Wrap it in <code>int()</code> the moment you need a number.</span></li>
+    <li><span><b><code>[int(x) for x in input().split()]</code></b> — the one line that reads a row of numbers. Know it cold.</span></li>
+    <li><span><b><code>join</code> needs strings</b>, so convert first, or use <code>print(*nums)</code> instead.</span></li>
+    <li><span><b>Need the position? <code>enumerate</code>.</b> Need to write back into the list? <code>range(len(arr))</code>. Otherwise just <code>for x in arr</code>.</span></li>
+    <li><span><b>Never mutate a list you're looping over</b>, and remember <code>.sort()</code> returns <code>None</code>.</span></li>
+    <li><span><b>Every path must return something.</b> Falling off the end of a function gives <code>None</code>, and that <code>None</code> will crash somewhere far away from the real cause.</span></li>
+  </ol>
+</section>
+
+<div class="cta">
+  <h2>Now the patterns will land</h2>
+  <p>With the plumbing solid, "the values arrive as <code>nums</code>, you return an answer" stops being a question — and every trace on the techniques page gets easier to follow.</p>
+  <div class="row">
+    <a href="https://claude.ai/code/artifact/558e35f2-a737-4fa4-9a01-b986ceef0816">Eight Techniques →</a>
+    <a class="alt" href="https://claude.ai/code/artifact/64f95123-a9ed-4a95-9c5e-3a84b1b73646">Day One, Explained</a>
+  </div>
+</div>
+
+</div>
+
+<script>
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+/* =====================================================================
+   CONSOLES
+   line kinds: c = code (>>>), t = what you typed at a prompt,
+               o = output, e = error, m = comment
+   ===================================================================== */
+const DEMOS = {
+  'c-in': [
+    { b:'parameters',
+      lines:[['c','def greet(name, times):'],['c','    return name * times'],['c',''],['c','greet("hi ", 3)'],['o',"'hi hi hi '"]],
+      n:"The way real code and interviews pass data. The values are already the right type — no converting, no reading. This is the one to default to." },
+    { b:'hardcoded',
+      lines:[['c','nums = [3, 1, 4, 1, 5]'],['c','target = 4'],['c','solve(nums, target)'],['o','2']],
+      n:"For testing your own code. Fastest possible loop: change the numbers, hit run. Use this far more than input()." },
+    { b:'input()',
+      lines:[['c','name = input("Your name: ")'],['t','Your name: Amaan'],['c','name'],['o',"'Amaan'"],['c','type(name)'],['o',"<class 'str'>"]],
+      n:"Reads one line from the keyboard. Note the type — a string, always, even if you typed digits." },
+    { b:'int(input())',
+      lines:[['c','n = input()'],['t','5'],['c','n + 1'],['e','TypeError: can only concatenate str (not "int") to str'],['c','n = int(input())'],['t','5'],['c','n + 1'],['o','6']],
+      n:"The single most common beginner error, and its fix. If it came from input() and you want to do maths with it, wrap it in int()." },
+    { b:'input().split()',
+      lines:[['c','words = input().split()'],['t','cat dog fish'],['c','words'],['o',"['cat', 'dog', 'fish']"],['c','len(words)'],['o','3']],
+      n:"split() cuts a string into a list wherever there's whitespace. This is how you take a list of strings — the exact thing you asked about." },
+    { b:'a list of numbers',
+      lines:[['c','nums = [int(x) for x in input().split()]'],['t','3 1 4'],['c','nums'],['o','[3, 1, 4]'],['c','sum(nums)'],['o','8'],['m','# same thing, shorter:'],['c','nums = list(map(int, input().split()))'],['o','[3, 1, 4]']],
+      n:"Memorise one of these two lines. It covers about 80% of all practice-site input. split() gives you strings; the int() converts each one." },
+    { b:'two values on one line',
+      lines:[['c','a, b = input().split()'],['t','hello world'],['c','a'],['o',"'hello'"],['m','# for numbers:'],['c','x, y = map(int, input().split())'],['t','3 7'],['c','x + y'],['o','10']],
+      n:"Unpacking straight from the split. The count must match exactly — three words into two names raises ValueError." },
+    { b:'several lines',
+      lines:[['c','n = int(input())'],['t','3'],['c','rows = [input() for _ in range(n)]'],['t','alice'],['t','bob'],['t','carol'],['c','rows'],['o',"['alice', 'bob', 'carol']"]],
+      n:"The classic 'first line says how many, then that many lines' format. The underscore just means you don't care about the loop variable." },
+    { b:'from a file',
+      lines:[['c','with open("data.txt") as f:'],['c','    lines = f.read().splitlines()'],['c','lines'],['o',"['3 1 4', '1 5 9']"],['m','# every line as numbers:'],['c','rows = [[int(x) for x in ln.split()] for ln in lines]'],['o','[[3, 1, 4], [1, 5, 9]]']],
+      n:"splitlines() avoids the trailing newline that plain split('\\n') leaves behind. Same conversion rules apply — file text is text." }
+  ],
+
+  'c-conv': [
+    { b:'str → int',
+      lines:[['c','int("42")'],['o','42'],['c','int("42abc")'],['e','ValueError: invalid literal for int() with base 10: \'42abc\''],['c','int("3 4")'],['e','ValueError: invalid literal for int() with base 10: \'3 4\'']],
+      n:"int() takes one clean number. Two numbers in a string must be split first — that's why split() always comes before int()." },
+    { b:'int → str',
+      lines:[['c','"Score: " + 42'],['e','TypeError: can only concatenate str (not "int") to str'],['c','"Score: " + str(42)'],['o',"'Score: 42'"],['c','f"Score: {42}"'],['o',"'Score: 42'"]],
+      n:"Python never converts silently. The f-string does it for you, which is why it's the easiest way to build output." },
+    { b:'split()',
+      lines:[['c','"3 1 4".split()'],['o',"['3', '1', '4']"],['c','"a,b,c".split(",")'],['o',"['a', 'b', 'c']"],['c','"  spaced   out  ".split()'],['o',"['spaced', 'out']"]],
+      n:"Bare split() handles any run of whitespace and ignores the edges — that's why it's safer than split(' ') for keyboard input." },
+    { b:'list(string)',
+      lines:[['c','list("hello")'],['o',"['h', 'e', 'l', 'l', 'o']"],['c','"hello"[1]'],['o',"'e'"],['c','for ch in "hi": print(ch)'],['o','h'],['o','i']],
+      n:"A string is already a sequence of characters, so you can index it and loop it without converting. list() is only for when you need to change it." },
+    { b:'join()',
+      lines:[['c','" ".join(["a", "b", "c"])'],['o',"'a b c'"],['c','"-".join(["2024", "01", "09"])'],['o',"'2024-01-09'"],['c','" ".join([3, 1, 4])'],['e','TypeError: sequence item 0: expected str instance, int found'],['c','" ".join(str(x) for x in [3, 1, 4])'],['o',"'3 1 4'"]],
+      n:"The separator goes before .join, the list goes inside. Numbers must be converted first — this error is a rite of passage." },
+    { b:'the reverse trip',
+      lines:[['c','nums = [3, 1, 4]'],['c','print(nums)'],['o','[3, 1, 4]'],['c','print(*nums)'],['o','3 1 4'],['c','print(" ".join(map(str, nums)))'],['o','3 1 4']],
+      n:"print(nums) shows Python's own notation, brackets and all. Judges usually want the bare numbers — that's print(*nums), the simplest of the three." }
+  ],
+
+  'c-out': [
+    { b:'return a value',
+      lines:[['c','def double(n):'],['c','    return n * 2'],['c',''],['c','double(5) + 1'],['o','11']],
+      n:"The returned value can be used immediately in a bigger expression. That's the whole point of returning instead of printing." },
+    { b:'return early',
+      lines:[['c','def find(nums, target):'],['c','    for i, n in enumerate(nums):'],['c','        if n == target:'],['c','            return i'],['c','    return -1'],['c',''],['c','find([4, 9, 2], 9)'],['o','1']],
+      n:"return leaves the function on the spot — no break needed, the loop just stops. The final return handles 'never found', and forgetting it is a classic bug." },
+    { b:'return several values',
+      lines:[['c','def stats(nums):'],['c','    return min(nums), max(nums)'],['c',''],['c','lo, hi = stats([3, 1, 4])'],['c','lo, hi'],['o','(1, 4)']],
+      n:"Python packs them into a tuple and you unpack on the other side. This is why so many functions seem to return 'two things'." },
+    { b:'return nothing',
+      lines:[['c','def add_tag(tags, tag):'],['c','    tags.append(tag)'],['c',''],['c','result = add_tag(["a"], "b")'],['c','print(result)'],['o','None']],
+      n:"No return statement means None comes back. The list really was changed — but nothing was handed to you. Mutate OR return; pick one per function." },
+    { b:'the sort trap',
+      lines:[['c','nums = [3, 1, 4]'],['c','nums = nums.sort()'],['c','print(nums)'],['o','None'],['m','# the two correct forms:'],['c','nums.sort()             # in place, returns None'],['c','out = sorted(nums)      # new list, original untouched'],['o','[1, 3, 4]']],
+      n:"Same rule as above wearing a disguise. .sort() mutates and returns None; sorted() returns a new list. Assigning the result of .sort() destroys your data." },
+    { b:'return a list',
+      lines:[['c','def evens(nums):'],['c','    return [n for n in nums if n % 2 == 0]'],['c',''],['c','evens([1, 2, 3, 4])'],['o','[2, 4]']],
+      n:"You can return any object — a list, a dict, a tuple. Building and returning a new collection is usually cleaner than modifying the caller's." },
+    { b:'print vs return, side by side',
+      lines:[['c','def a(): print("hi")'],['c','def b(): return "hi"'],['c',''],['c','x = a()'],['o','hi'],['c','print(x)'],['o','None'],['c','y = b()'],['c','print(y)'],['o','hi']],
+      n:"a() showed something and gave back None. b() gave back a real value you can keep using. On screen the first looks fine — that's the trap." }
+  ]
+};
+
+for (const [id, moves] of Object.entries(DEMOS)){
+  const box = document.getElementById(id);
+  const bar = document.querySelector(`.moves[data-console="${id}"]`);
+  if (!box || !bar) continue;
+
+  box.innerHTML = '<div class="ln idle">pick one below to run it</div>';
+
+  moves.forEach(m => {
+    const btn = document.createElement('button');
+    btn.className = 'move'; btn.type = 'button'; btn.textContent = m.b;
+    btn.onclick = () => {
+      bar.querySelectorAll('.move').forEach(x => x.classList.remove('on'));
+      btn.classList.add('on');
+      const body = m.lines.map(([kind, text]) => {
+        if (kind === 'c') return `<div class="ln"><span class="ps">&gt;&gt;&gt; </span>${esc(text)}</div>`;
+        if (kind === 't') return `<div class="ln typed">${esc(text)}<span class="ps">   ← you type this</span></div>`;
+        if (kind === 'o') return `<div class="ln out">${esc(text)}</div>`;
+        if (kind === 'e') return `<div class="ln err">${esc(text)}</div>`;
+        return `<div class="ln cm">${esc(text)}</div>`;
+      }).join('');
+      box.innerHTML = body + `<div class="note">${m.n}</div>`;
+    };
+    bar.appendChild(btn);
+  });
+}
+
+/* =====================================================================
+   RETURN vs PRINT
+   ===================================================================== */
+const vsPrint = document.getElementById('vsPrint');
+const vsReturn = document.getElementById('vsReturn');
+const clearVs = () => {
+  vsPrint.innerHTML = '<div class="idle">not run yet</div>';
+  vsReturn.innerHTML = '<div class="idle">not run yet</div>';
+};
+document.getElementById('vsRun').onclick = () => {
+  vsPrint.innerHTML =
+    `<div class="ln out">10</div>` +
+    `<div class="ln out">result is None</div>` +
+    `<div class="ln err">↑ the answer was shown, then thrown away</div>`;
+  vsReturn.innerHTML =
+    `<div class="ln out">result is 10</div>` +
+    `<div class="ln out">↑ result holds 10 — usable</div>`;
+};
+document.getElementById('vsReset').onclick = clearVs;
+clearVs();
+
+/* =====================================================================
+   TRAVERSAL PICKER
+   ===================================================================== */
+const SHAPES = [
+  { b:'A list, values only', shape:'nums = [3, 1, 4]',
+    lines:[['c','for x in nums:'],['c','    print(x)'],['o','3'],['o','1'],['o','4']],
+    n:"The default. <b>x holds the value</b> — there is no index available, so you cannot write back into the list from here." },
+  { b:'A list, with position', shape:'nums = [3, 1, 4]',
+    lines:[['c','for i, x in enumerate(nums):'],['c','    print(i, x)'],['o','0 3'],['o','1 1'],['o','2 4'],['m','# start counting at 1 instead:'],['c','for i, x in enumerate(nums, start=1): ...']],
+    n:"<b>i is the index, x is the value.</b> Reach for this whenever you catch yourself writing range(len(...)) — it's the same thing with less to get wrong." },
+  { b:'A list, writing into it', shape:'nums = [3, 1, 4]',
+    lines:[['c','for i in range(len(nums)):'],['c','    nums[i] = nums[i] * 2'],['c','nums'],['o','[6, 2, 8]']],
+    n:"<b>The only form that lets you assign back.</b> nums[i] on the left writes; on the right it reads. 'for x in nums' cannot do this — changing x would just rebind the loop variable." },
+  { b:'A string', shape:'s = "cat"',
+    lines:[['c','for ch in s:'],['c','    print(ch)'],['o','c'],['o','a'],['o','t'],['m','# with position:'],['c','for i, ch in enumerate(s): ...']],
+    n:"A string walks exactly like a list of characters. Strings are immutable, though — you can read s[i] but never assign to it." },
+  { b:'A dict', shape:'ages = {"ana": 31, "bo": 24}',
+    lines:[['c','for k in ages:'],['c','    print(k)'],['o','ana'],['o','bo'],['m','# both at once — use this one:'],['c','for k, v in ages.items():'],['c','    print(k, v)'],['o','ana 31'],['o','bo 24'],['m','# just the values:'],['c','for v in ages.values(): ...']],
+    n:"Looping a dict bare gives you the <b>keys</b>, which surprises people. <b>.items()</b> is what you want almost every time." },
+  { b:'Two lists together', shape:'names = ["ana","bo"]\nscores = [90, 85]',
+    lines:[['c','for name, score in zip(names, scores):'],['c','    print(name, score)'],['o','ana 90'],['o','bo 85']],
+    n:"zip walks them in step. <b>It stops at the shorter list</b> with no warning — if the lengths can differ, check them first." },
+  { b:'A grid', shape:'grid = [[1, 2], [3, 4]]',
+    lines:[['c','for row in grid:'],['c','    for cell in row:'],['c','        print(cell)'],['o','1'],['o','2'],['o','3'],['o','4'],['m','# with both coordinates:'],['c','for r, row in enumerate(grid):'],['c','    for c, cell in enumerate(row): ...']],
+    n:"Outer loop takes a row, inner loop takes each cell. <b>grid[r][c]</b> is row r, column c — row first, always." },
+  { b:'Backwards', shape:'nums = [3, 1, 4]',
+    lines:[['c','for x in reversed(nums):'],['c','    print(x)'],['o','4'],['o','1'],['o','3'],['m','# backwards with indexes:'],['c','for i in range(len(nums) - 1, -1, -1): ...']],
+    n:"reversed() doesn't copy or change the list. That second form reads as: start at the last index, stop before -1, step by -1." },
+  { b:'Uneven movement', shape:'nums = [3, 1, 4, 1, 5]',
+    lines:[['c','i = 0'],['c','while i < len(nums):'],['c','    if nums[i] == 1:'],['c','        i += 2      # skip ahead'],['c','    else:'],['c','        i += 1'],['m','# every branch must move i, or it never ends']],
+    n:"<b>Use a while only when the step isn't always 1.</b> A for loop advances itself; a while loop doesn't — you must move it on every path or the program hangs with no error at all." }
+];
+const picker = document.getElementById('picker');
+const shapeLine = document.getElementById('shapeLine');
+const travOut = document.getElementById('travOut');
+
+function paintShape(n){
+  const S = SHAPES[n];
+  picker.querySelectorAll('.pick').forEach((b, k) => b.classList.toggle('on', k === n));
+  shapeLine.innerHTML = S.shape.split('\n').map(l => `<b>${esc(l)}</b>`).join('<br>');
+  travOut.innerHTML = S.lines.map(([kind, text]) => {
+    if (kind === 'c') return `<div class="ln"><span class="ps">&gt;&gt;&gt; </span>${esc(text)}</div>`;
+    if (kind === 'o') return `<div class="ln out">${esc(text)}</div>`;
+    if (kind === 'e') return `<div class="ln err">${esc(text)}</div>`;
+    return `<div class="ln cm">${esc(text)}</div>`;
+  }).join('') + `<div class="note">${S.n}</div>`;
+}
+SHAPES.forEach((S, n) => {
+  const b = document.createElement('button');
+  b.className = 'pick'; b.type = 'button'; b.textContent = S.b;
+  b.onclick = () => paintShape(n);
+  picker.appendChild(b);
+});
+paintShape(0);
+</script>
