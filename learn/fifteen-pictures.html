@@ -1,0 +1,636 @@
+<title>Fifteen Pictures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+
+<style>
+:root{
+  --ground:#E9E7F2; --panel:#FFFFFF; --panel-2:#F3F1F9;
+  --ink:#1A1726; --ink-soft:#5C5570; --ink-faint:#8B84A0; --rule:#D6D2E4;
+  --accent:#D91A63;
+  --good:#0F9E76; --bad:#D9342B; --warn:#B96C05; --cool:#2F5BEA;
+  --console:#221E31; --console-ink:#8CE0C0;
+  --shadow:0 2px 0 rgba(26,23,38,.12), 0 14px 32px -18px rgba(26,23,38,.55);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+    --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+    --accent:#FF4B87;
+    --good:#2FD3A0; --bad:#FF6B60; --warn:#F0A93C; --cool:#7C9BFF;
+    --console:#0E0C16; --console-ink:#8CE0C0;
+    --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+  --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+  --accent:#FF4B87;
+  --good:#2FD3A0; --bad:#FF6B60; --warn:#F0A93C; --cool:#7C9BFF;
+  --console:#0E0C16; --console-ink:#8CE0C0;
+  --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6;display:flex;justify-content:center;padding:26px 16px 44px}
+.wrap{width:100%;max-width:660px;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+p{margin:0}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px}
+
+/* ---------- hud ---------- */
+.hud{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px}
+.brand{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:18px;letter-spacing:-.02em;background:none;border:none;color:var(--ink);padding:0;cursor:pointer}
+.brand em{font-style:normal;color:var(--accent)}
+.brand:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
+.progress{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+
+/* ---------- card ---------- */
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:16px;box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column;gap:18px}
+.qline{font-family:"Bricolage Grotesque","Public Sans",sans-serif;font-weight:700;font-size:clamp(20px,4.4vw,26px);line-height:1.25;letter-spacing:-.02em;text-wrap:balance}
+.eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+
+.btn{font-family:"Public Sans",sans-serif;font-weight:800;font-size:15px;color:#fff;background:var(--accent);border:none;border-radius:10px;padding:13px 20px;cursor:pointer;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.btn.wide{width:100%}
+.btn.ghost{background:none;color:var(--ink);border:1.5px solid var(--rule);box-shadow:none;font-size:14px;padding:12px 18px}
+.btn.miss{background:var(--bad);box-shadow:0 3px 0 color-mix(in srgb,var(--bad) 55%,#000)}
+.btn.got{background:var(--good);box-shadow:0 3px 0 color-mix(in srgb,var(--good) 55%,#000)}
+.row{display:flex;gap:9px;flex-wrap:wrap}
+.row.split > *{flex:1;min-width:130px}
+
+/* ---------- answer block ---------- */
+.answer{display:flex;flex-direction:column;gap:16px;border-top:1px solid var(--rule);padding-top:17px}
+.headline{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--good);line-height:1.3}
+.why{font-size:15.5px;line-height:1.55;color:var(--ink-soft)}
+.why b{color:var(--ink)}
+.trigger{border-left:4px solid var(--accent);padding:3px 0 3px 14px;display:flex;flex-direction:column;gap:3px}
+.trigger h4{margin:0;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--accent)}
+.trigger p{font-size:15px;line-height:1.5;color:var(--ink)}
+.also{display:flex;flex-direction:column;gap:7px}
+.also h4{margin:0;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.also ul{margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.also li{list-style:none;font-size:14.5px;line-height:1.4;color:var(--ink-soft);padding-left:15px;position:relative}
+.also li::before{content:"›";position:absolute;left:2px;color:var(--accent);font-weight:800}
+.also .same{font-size:13px;color:var(--ink-faint);font-style:italic;margin-top:2px}
+
+/* =====================================================
+   DIAGRAM VOCABULARY — the same few parts, reused
+   ===================================================== */
+.dia{background:var(--panel-2);border:1px solid var(--rule);border-radius:12px;padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:13px;overflow-x:auto}
+.dia .cap{font-size:13.5px;line-height:1.45;color:var(--ink-soft);text-align:center;max-width:44ch}
+.dia .cap b{color:var(--ink)}
+.dr{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.dr.tight{gap:5px}
+.dcol{display:flex;flex-direction:column;align-items:center;gap:5px}
+
+.bx{min-width:46px;height:46px;padding:0 10px;border-radius:9px;border:2px solid var(--ink-faint);background:var(--panel);display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:16px;color:var(--ink)}
+.bx.str{border-color:var(--warn);color:var(--warn)}
+.bx.num{border-color:var(--cool);color:var(--cool)}
+.bx.hl{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--panel));color:var(--accent)}
+.bx.gone{border-style:dashed;opacity:.4}
+.bx.ok{border-color:var(--good);color:var(--good)}
+.bx.wide{min-width:auto}
+.bx.sm{height:36px;font-size:14px;min-width:36px}
+
+.lbl{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint);text-align:center;white-space:nowrap}
+.lbl.on{color:var(--accent);font-weight:700}
+.lbl.up{color:var(--cool);font-weight:700}
+.arw{font-size:22px;color:var(--ink-faint);line-height:1}
+.arw.big{font-size:26px;color:var(--accent)}
+.machine{padding:0 16px;height:52px;border-radius:10px;background:var(--ink);color:var(--ground);display:flex;align-items:center;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:14px}
+.screen{background:var(--console);color:var(--console-ink);border-radius:9px;padding:11px 15px;font-family:"JetBrains Mono",monospace;font-size:14px;font-weight:700;min-width:120px;text-align:center}
+.screen small{display:block;color:#8E86AB;font-weight:400;font-size:10.5px;margin-top:3px;font-style:italic}
+.strip{padding:10px 16px;border-radius:9px;border:2px dashed var(--warn);color:var(--warn);font-family:"JetBrains Mono",monospace;font-weight:700;font-size:15px;background:var(--panel)}
+.strip.solid{border-style:solid}
+.pipe{display:flex;flex-direction:column;align-items:center;gap:2px}
+.pipe .line{font-size:20px;color:var(--ink-faint);line-height:1}
+.pipe.dead .line{color:var(--bad)}
+.pipe.live .line{color:var(--good)}
+.drawer{border:2px solid var(--ink-faint);border-radius:9px;overflow:hidden;background:var(--panel);min-width:78px}
+.drawer .face{background:var(--ink-faint);color:var(--panel);font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px;padding:4px 8px;text-align:center}
+.drawer .inside{padding:9px 8px;text-align:center;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:16px;color:var(--ink)}
+.eq{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:17px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.eq .side{padding:5px 9px;border-radius:7px}
+.eq .dest{background:color-mix(in srgb,var(--accent) 16%,var(--panel));color:var(--accent);border:1.5px solid var(--accent)}
+.eq .src{background:color-mix(in srgb,var(--good) 16%,var(--panel));color:var(--good);border:1.5px solid var(--good)}
+.flow{display:flex;align-items:center;gap:9px;font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700}
+.flow .to{color:var(--accent);font-size:20px}
+.warnpill{font-size:12.5px;font-weight:800;color:var(--bad);border:1.5px solid var(--bad);border-radius:99px;padding:3px 12px;background:color-mix(in srgb,var(--bad) 8%,var(--panel))}
+.okpill{font-size:12.5px;font-weight:800;color:var(--good);border:1.5px solid var(--good);border-radius:99px;padding:3px 12px;background:color-mix(in srgb,var(--good) 8%,var(--panel))}
+.codeline{font-family:"JetBrains Mono",monospace;font-size:14px;font-weight:700;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:9px 13px;white-space:pre;overflow-x:auto;max-width:100%}
+
+/* ---------- menu ---------- */
+.menu{display:flex;flex-direction:column;gap:22px}
+.menu h1{font-size:clamp(32px,6.8vw,46px);font-weight:800;line-height:1}
+.menu h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:16px;line-height:1.55;color:var(--ink-soft);max-width:54ch}
+.due{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap}
+.due b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:52px;letter-spacing:-.04em;line-height:.9;color:var(--accent)}
+.due span{font-size:15px;color:var(--ink-soft)}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{border:1.5px solid var(--rule);border-radius:10px;padding:11px 13px;display:flex;flex-direction:column;gap:2px;background:var(--panel)}
+.stat b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat span{font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint);font-weight:800}
+.stat.new b{color:var(--cool)} .stat.due b{color:var(--accent)} .stat.done b{color:var(--good)}
+
+/* ---------- browse ---------- */
+.browse{display:flex;flex-direction:column;gap:14px}
+.bcard{background:var(--panel);border:1px solid var(--rule);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.bcard h3{font-size:16.5px}
+.bcard .headline{font-size:16px}
+.foot{font-size:11.5px;color:var(--ink-faint);text-align:center;line-height:1.5}
+.foot kbd{font-family:"JetBrains Mono",monospace;border:1px solid var(--rule);border-radius:3px;padding:1px 4px;font-size:10px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="hud">
+    <button class="brand" id="brand">Fifteen <em>Pictures</em></button>
+    <span class="progress" id="prog"></span>
+  </div>
+  <div id="stage"></div>
+  <p class="foot" id="foot"></p>
+</div>
+
+<script>
+/* =========================================================================
+   THE DECK — one picture per idea
+   ========================================================================= */
+const DECK = [
+{
+  id:'input-str',
+  q:"You run <code>age = input()</code> and the person types <b>25</b>. What is inside <code>age</code>?",
+  pic:`<div class="dr">
+        <div class="dcol"><div class="bx">25</div><div class="lbl">they type</div></div>
+        <span class="arw">→</span>
+        <div class="machine">input()</div>
+        <span class="arw">→</span>
+        <div class="dcol"><div class="strip">"25"</div><div class="lbl on">a string — quotes came along</div></div>
+      </div>
+      <p class="cap">The keyboard can only ever hand you <b>text</b>. The quotes are invisible on screen, which is the whole problem.</p>`,
+  a:"The string <code>\"25\"</code> — never the number 25.",
+  why:"<code>input()</code> returns a string <b>every single time</b>, no matter what was typed. So <code>age + 5</code> raises <code>TypeError</code>, and <code>age * 2</code> quietly gives <code>\"2525\"</code>, which is worse because it doesn't crash.",
+  trigger:"The moment a value came from the keyboard and you want to do maths with it — wrap it in <code>int()</code>.",
+  also:["What type does input() return?",
+        "Why does <code>\"5\" + 1</code> fail?",
+        "The user typed 25 and my addition broke — why?",
+        "When do you need int() around something?",
+        "Why did my number become 2525?"]
+},
+{
+  id:'return-print',
+  q:"Your function <code>print</code>s the answer and works when you run it — but every test fails. Why?",
+  pic:`<div class="dr">
+        <div class="machine">your function</div>
+        <div class="dcol">
+          <div class="pipe dead"><span class="lbl">print</span><span class="line">→</span></div>
+          <div class="pipe live"><span class="lbl">return</span><span class="line">→</span></div>
+        </div>
+        <div class="dcol" style="gap:9px">
+          <div class="screen">10<small>seen, then gone</small></div>
+          <div class="bx ok wide">result = 10</div>
+        </div>
+      </div>
+      <p class="cap"><b>print</b> sends the answer to the screen and hands back nothing. <b>return</b> hands it to whoever called you.</p>`,
+  a:"It printed instead of returning — so the caller got <code>None</code>.",
+  why:"A test calls your function and checks what came <b>back</b>. It never looks at the screen. Printing satisfies your eyes and fails the test.",
+  trigger:"Writing the last line of a function. Ask: <b>does someone need this value, or just need to see it?</b> Functions return; only the outermost line prints.",
+  also:["What's the difference between return and print?",
+        "Why does my function return None?",
+        "It works when I run it but the tests fail — why?",
+        "Can I use the value after I print it?",
+        "Where should print go in my program?"]
+},
+{
+  id:'no-return',
+  q:"A function has no <code>return</code> statement at all. What does the caller get?",
+  pic:`<div class="dr">
+        <div class="machine">def f(): …</div>
+        <span class="arw">→</span>
+        <div class="dcol"><div class="bx gone">None</div><div class="lbl">nothing was handed back</div></div>
+      </div>
+      <p class="cap">Every Python function returns something. If you don't say what, it returns <b>None</b> — silently.</p>`,
+  a:"<code>None</code>, always.",
+  why:"There is no such thing as a function that returns nothing. Falling off the end returns <code>None</code>, and that None travels onward and crashes somewhere far away as <code>AttributeError: 'NoneType' object has no attribute …</code>",
+  trigger:"Any <code>if</code> inside a function that returns. Check the path where the <code>if</code> is <b>false</b> — does it return too? A search function needs its <code>return -1</code> at the bottom.",
+  also:["What does a function return if there's no return?",
+        "Why am I getting NoneType has no attribute?",
+        "Do I need a return at the end?",
+        "What happens on the path where the if doesn't match?"]
+},
+{
+  id:'assign-side',
+  q:"In <code>nums[write] = nums[read]</code> — which one is being changed, and which one is being looked at?",
+  pic:`<div class="dcol" style="gap:11px">
+        <div class="eq"><span class="side dest">nums[write]</span> = <span class="side src">nums[read]</span></div>
+        <div class="dr tight">
+          <span class="lbl on">changed ↑</span>
+          <span style="width:26px"></span>
+          <span class="lbl" style="color:var(--good);font-weight:700">↑ looked at</span>
+        </div>
+        <div class="arw big">←</div>
+        <div class="lbl">the value travels right to left</div>
+      </div>
+      <p class="cap">Left of <code>=</code> is the <b>destination</b>. Right of <code>=</code> is the <b>source</b>. Always, everywhere, no exceptions.</p>`,
+  a:"Left is changed. Right is read. The value moves right → left.",
+  why:"<code>nums[i]</code> means two different things depending on which side it sits on. On the left it <b>writes into</b> the slot; on the right it <b>reads out of</b> it. Same text, opposite jobs.",
+  trigger:"Any time you're stuck on which pointer goes where. Say it as a sentence: <b>\"take the value at read, put it at write.\"</b> The sentence places both.",
+  also:["Which side of the equals sign writes?",
+        "What does nums[i] = nums[j] actually do?",
+        "How do I move a value from one slot to another?",
+        "I always mix up the read and write pointers — what's the rule?"]
+},
+{
+  id:'swap',
+  q:"How do you swap two items in a list, and why does Python need no temporary variable?",
+  pic:`<div class="dcol" style="gap:12px">
+        <div class="codeline">a, b = b, a</div>
+        <div class="dr">
+          <div class="dcol"><div class="bx hl">b, a</div><div class="lbl on">1. right side built first</div></div>
+          <span class="arw">→</span>
+          <div class="dcol"><div class="bx ok">a, b</div><div class="lbl">2. then unpacked into the left</div></div>
+        </div>
+      </div>
+      <p class="cap">Both old values are safely captured as a tuple <b>before</b> anything is overwritten.</p>`,
+  a:"<code>arr[i], arr[j] = arr[j], arr[i]</code> — the whole right side is built first.",
+  why:"Python evaluates everything on the right into a tuple, <i>then</i> assigns. Written as two separate lines instead, the first assignment destroys the value the second one needed.",
+  trigger:"Reversing a string, two-pointer problems, sorting by hand — anywhere two things trade places.",
+  also:["How do you swap two variables in Python?",
+        "Why don't I need a temp variable?",
+        "What order does Python evaluate assignment in?",
+        "Why does swapping in two lines lose a value?"]
+},
+{
+  id:'split',
+  q:"The person types <code>3 1 4</code> on one line. How do you get a list of numbers out of it?",
+  pic:`<div class="dcol" style="gap:12px">
+        <div class="dr"><div class="strip">"3 1 4"</div><span class="arw">→</span><div class="machine">.split()</div><span class="arw">→</span>
+          <div class="dr tight"><div class="bx str sm">'3'</div><div class="bx str sm">'1'</div><div class="bx str sm">'4'</div></div></div>
+        <div class="dr"><span class="lbl">still text</span><span class="arw">↓</span><div class="machine">int()</div><span class="arw">↓</span>
+          <div class="dr tight"><div class="bx num sm">3</div><div class="bx num sm">1</div><div class="bx num sm">4</div></div></div>
+        <div class="codeline">nums = [int(x) for x in input().split()]</div>
+      </div>
+      <p class="cap"><b>Two steps, always.</b> Split cuts the text into pieces — the pieces are still text. Then convert each one.</p>`,
+  a:"<code>[int(x) for x in input().split()]</code>",
+  why:"<code>.split()</code> cuts on any whitespace and gives you a list of <b>strings</b>. The conversion is a separate step — that's the part people forget, and then the sum comes out as text glued together.",
+  trigger:"Any practice site that feeds you a row of numbers. This line is worth typing from memory until it's automatic.",
+  also:["How do you read a line of numbers?",
+        "What does split() give you back?",
+        "How do I turn \"3 1 4\" into [3, 1, 4]?",
+        "Why is my sum wrong when I read from input?",
+        "How do you take a list of strings?"]
+},
+{
+  id:'join',
+  q:"Why does <code>\" \".join([3, 1, 4])</code> fail, and what's the fix?",
+  pic:`<div class="dcol" style="gap:12px">
+        <div class="dr"><div class="dr tight"><div class="bx num sm">3</div><div class="bx num sm">1</div></div>
+          <span class="arw">→</span><div class="machine">join</div><span class="arw">→</span>
+          <span class="warnpill">TypeError</span></div>
+        <div class="dr"><div class="dr tight"><div class="bx str sm">'3'</div><div class="bx str sm">'1'</div></div>
+          <span class="arw">→</span><div class="machine">join</div><span class="arw">→</span>
+          <div class="strip solid">"3 1"</div></div>
+      </div>
+      <p class="cap"><b>join glues text.</b> Hand it numbers and it refuses — it will not convert for you.</p>`,
+  a:"join only accepts strings. Use <code>\" \".join(str(x) for x in nums)</code> — or just <code>print(*nums)</code>.",
+  why:"The error says it exactly: <code>expected str instance, int found</code>. Python never converts silently, so you convert first.",
+  trigger:"Printing a list as bare values. Honestly, <code>print(*nums)</code> is easier and avoids the whole thing.",
+  also:["Why does join throw a TypeError?",
+        "How do I print a list without brackets?",
+        "expected str instance, int found — what does that mean?",
+        "How do you turn a list back into one line of text?"]
+},
+{
+  id:'print-star',
+  q:"The judge wants <code>3 1 4</code> but your output shows <code>[3, 1, 4]</code>. What did you write, and what should you write?",
+  pic:`<div class="dr">
+        <div class="dcol"><div class="codeline">print(nums)</div><div class="screen">[3, 1, 4]<small>Python's own notation</small></div></div>
+        <div class="dcol"><div class="codeline">print(*nums)</div><div class="screen">3 1 4<small>bare values</small></div></div>
+      </div>
+      <p class="cap">The star <b>unpacks</b> the list into separate arguments, so print puts spaces between them instead of showing you the list object.</p>`,
+  a:"You wrote <code>print(nums)</code>. Write <code>print(*nums)</code>.",
+  why:"<code>print(nums)</code> shows the list the way Python writes lists — brackets and commas included. That's a submission failure on almost every practice site, and it has nothing to do with your algorithm.",
+  trigger:"Right before you submit anything. Look at the expected output format and match it exactly.",
+  also:["Why does my output have brackets in it?",
+        "print(nums) vs print(*nums)?",
+        "What does the star do in a function call?",
+        "My answer is right but it's marked wrong — why?"]
+},
+{
+  id:'for-values',
+  q:"Inside <code>for x in nums:</code> — can you change the list?",
+  pic:`<div class="dcol" style="gap:11px">
+        <div class="dr tight"><div class="bx">3</div><div class="bx">1</div><div class="bx">4</div></div>
+        <div class="dr"><span class="lbl">you get: <b style="color:var(--ink)">the value</b></span></div>
+        <div class="dr"><span class="warnpill">no index → cannot write back</span></div>
+      </div>
+      <p class="cap"><code>x</code> is a copy of the reference. Changing <code>x</code> just repoints your loop variable — the list never hears about it.</p>`,
+  a:"No. You have the value but not its address.",
+  why:"To write into a list you need the <b>position</b>, and this loop form doesn't give you one. That's the entire reason <code>range(len(...))</code> and <code>enumerate</code> exist.",
+  trigger:"When the question says <b>in place</b>. That phrase rules this loop out immediately.",
+  also:["Can you modify a list while looping over its values?",
+        "Why didn't my changes to x affect the list?",
+        "When is 'for x in list' not enough?",
+        "What does the loop variable actually hold?"]
+},
+{
+  id:'enumerate',
+  q:"You need both the position and the value. What's the loop?",
+  pic:`<div class="dcol" style="gap:9px">
+        <div class="dr tight">
+          <div class="dcol"><div class="lbl up">0</div><div class="bx">3</div></div>
+          <div class="dcol"><div class="lbl up">1</div><div class="bx">1</div></div>
+          <div class="dcol"><div class="lbl up">2</div><div class="bx">4</div></div>
+        </div>
+        <div class="codeline">for i, x in enumerate(nums):</div>
+        <div class="dr"><span class="lbl up">i = the tag on top</span><span class="lbl">x = what's inside</span></div>
+      </div>
+      <p class="cap">Both at once, and you can never build an index that doesn't exist.</p>`,
+  a:"<code>for i, x in enumerate(nums):</code>",
+  why:"<code>i</code> is the index, <code>x</code> is the value. It's safer than <code>range(len(nums))</code> because the index always comes from the list itself. Add <code>start=1</code> when the output is numbered for humans.",
+  trigger:"Any time you catch yourself typing <code>range(len(</code> — stop and ask whether you actually need to <i>write</i>. If you only need to read the position, use enumerate.",
+  also:["How do you get the index and the value together?",
+        "enumerate vs range(len())?",
+        "How do I know which position I'm at in the loop?",
+        "How do you number output starting at 1?"]
+},
+{
+  id:'range-len',
+  q:"Double every number in the list <b>in place</b>. Which loop, and what's the line?",
+  pic:`<div class="dcol" style="gap:11px">
+        <div class="dr tight">
+          <div class="dcol"><div class="lbl up">0</div><div class="bx hl">6</div></div>
+          <div class="dcol"><div class="lbl up">1</div><div class="bx hl">2</div></div>
+          <div class="dcol"><div class="lbl up">2</div><div class="bx hl">8</div></div>
+        </div>
+        <div class="codeline">for i in range(len(nums)):
+    nums[i] = nums[i] * 2</div>
+        <div class="dr"><span class="okpill">the only loop that can write back</span></div>
+      </div>
+      <p class="cap">The index gives you the address, and the address is what lets you put something back.</p>`,
+  a:"<code>for i in range(len(nums)): nums[i] = nums[i] * 2</code>",
+  why:"You need the index because you're assigning into the list. Left side writes, right side reads — the same rule as the arrow picture.",
+  trigger:"The words <b>in place</b> or <b>no extra space</b> in a question. They're telling you to use indexes, not to build a new list.",
+  also:["How do you change every element of a list?",
+        "Which loop lets you assign back into the list?",
+        "What does 'in place' mean for a loop?",
+        "How do you modify a list while iterating it safely?"]
+},
+{
+  id:'dict-items',
+  q:"You write <code>for k in ages:</code> over a dictionary. What lands in <code>k</code>?",
+  pic:`<div class="dcol" style="gap:12px">
+        <div class="dr">
+          <div class="drawer"><div class="face">ana</div><div class="inside">31</div></div>
+          <div class="drawer"><div class="face">bo</div><div class="inside">24</div></div>
+        </div>
+        <div class="dr"><span class="lbl">the <b style="color:var(--ink)">labels</b> on the front</span><span class="arw">↔</span><span class="lbl">what's <b style="color:var(--ink)">inside</b></span></div>
+        <div class="dcol" style="gap:5px">
+          <div class="codeline">for k in ages:            → ana, bo</div>
+          <div class="codeline">for k, v in ages.items(): → ana 31, bo 24</div>
+        </div>
+      </div>
+      <p class="cap">Looping a dict bare gives you the <b>labels only</b>. That surprises almost everyone the first time.</p>`,
+  a:"The keys — the labels, not the values.",
+  why:"Use <code>.items()</code> for both, <code>.values()</code> for just the contents. Since Python 3.7 you get them in insertion order.",
+  trigger:"Any loop over a dict where you need the value too — which is most of them. Reach for <code>.items()</code> by default.",
+  also:["What do you get when you loop over a dictionary?",
+        "How do you loop over keys and values together?",
+        "Why is my dict loop printing names instead of numbers?",
+        "What does .items() do?"]
+},
+{
+  id:'zip',
+  q:"You <code>zip</code> a list of 3 names with a list of 2 scores. What happens to the third name?",
+  pic:`<div class="dcol" style="gap:8px">
+        <div class="dr tight"><div class="bx sm">ana</div><div class="bx sm">bo</div><div class="bx sm gone">cy</div></div>
+        <div class="dr tight"><div class="bx sm">90</div><div class="bx sm">85</div><div class="bx sm gone">—</div></div>
+        <div class="dr"><span class="warnpill">dropped, with no error</span></div>
+      </div>
+      <p class="cap">zip stops the moment the <b>shorter</b> list runs out. Nothing is raised, nothing is printed.</p>`,
+  a:"It's silently dropped. zip stops at the shorter list.",
+  why:"No error, no warning — the loop just runs two times instead of three. If mismatched lengths would be a bug, check them yourself first, or use <code>itertools.zip_longest</code>.",
+  trigger:"Pairing two lists that came from different places — different files, different API calls, different input lines.",
+  also:["What happens when zip gets different lengths?",
+        "Why is my loop skipping the last item?",
+        "How do you loop two lists at the same time?",
+        "Does zip raise an error on mismatched lists?"]
+},
+{
+  id:'sort-none',
+  q:"What is in <code>nums</code> after <code>nums = nums.sort()</code>?",
+  pic:`<div class="dcol" style="gap:12px">
+        <div class="dr"><div class="codeline">nums.sort()</div><span class="arw">→</span>
+          <div class="dcol"><div class="dr tight"><div class="bx ok sm">1</div><div class="bx ok sm">3</div><div class="bx ok sm">4</div></div><div class="lbl">same list, reordered</div></div>
+          <span class="arw">+</span><div class="bx gone">None</div></div>
+        <div class="dr"><div class="codeline">sorted(nums)</div><span class="arw">→</span>
+          <div class="dcol"><div class="dr tight"><div class="bx ok sm">1</div><div class="bx ok sm">3</div><div class="bx ok sm">4</div></div><div class="lbl">a brand new list</div></div></div>
+      </div>
+      <p class="cap"><b>.sort()</b> rearranges and hands back None. <b>sorted()</b> leaves the original alone and hands back a new list.</p>`,
+  a:"<code>None</code> — you just destroyed your list.",
+  why:"<code>.sort()</code> works in place and returns <code>None</code>, so assigning its result overwrites your data with nothing. Either call <code>nums.sort()</code> on its own line, or use <code>nums = sorted(nums)</code>.",
+  trigger:"Any method that changes a thing in place — <code>.sort()</code>, <code>.append()</code>, <code>.reverse()</code>. Never assign their result to anything.",
+  also:["What does list.sort() return?",
+        "sort() vs sorted()?",
+        "Why did my list become None?",
+        "Which one gives me a new list and which changes the original?"]
+},
+{
+  id:'while-move',
+  q:"When do you use a <code>while</code> instead of a <code>for</code> — and what's the one thing that will hang your program?",
+  pic:`<div class="dcol" style="gap:12px">
+        <div class="dr">
+          <div class="dcol"><div class="machine">for</div><div class="lbl">moves itself</div></div>
+          <div class="dcol"><div class="machine" style="background:var(--accent)">while</div><div class="lbl on">you must move it</div></div>
+        </div>
+        <div class="codeline">while i &lt; len(nums):
+    ...
+    i += 1        ← every branch needs this</div>
+        <div class="dr"><span class="warnpill">forget it → runs forever, no error</span></div>
+      </div>
+      <p class="cap">A <b>for</b> loop advances on its own. A <b>while</b> loop only advances because you wrote a line that moves it.</p>`,
+  a:"Use while when the step isn't always 1. The killer is forgetting to move the variable on some path.",
+  why:"Two pointers moving at different speeds, or advancing only on a condition — that's a while. And it fails silently: no error, no traceback, the program just stops responding.",
+  trigger:"Before you run any while loop, <b>point at the line that changes the condition</b>. Then check every <code>if</code> branch reaches it. If you can't find that line, it isn't there.",
+  also:["When do you use while instead of for?",
+        "Why is my program hanging?",
+        "What makes an infinite loop?",
+        "Who moves the loop variable in a while loop?"]
+}
+];
+
+/* =========================================================================
+   SPACED REPETITION — Leitner boxes
+   ========================================================================= */
+const GAPS = [0, 1, 3, 7, 21, 60];           // days until next sight, by box
+const today = () => new Date().toISOString().slice(0, 10);
+const addDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); };
+
+const store = {
+  read(){ try { return JSON.parse(localStorage.getItem('fp_state')) || {} } catch { return {} } },
+  write(s){ try { localStorage.setItem('fp_state', JSON.stringify(s)) } catch {} }
+};
+let state = store.read();
+
+function cardState(id){ return state[id] || { box: 0, due: today() }; }
+function isDue(id){ return cardState(id).due <= today(); }
+function grade(id, got){
+  const c = cardState(id);
+  const box = got ? Math.min(c.box + 1, GAPS.length - 1) : 1;
+  state[id] = { box, due: addDays(GAPS[box]) };
+  store.write(state);
+}
+const dueCards  = () => DECK.filter(c => isDue(c.id));
+const newCount  = () => DECK.filter(c => !state[c.id]).length;
+const doneCount = () => DECK.filter(c => (state[c.id]?.box || 0) >= 4).length;
+
+/* =========================================================================
+   VIEWS
+   ========================================================================= */
+const stage = document.getElementById('stage');
+const prog  = document.getElementById('prog');
+const foot  = document.getElementById('foot');
+let queue = [], at = 0, shown = false, session = { got: 0, missed: 0 };
+let onKey = null;
+function bindKey(fn){ if (onKey) removeEventListener('keydown', onKey); onKey = fn; addEventListener('keydown', onKey); }
+document.getElementById('brand').onclick = menu;
+
+function menu(){
+  const due = dueCards();
+  prog.textContent = '';
+  foot.innerHTML = 'Your progress is saved in this browser · <kbd>Enter</kbd> to start';
+  stage.innerHTML = `
+    <div class="card menu">
+      <h1>You won't reread this.<br>You'll <em>remember</em> it.</h1>
+      <p class="lede">Fifteen ideas, each one a picture instead of a paragraph. It asks, you answer out loud, then you check. Whatever you miss comes back tomorrow — what you know comes back in three days, then a week.</p>
+      <div class="due"><b>${due.length}</b><span>${due.length === 1 ? 'card is' : 'cards are'} waiting for you today</span></div>
+      <div class="stats3">
+        <div class="stat new"><b>${newCount()}</b><span>Never seen</span></div>
+        <div class="stat due"><b>${due.length}</b><span>Due now</span></div>
+        <div class="stat done"><b>${doneCount()}</b><span>Locked in</span></div>
+      </div>
+      <div class="row">
+        ${due.length ? `<button class="btn" id="start">Start — ${due.length} card${due.length===1?'':'s'} →</button>` : ''}
+        <button class="btn ghost" id="all">Go through all 15</button>
+        <button class="btn ghost" id="browse">Just show me the pictures</button>
+      </div>
+      ${due.length ? '' : `<p class="lede" style="color:var(--good)"><b>Nothing due.</b> Come back tomorrow — that gap is doing the work. Or run all 15 anyway.</p>`}
+    </div>`;
+  const s = document.getElementById('start');
+  if (s) s.onclick = () => start(due);
+  document.getElementById('all').onclick = () => start(DECK.slice());
+  document.getElementById('browse').onclick = browse;
+  bindKey(e => { if (e.key === 'Enter'){ e.preventDefault(); start(due.length ? due : DECK.slice()) } });
+}
+
+function start(cards){
+  queue = cards.slice().sort(() => Math.random() - 0.5);
+  at = 0; session = { got: 0, missed: 0 };
+  if (!queue.length) return menu();
+  ask();
+}
+
+function ask(){
+  if (at >= queue.length) return done();
+  const c = queue[at];
+  shown = false;
+  prog.textContent = `${at + 1} / ${queue.length}`;
+  foot.innerHTML = 'Say your answer out loud first · <kbd>Space</kbd> to reveal';
+  stage.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Answer it before you look</div>
+      <p class="qline">${c.q}</p>
+      <button class="btn wide" id="reveal">Show me →</button>
+    </div>`;
+  document.getElementById('reveal').onclick = reveal;
+  bindKey(e => { if (e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); reveal() } });
+}
+
+function reveal(){
+  if (shown) return;
+  shown = true;
+  const c = queue[at];
+  foot.innerHTML = 'Be honest — <kbd>1</kbd> missed it · <kbd>2</kbd> got it';
+  stage.innerHTML = `
+    <div class="card">
+      <div class="eyebrow">Answer it before you look</div>
+      <p class="qline">${c.q}</p>
+      <div class="answer">
+        <div class="dia">${c.pic}</div>
+        <p class="headline">${c.a}</p>
+        <p class="why">${c.why}</p>
+        <div class="trigger"><h4>You'll feel this while writing code</h4><p>${c.trigger}</p></div>
+        <div class="also">
+          <h4>The same question, worded to catch you out</h4>
+          <ul>${c.also.map(x => `<li>${x}</li>`).join('')}</ul>
+          <p class="same">All of these have the answer above. Recognise the idea, not the sentence.</p>
+        </div>
+        <div class="row split">
+          <button class="btn miss" id="miss">Missed it</button>
+          <button class="btn got" id="got">Got it</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('miss').onclick = () => mark(false);
+  document.getElementById('got').onclick  = () => mark(true);
+  bindKey(e => {
+    if (e.key === '1'){ e.preventDefault(); mark(false) }
+    if (e.key === '2'){ e.preventDefault(); mark(true) }
+  });
+}
+
+function mark(got){
+  grade(queue[at].id, got);
+  session[got ? 'got' : 'missed']++;
+  at++;
+  ask();
+}
+
+function done(){
+  prog.textContent = '';
+  foot.innerHTML = '<kbd>Enter</kbd> for the menu';
+  const missed = session.missed;
+  stage.innerHTML = `
+    <div class="card menu">
+      <h1>${missed === 0 ? 'All of them. <em>Clean.</em>' : 'Done for <em>today.</em>'}</h1>
+      <div class="stats3">
+        <div class="stat done"><b>${session.got}</b><span>Got it</span></div>
+        <div class="stat due"><b>${missed}</b><span>Missed</span></div>
+        <div class="stat new"><b>${dueCards().length}</b><span>Still due</span></div>
+      </div>
+      <p class="lede">${missed
+        ? `The ${missed} you missed come back <b>tomorrow</b>. The rest move further out. Don't reread them now — the forgetting is what makes the next recall stick.`
+        : `Everything you saw moves further away. Come back tomorrow and see what's due — a short gap beats a long session.`}</p>
+      <div class="row">
+        <button class="btn" id="again">Back to the menu</button>
+        <button class="btn ghost" id="browse2">Look at the pictures</button>
+      </div>
+    </div>`;
+  document.getElementById('again').onclick = menu;
+  document.getElementById('browse2').onclick = browse;
+  bindKey(e => { if (e.key === 'Enter'){ e.preventDefault(); menu() } });
+}
+
+function browse(){
+  prog.textContent = `${DECK.length} pictures`;
+  foot.innerHTML = 'Reading is not remembering — come back and answer them tomorrow';
+  stage.innerHTML = `<div class="browse">
+    ${DECK.map((c, n) => `
+      <div class="bcard">
+        <div class="eyebrow">${String(n + 1).padStart(2, '0')}</div>
+        <h3>${c.a}</h3>
+        <div class="dia">${c.pic}</div>
+        <p class="why">${c.why}</p>
+        <div class="trigger"><h4>You'll feel this while writing code</h4><p>${c.trigger}</p></div>
+      </div>`).join('')}
+    <button class="btn" id="back">Back to the menu</button>
+  </div>`;
+  document.getElementById('back').onclick = menu;
+  bindKey(e => { if (e.key === 'Enter'){ e.preventDefault(); menu() } });
+  scrollTo(0, 0);
+}
+
+menu();
+</script>

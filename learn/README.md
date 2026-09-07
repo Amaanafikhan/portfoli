@@ -1,6 +1,6 @@
 # Python revision pages
 
-Six interactive pages built as a learn-then-drill shelf. Source is here; the
+Seven interactive pages built as a learn-then-drill shelf. Source is here; the
 published, shareable versions are linked below.
 
 | Page | What it's for | Live |
@@ -11,10 +11,16 @@ published, shareable versions are linked below.
 | `reload-arcade.html` | all of Day 1, drilled + interview lines | https://claude.ai/code/artifact/1c759e0a-4535-4fb9-a223-2dbd0ad42765 |
 | `eight-techniques.html` | the 8 patterns, with steppable traces | https://claude.ai/code/artifact/558e35f2-a737-4fa4-9a01-b986ceef0816 |
 | `the-plumbing.html` | taking input, returning answers, looping through data | https://claude.ai/code/artifact/eb421301-3ce0-47f3-bab6-01509dbe20f8 |
+| `fifteen-pictures.html` | the same 15 ideas as pictures, with spaced repetition | https://claude.ai/code/artifact/216eed8b-f415-431e-b198-b7f131a92606 |
 
 Read order: **Four Boxes → Set or Regret → Day One, Explained → Reload Arcade**
 for the language, then **The Plumbing** (how data gets in and answers get out),
 then **Eight Techniques** for problem-solving.
+
+`fifteen-pictures.html` is the memory layer for The Plumbing: one diagram per
+idea instead of a paragraph, recall-first (you answer, then reveal), 63
+alternative wordings so a reworded question still lands, and Leitner spacing
+(1 / 3 / 7 / 21 / 60 days) held in localStorage. Open it daily, not once.
 
 `the-plumbing.html` covers every way to take input (parameters, hardcoded,
 `input()`, `split()`, multi-line, files), every form of `return` — including the
