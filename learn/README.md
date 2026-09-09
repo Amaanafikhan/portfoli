@@ -1,6 +1,6 @@
 # Python revision pages
 
-Eight interactive pages built as a learn-then-drill shelf. Source is here; the
+Nine interactive pages built as a learn-then-drill shelf. Source is here; the
 published, shareable versions are linked below.
 
 | Page | What it's for | Live |
@@ -13,11 +13,21 @@ published, shareable versions are linked below.
 | `the-plumbing.html` | taking input, returning answers, looping through data | https://claude.ai/code/artifact/eb421301-3ce0-47f3-bab6-01509dbe20f8 |
 | `fifteen-pictures.html` | the same 15 ideas as pictures, with spaced repetition | https://claude.ai/code/artifact/216eed8b-f415-431e-b198-b7f131a92606 |
 | `type-it-out.html` | **22 exercises you type and run** — real Python in the page | https://claude.ai/code/artifact/dcdf9c06-3259-4d8c-a959-6e2ecc11c67d |
+| `fizzbuzz-order.html` | drag-the-rules game for the FizzBuzz condition-order trap | https://claude.ai/code/artifact/40d8012b-c751-4fb3-8916-15f75b83194d |
 
 Read order: **Four Boxes → Set or Regret → Day One, Explained → Reload Arcade**
 for the language, then **The Plumbing** (how data gets in and answers get out),
 then **Type It Out** (write code, don't read it), then **Eight Techniques**
 for problem-solving.
+
+`fizzbuzz-order.html` is a focused companion to Type It Out's FizzBuzz
+exercise: drag Fizz/Buzz/FizzBuzz into any order and watch a live 1-15 belt
+show which numbers break, then a second Skulpt editor to write and run the
+real thing with line-15-aware diagnosis. Verified: all four rule orderings
+checked programmatically (any order with the both-check last fails only at
+15; first, always correct), and both a correct and a deliberately
+wrong-order Python solution run through Skulpt to confirm the diagnosis
+text matches reality.
 
 `type-it-out.html` runs real Python in the browser via Skulpt (loaded from
 jsDelivr; no server). 22 exercises in 5 stages, from `print(8)` up to

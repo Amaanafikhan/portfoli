@@ -1,0 +1,386 @@
+<title>The Order Machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+
+<style>
+:root{
+  --ground:#E9E7F2; --panel:#FFFFFF; --panel-2:#F3F1F9;
+  --ink:#1A1726; --ink-soft:#5C5570; --ink-faint:#8B84A0; --rule:#D6D2E4;
+  --accent:#D91A63;
+  --fizz:#2F5BEA; --buzz:#B96C05; --both:#7B3FE4;
+  --good:#0F9E76; --bad:#D9342B;
+  --console:#221E31; --console-ink:#EDEAF7;
+  --shadow:0 2px 0 rgba(26,23,38,.12), 0 14px 32px -18px rgba(26,23,38,.55);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+    --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+    --accent:#FF4B87; --fizz:#7C9BFF; --buzz:#F0A93C; --both:#B48CFF;
+    --good:#2FD3A0; --bad:#FF6B60;
+    --console:#0E0C16; --console-ink:#E6E1F5;
+    --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+  --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+  --accent:#FF4B87; --fizz:#7C9BFF; --buzz:#F0A93C; --both:#B48CFF;
+  --good:#2FD3A0; --bad:#FF6B60;
+  --console:#0E0C16; --console-ink:#E6E1F5;
+  --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6;display:flex;justify-content:center;padding:26px 16px 48px}
+.wrap{width:100%;max-width:720px;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1{font-size:clamp(34px,7vw,50px);font-weight:800;line-height:.98}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-size:clamp(21px,4vw,26px);font-weight:800;line-height:1.1}
+p{margin:0}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px}
+b{font-weight:800}
+section{display:flex;flex-direction:column;gap:16px}
+.step{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.lede{font-size:16px;line-height:1.55;color:var(--ink-soft);max-width:58ch}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:16px}
+hr{border:none;border-top:1px solid var(--rule);margin:0}
+
+/* ---- rule chips (draggable order) ---- */
+.chips{display:flex;flex-direction:column;gap:8px}
+.chip{
+  display:flex;align-items:center;gap:12px;
+  background:var(--panel-2);border:1.5px solid var(--rule);border-radius:10px;
+  padding:11px 14px;cursor:grab;user-select:none;
+  font-family:"JetBrains Mono",monospace;font-size:14px;font-weight:700;
+  transition:transform .12s,border-color .12s;
+}
+.chip:active{cursor:grabbing}
+.chip.drag{opacity:.4}
+.chip .rank{
+  width:22px;height:22px;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-family:"Public Sans",sans-serif;font-weight:800;font-size:12px;
+  color:#fff;
+}
+.chip[data-rule="fizz"] .rank{background:var(--fizz)}
+.chip[data-rule="buzz"] .rank{background:var(--buzz)}
+.chip[data-rule="both"] .rank{background:var(--both)}
+.chip .txt{flex:1}
+.chip .txt small{display:block;font-family:"Public Sans",sans-serif;font-weight:400;font-size:11.5px;color:var(--ink-faint);margin-top:2px}
+.chip .handle{color:var(--ink-faint);font-size:18px;letter-spacing:2px}
+
+.runbtn{
+  align-self:flex-start;font-family:"Public Sans",sans-serif;font-weight:800;font-size:14.5px;
+  color:#fff;background:var(--accent);border:none;border-radius:10px;padding:12px 20px;cursor:pointer;
+  box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s;
+}
+.runbtn:active{transform:translateY(2px);box-shadow:none}
+.runbtn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.ghostbtn{
+  font-family:"Public Sans",sans-serif;font-weight:800;font-size:13px;
+  background:none;border:1.5px solid var(--rule);color:var(--ink);border-radius:9px;padding:10px 15px;cursor:pointer;
+}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---- number belt ---- */
+.belt{display:flex;flex-wrap:wrap;gap:5px}
+.slot{
+  width:52px;height:44px;border-radius:8px;border:1.5px solid var(--rule);background:var(--panel-2);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px;
+  font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px;color:var(--ink-faint);
+  transition:all .15s;
+}
+.slot .n{font-size:9px;font-weight:400;color:var(--ink-faint)}
+.slot.now{border-color:var(--accent);transform:scale(1.08);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+.slot.ok{background:color-mix(in srgb,var(--good) 16%,var(--panel));border-color:var(--good);color:var(--ink)}
+.slot.bad{background:color-mix(in srgb,var(--bad) 18%,var(--panel));border-color:var(--bad);color:var(--ink)}
+
+.verdictline{font-size:15px;line-height:1.55;color:var(--ink-soft);min-height:48px}
+.verdictline b{color:var(--ink)}
+.verdictline.win{color:var(--good)}
+.verdictline.lose{color:var(--bad)}
+
+/* ---- editor / run ---- */
+.edwrap{border:2px solid var(--rule);border-radius:11px;overflow:hidden;background:var(--console)}
+.edwrap:focus-within{border-color:var(--accent)}
+.edbar{display:flex;justify-content:space-between;padding:7px 12px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.09)}
+.edbar span{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:#8E86AB}
+textarea{width:100%;min-height:180px;resize:vertical;background:var(--console);color:var(--console-ink);border:none;outline:none;font-family:"JetBrains Mono",monospace;font-size:13.5px;line-height:1.65;padding:13px 15px;tab-size:4}
+.result{display:flex;flex-direction:column;gap:12px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media (max-width:520px){.cmp{grid-template-columns:1fr}}
+.cmp h4{margin:0 0 4px;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-weight:800}
+.cmp .want h4{color:var(--good)} .cmp .got h4{color:var(--bad)}
+.mono{font-family:"JetBrains Mono",monospace;font-size:12.5px;background:var(--console);color:var(--console-ink);border-radius:8px;padding:10px 12px;white-space:pre;overflow-x:auto;line-height:1.6}
+.line{display:block}
+.line.bad{background:rgba(217,52,44,.28);border-radius:3px}
+.headline{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:18px}
+.headline.ok{color:var(--good)} .headline.no{color:var(--bad)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:16px">
+  <h1>FizzBuzz isn't about<br>math. It's about <em>order.</em></h1>
+  <p class="lede">Every number divisible by 3 gets checked by your <b>first</b> matching rule — even if a later rule would've been more correct. 15 is divisible by both 3 and 5. Whoever checks 15 first, wins.</p>
+</header>
+
+<hr>
+
+<!-- ===== 01: build your order ===== -->
+<section>
+  <div class="step">01 — Your turn to choose</div>
+  <h2>Drag these into the order you'd check them</h2>
+  <p class="lede">This is exactly what an <code>if / elif / elif</code> chain does — top to bottom, first match wins. Arrange the three rules, then watch what happens at 15.</p>
+
+  <div class="card">
+    <div class="chips" id="chips"></div>
+    <div class="row">
+      <button class="runbtn" id="play">Run it on 1–15 →</button>
+      <button class="ghostbtn" id="reset">Reset order</button>
+    </div>
+    <div class="belt" id="belt"></div>
+    <p class="verdictline" id="verdict">Arrange the rules above, then press run. Watch what happens at <b>15</b> — that's the only number where it matters.</p>
+  </div>
+
+  <div class="card" style="gap:10px">
+    <p class="lede" style="font-size:14.5px">The fix that always works, regardless of order: check <b>both</b> first. <code>% 15 == 0</code> is the only condition that's true exactly when <i>both</i> <code>% 3</code> and <code>% 5</code> are — so putting it on top can never accidentally get shadowed.</p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ===== 02: type it, run it ===== -->
+<section>
+  <div class="step">02 — Now write it for real</div>
+  <h2>Type FizzBuzz, run real Python</h2>
+  <p class="lede">Loop 1 to 15. Use the ordering you just proved works.</p>
+  <div class="card">
+    <div class="edwrap">
+      <div class="edbar"><span>your code</span><span id="engineFlag"></span></div>
+      <textarea id="ed" spellcheck="false">for i in range(1, 16):
+    </textarea>
+    </div>
+    <div class="row">
+      <button class="runbtn" id="run">Run it →</button>
+      <button class="ghostbtn" id="resetCode">Reset</button>
+    </div>
+    <div id="result"></div>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* =========================================================================
+   PART 1 — the ordering simulator (pure visualization, no Python needed)
+   ========================================================================= */
+const RULES = {
+  fizz: { label: 'Fizz', sub: 'divisible by 3', test: n => n % 3 === 0, color: 'var(--fizz)' },
+  buzz: { label: 'Buzz', sub: 'divisible by 5', test: n => n % 5 === 0, color: 'var(--buzz)' },
+  both: { label: 'FizzBuzz', sub: 'divisible by both (n % 15 == 0)', test: n => n % 15 === 0, color: 'var(--both)' }
+};
+let order = ['fizz', 'buzz', 'both'];
+
+function paintChips(){
+  const chips = document.getElementById('chips');
+  chips.innerHTML = order.map((key, i) => {
+    const r = RULES[key];
+    return `<div class="chip" draggable="true" data-rule="${key}" data-i="${i}">
+      <span class="rank">${i + 1}</span>
+      <span class="txt">${r.label}<small>${r.sub}</small></span>
+      <span class="handle">⠿</span>
+    </div>`;
+  }).join('');
+  wireDrag();
+}
+
+let dragFrom = null;
+function wireDrag(){
+  const chips = [...document.querySelectorAll('.chip')];
+  chips.forEach(c => {
+    c.addEventListener('dragstart', () => { dragFrom = +c.dataset.i; c.classList.add('drag') });
+    c.addEventListener('dragend', () => c.classList.remove('drag'));
+    c.addEventListener('dragover', e => e.preventDefault());
+    c.addEventListener('drop', () => {
+      const to = +c.dataset.i;
+      if (dragFrom === null || dragFrom === to) return;
+      const item = order.splice(dragFrom, 1)[0];
+      order.splice(to, 0, item);
+      paintChips();
+    });
+  });
+}
+
+function correctLabel(n){
+  if (n % 15 === 0) return 'FizzBuzz';
+  if (n % 3 === 0) return 'Fizz';
+  if (n % 5 === 0) return 'Buzz';
+  return String(n);
+}
+function labelWithOrder(n){
+  for (const key of order){
+    if (RULES[key].test(n)) return RULES[key].label;
+  }
+  return String(n);
+}
+
+const belt = document.getElementById('belt');
+function buildBelt(){
+  belt.innerHTML = '';
+  for (let n = 1; n <= 15; n++){
+    const d = document.createElement('div');
+    d.className = 'slot';
+    d.id = 'slot-' + n;
+    d.innerHTML = `<div class="n">${n}</div><div class="v">–</div>`;
+    belt.appendChild(d);
+  }
+}
+buildBelt();
+
+let playing = false;
+document.getElementById('play').onclick = () => {
+  if (playing) return;
+  playing = true;
+  buildBelt();
+  const verdict = document.getElementById('verdict');
+  verdict.className = 'verdictline';
+  let mismatches = [];
+  let n = 1;
+  const step = () => {
+    if (n > 15){
+      playing = false;
+      const s15 = document.getElementById('slot-15');
+      if (mismatches.length){
+        verdict.className = 'verdictline lose';
+        verdict.innerHTML = `<b>Not quite.</b> Your order got 15 wrong. Whichever of Fizz or Buzz you put first "wins" at 15 — but 15 needs <b>FizzBuzz</b>. Move <code>both</code> to the top.`;
+      } else {
+        verdict.className = 'verdictline win';
+        verdict.innerHTML = `<b>Correct on every number.</b> ${order[0] === 'both' ? "Checking both-first means it can never be shadowed." : "Fizz and Buzz never overlap unless it's 15 — and your order happened to check the right one first for every case that matters."}`;
+      }
+      return;
+    }
+    const el = document.getElementById('slot-' + n);
+    el.classList.add('now');
+    const got = labelWithOrder(n);
+    const want = correctLabel(n);
+    setTimeout(() => {
+      el.classList.remove('now');
+      el.querySelector('.v').textContent = got === String(n) ? '' : got;
+      if (got === want){
+        el.classList.add('ok');
+      } else {
+        el.classList.add('bad');
+        mismatches.push(n);
+      }
+      n++;
+      step();
+    }, 90);
+  };
+  step();
+};
+document.getElementById('reset').onclick = () => { order = ['fizz', 'buzz', 'both']; paintChips(); buildBelt();
+  document.getElementById('verdict').className = 'verdictline';
+  document.getElementById('verdict').innerHTML = 'Arrange the rules above, then press run. Watch what happens at <b>15</b> — that\'s the only number where it matters.';
+};
+paintChips();
+
+/* =========================================================================
+   PART 2 — real Python via Skulpt
+   ========================================================================= */
+const EXPECTED = "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz";
+const engineFlag = document.getElementById('engineFlag');
+engineFlag.textContent = (typeof Sk === 'undefined') ? 'engine not loaded' : 'python (skulpt)';
+
+function pyRun(code){
+  if (typeof Sk === 'undefined') return { ok:false, out:'', err:'ENGINE_MISSING' };
+  let out = '';
+  Sk.configure({
+    output: t => { out += t },
+    read: f => {
+      if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][f] === undefined)
+        throw "File not found: '" + f + "'";
+      return Sk.builtinFiles["files"][f];
+    },
+    __future__: Sk.python3,
+    execLimit: 4000
+  });
+  try {
+    Sk.misceval.retryOptionalSuspensionOrThrow(Sk.importMainWithBody("<stdin>", false, code, true));
+    return { ok:true, out };
+  } catch (e) {
+    return { ok:false, out, err: (e && e.toString) ? e.toString() : String(e) };
+  }
+}
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+function diagnose(code, err, got){
+  if (err){
+    if (/TimeLimitError/.test(err)) return "Your loop never stopped. Check range(1, 16) and that i actually advances — range() does that for you automatically in a for loop.";
+    if (/IndentationError|bad input/.test(err)) return "Indentation issue — every line inside the for loop needs the same amount of leading whitespace.";
+    if (/SyntaxError/.test(err)) return "Python couldn't read this — check for a missing colon after an if/elif/for, or an unclosed bracket.";
+    if (/NameError/.test(err)) return "A name here isn't defined — check spelling against your loop variable.";
+    return "Read the error below — it names the line and the problem.";
+  }
+  const gl = got.trim().split('\n'), wl = EXPECTED.split('\n');
+  if (gl.every((l,i)=>l===wl[i] || wl[i]===undefined) && gl.length !== wl.length){
+    return gl.length < wl.length ? "You printed fewer lines than expected — check your range() bounds." : "You printed more lines than expected — check your range() bounds.";
+  }
+  // find first Fizz/Buzz mismatch to explain ordering
+  for (let i = 0; i < wl.length; i++){
+    if (gl[i] !== wl[i]){
+      const n = i + 1;
+      if (n === 15) return "Line 15 is wrong — this is the ordering bug. Check % 15 before % 3 and % 5, or it never gets reached.";
+      return `Line ${n} doesn't match. Expected "${wl[i]}", got "${gl[i] || '(missing)'}" — walk through what n%3, n%5 and n%15 give for n=${n}.`;
+    }
+  }
+  return "Close, but not an exact match — compare line by line below.";
+}
+
+function runNow(){
+  const code = document.getElementById('ed').value;
+  const res = document.getElementById('result');
+  const r = pyRun(code);
+  const got = (r.out || '').replace(/\s+$/, '');
+  const passed = r.ok && got === EXPECTED;
+
+  let blocks = '';
+  if (!r.ok){
+    blocks += `<p class="lede">${diagnose(code, r.err, '')}</p><div class="mono" style="color:#FF8A7E">${esc(r.err)}</div>`;
+  } else if (!passed){
+    blocks += `<p class="lede">${diagnose(code, null, got)}</p>`;
+    const wl = EXPECTED.split('\n'), gl = got.split('\n');
+    const rows = Math.max(wl.length, gl.length);
+    const fmt = (arr, other) => {
+      let s = '';
+      for (let i = 0; i < rows; i++){
+        const v = arr[i];
+        if (v === undefined) s += `<span class="line" style="opacity:.4;font-style:italic">(nothing)</span>\n`;
+        else s += `<span class="line ${v !== other[i] ? 'bad' : ''}">${esc(v) || ' '}</span>\n`;
+      }
+      return s;
+    };
+    blocks += `<div class="cmp">
+      <div class="want"><h4>Expected</h4><div class="mono">${fmt(wl, gl)}</div></div>
+      <div class="got"><h4>You got</h4><div class="mono">${fmt(gl, wl)}</div></div>
+    </div>`;
+  } else {
+    blocks += `<div class="mono">${esc(got)}</div>`;
+  }
+
+  res.innerHTML = `<div class="result">
+    <div class="headline ${passed ? 'ok' : 'no'}">${passed ? '✓ That\'s it — order solved.' : '✕ Not yet.'}</div>
+    ${blocks}
+  </div>`;
+}
+document.getElementById('run').onclick = runNow;
+document.getElementById('resetCode').onclick = () => {
+  document.getElementById('ed').value = 'for i in range(1, 16):\n    ';
+  document.getElementById('result').innerHTML = '';
+};
+</script>
