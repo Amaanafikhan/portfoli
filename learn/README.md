@@ -1,6 +1,6 @@
 # Python revision pages
 
-Seven interactive pages built as a learn-then-drill shelf. Source is here; the
+Eight interactive pages built as a learn-then-drill shelf. Source is here; the
 published, shareable versions are linked below.
 
 | Page | What it's for | Live |
@@ -12,10 +12,27 @@ published, shareable versions are linked below.
 | `eight-techniques.html` | the 8 patterns, with steppable traces | https://claude.ai/code/artifact/558e35f2-a737-4fa4-9a01-b986ceef0816 |
 | `the-plumbing.html` | taking input, returning answers, looping through data | https://claude.ai/code/artifact/eb421301-3ce0-47f3-bab6-01509dbe20f8 |
 | `fifteen-pictures.html` | the same 15 ideas as pictures, with spaced repetition | https://claude.ai/code/artifact/216eed8b-f415-431e-b198-b7f131a92606 |
+| `type-it-out.html` | **22 exercises you type and run** — real Python in the page | https://claude.ai/code/artifact/dcdf9c06-3259-4d8c-a959-6e2ecc11c67d |
 
 Read order: **Four Boxes → Set or Regret → Day One, Explained → Reload Arcade**
 for the language, then **The Plumbing** (how data gets in and answers get out),
-then **Eight Techniques** for problem-solving.
+then **Type It Out** (write code, don't read it), then **Eight Techniques**
+for problem-solving.
+
+`type-it-out.html` runs real Python in the browser via Skulpt (loaded from
+jsDelivr; no server). 22 exercises in 5 stages, from `print(8)` up to
+two-pointer reversal and FizzBuzz. It checks output, diagnoses failures with
+targeted hints, and asks an interview question on each pass.
+
+Verification: every exercise's expected output was produced by running its
+reference solution on **real CPython**, then all 22 reference solutions were
+re-run through **Skulpt with the page's exact harness** — 22/22 match. The
+hint engine was tested against 12 realistic wrong answers; all 12 produced a
+correct, specific diagnosis. Skulpt's `execLimit` turns infinite loops into a
+TimeLimitError instead of a frozen page.
+
+Known Skulpt gap: `{**a, **b}` dict merging errors out, so it is kept out of
+the exercises.
 
 `fifteen-pictures.html` is the memory layer for The Plumbing: one diagram per
 idea instead of a paragraph, recall-first (you answer, then reveal), 63

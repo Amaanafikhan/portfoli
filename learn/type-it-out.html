@@ -1,0 +1,698 @@
+<title>Type It Out</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+
+<style>
+:root{
+  --ground:#E9E7F2; --panel:#FFFFFF; --panel-2:#F3F1F9;
+  --ink:#1A1726; --ink-soft:#5C5570; --ink-faint:#8B84A0; --rule:#D6D2E4;
+  --accent:#D91A63;
+  --good:#0F9E76; --bad:#D9342B; --warn:#B96C05; --cool:#2F5BEA;
+  --console:#221E31; --console-ink:#EDEAF7;
+  --shadow:0 2px 0 rgba(26,23,38,.12), 0 14px 32px -18px rgba(26,23,38,.55);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+    --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+    --accent:#FF4B87; --good:#2FD3A0; --bad:#FF6B60; --warn:#F0A93C; --cool:#7C9BFF;
+    --console:#0E0C16; --console-ink:#E6E1F5;
+    --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141220; --panel:#1E1B2C; --panel-2:#262236;
+  --ink:#EFECF7; --ink-soft:#ADA5C2; --ink-faint:#7B7392; --rule:#332E47;
+  --accent:#FF4B87; --good:#2FD3A0; --bad:#FF6B60; --warn:#F0A93C; --cool:#7C9BFF;
+  --console:#0E0C16; --console-ink:#E6E1F5;
+  --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6;display:flex;justify-content:center;padding:22px 16px 44px}
+.wrap{width:100%;max-width:720px;display:flex;flex-direction:column;gap:13px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+p{margin:0}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px}
+
+.hud{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px}
+.brand{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:18px;letter-spacing:-.02em;background:none;border:none;color:var(--ink);padding:0;cursor:pointer}
+.brand em{font-style:normal;color:var(--accent)}
+.brand:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
+.crumb{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
+
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:15px}
+.eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--ink-faint);display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.eyebrow s{text-decoration:none;color:#fff;background:var(--accent);border-radius:5px;padding:3px 8px;letter-spacing:.09em}
+.task{font-family:"Bricolage Grotesque","Public Sans",sans-serif;font-weight:700;font-size:clamp(19px,4vw,24px);line-height:1.25;letter-spacing:-.02em}
+.brief{font-size:15.5px;line-height:1.55;color:var(--ink-soft)}
+.brief b{color:var(--ink)} .brief code{font-size:13.5px}
+
+.expect{display:flex;flex-direction:column;gap:5px}
+.expect h4{margin:0;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.mono{font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--console);color:var(--console-ink);border-radius:8px;padding:11px 14px;white-space:pre;overflow-x:auto;line-height:1.6}
+.mono.small{font-size:12px;padding:9px 12px}
+
+/* editor */
+.edwrap{display:flex;flex-direction:column;gap:0;border:2px solid var(--rule);border-radius:11px;overflow:hidden;background:var(--console)}
+.edwrap:focus-within{border-color:var(--accent)}
+.edbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 12px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.09)}
+.edbar span{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:#8E86AB}
+.edbar button{font-family:"Public Sans",sans-serif;font-size:11px;font-weight:800;background:none;border:1px solid rgba(255,255,255,.22);color:#C9C2DC;border-radius:6px;padding:3px 9px;cursor:pointer}
+.edbar button:hover{background:rgba(255,255,255,.09)}
+textarea{width:100%;min-height:190px;resize:vertical;background:var(--console);color:var(--console-ink);border:none;outline:none;font-family:"JetBrains Mono",monospace;font-size:13.5px;line-height:1.65;padding:13px 15px;tab-size:4;white-space:pre;overflow-wrap:normal;overflow-x:auto}
+
+.btn{font-family:"Public Sans",sans-serif;font-weight:800;font-size:15px;color:#fff;background:var(--accent);border:none;border-radius:10px;padding:13px 20px;cursor:pointer;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.btn.ghost{background:none;color:var(--ink);border:1.5px solid var(--rule);box-shadow:none;font-size:13.5px;padding:12px 16px}
+.btn.next{background:var(--good);box-shadow:0 3px 0 color-mix(in srgb,var(--good) 55%,#000)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* verdict */
+.verdict{display:flex;flex-direction:column;gap:13px;border-top:1px solid var(--rule);padding-top:15px}
+.vhead{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:18px;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+.vhead.ok{color:var(--good)} .vhead.no{color:var(--bad)}
+.diag{border-left:4px solid var(--warn);padding:3px 0 3px 14px;display:flex;flex-direction:column;gap:4px}
+.diag h4{margin:0;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-weight:800;color:var(--warn)}
+.diag p{font-size:15px;line-height:1.5;color:var(--ink)}
+.diag p b{font-weight:800}
+.diag code{font-size:13px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media (max-width:560px){.cmp{grid-template-columns:1fr}}
+.cmp > div{display:flex;flex-direction:column;gap:4px}
+.cmp h4{margin:0;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-weight:800}
+.cmp .want h4{color:var(--good)} .cmp .got h4{color:var(--bad)}
+.line{display:block}
+.line.bad{background:color-mix(in srgb,var(--bad) 30%,transparent);border-radius:3px}
+.line.miss{opacity:.45;font-style:italic}
+
+/* interview */
+.iv{border:1.5px solid color-mix(in srgb,var(--accent) 32%,var(--rule));background:color-mix(in srgb,var(--accent) 6%,var(--panel));border-radius:11px;padding:14px 16px;display:flex;flex-direction:column;gap:11px}
+.iv h4{margin:0;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--accent);display:flex;align-items:center;gap:8px}
+.iv h4 b{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:0;background:var(--accent);color:#fff;border-radius:4px;padding:1px 6px}
+.qa{display:flex;flex-direction:column;gap:4px}
+.qa .q{font-size:15px;font-weight:800;line-height:1.45}
+.qa .q::before{content:"“"} .qa .q::after{content:"”"}
+.qa .a{font-size:14.5px;line-height:1.5;color:var(--ink-soft)}
+.qa .a::before{content:"→ ";color:var(--accent);font-weight:800}
+.qa .a b{color:var(--ink)}
+.reveal{align-self:flex-start;font-family:"Public Sans",sans-serif;font-weight:800;font-size:12.5px;background:none;border:1.5px solid var(--rule);color:var(--ink);border-radius:8px;padding:8px 13px;cursor:pointer}
+
+/* menu */
+.menu{display:flex;flex-direction:column;gap:20px}
+.menu h1{font-size:clamp(31px,6.6vw,45px);font-weight:800;line-height:1}
+.menu h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:16px;line-height:1.55;color:var(--ink-soft);max-width:56ch}
+.stage{display:flex;flex-direction:column;gap:7px}
+.stage > h3{font-size:13px;letter-spacing:.04em;color:var(--ink-faint);text-transform:uppercase;font-weight:800}
+.exlist{display:flex;flex-direction:column;gap:6px}
+.exbtn{display:flex;align-items:center;gap:11px;text-align:left;background:var(--panel);border:1.5px solid var(--rule);border-radius:10px;padding:11px 13px;cursor:pointer;transition:transform .08s,border-color .12s;font-family:"Public Sans",sans-serif}
+.exbtn:hover{transform:translateY(-1px);border-color:var(--ink-faint)}
+.exbtn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.exbtn.done{border-color:var(--good);background:color-mix(in srgb,var(--good) 8%,var(--panel))}
+.exbtn .tick{width:22px;height:22px;border-radius:50%;border:2px solid var(--rule);flex:none;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--panel)}
+.exbtn.done .tick{background:var(--good);border-color:var(--good)}
+.exbtn .nm{flex:1;font-size:14.5px;font-weight:700;color:var(--ink)}
+.exbtn .sub{display:block;font-weight:400;font-size:12.5px;color:var(--ink-faint)}
+.bar{height:7px;border-radius:99px;background:var(--rule);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);border-radius:99px}
+.count{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+
+.banner{border-radius:11px;padding:13px 16px;font-size:14.5px;line-height:1.5;border:1.5px solid var(--warn);background:color-mix(in srgb,var(--warn) 10%,var(--panel));color:var(--ink)}
+.banner b{font-weight:800}
+.foot{font-size:11.5px;color:var(--ink-faint);text-align:center;line-height:1.5}
+.foot kbd{font-family:"JetBrains Mono",monospace;border:1px solid var(--rule);border-radius:3px;padding:1px 4px;font-size:10px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="hud">
+    <button class="brand" id="brand">Type It <em>Out</em></button>
+    <span class="crumb" id="crumb"></span>
+  </div>
+  <div id="stage"></div>
+  <p class="foot" id="foot"></p>
+</div>
+
+<script>
+/* =========================================================================
+   EXERCISES — every "expect" was produced by running the reference
+   solution on real CPython, not written by hand.
+   ========================================================================= */
+const EX = [
+/* ---------------- STAGE 1 ---------------- */
+{
+  id:'print-it', stage:'First contact', title:'Make it say 8',
+  brief:"Every program starts here. Write one line that prints the number <b>8</b>.",
+  starter:"", check:"", expect:"8",
+  hints:[
+    {when:(c)=>!/print/.test(c), say:"Nothing in your code prints. You need <code>print(...)</code> — writing a value on its own line shows nothing when a program runs."},
+    {when:(c)=>/print\s*\(\s*['\"]8['\"]\s*\)/.test(c), say:"Close — you printed the <b>text</b> \"8\", not the number 8. Here they look the same on screen, but they behave differently. Drop the quotes."}
+  ],
+  iv:[{q:"What's the difference between 8 and \"8\"?",
+       a:"<b>One is a number, one is text.</b> They print identically, which is exactly why the bug is hard to see. <code>8 + 1</code> is 9; <code>\"8\" + 1</code> is a TypeError."}]
+},
+{
+  id:'variables', stage:'First contact', title:'Two boxes, one sum',
+  brief:"Put <b>3</b> in a variable, <b>5</b> in another, then print their sum. Don't just print 8 — make the computer do the adding.",
+  starter:"a = \nb = \n", check:"", expect:"8",
+  hints:[
+    {when:(c)=>/print\s*\(\s*8\s*\)/.test(c), say:"You printed the answer directly. That works today and breaks the moment the numbers change — add the two <b>variables</b> instead."},
+    {when:(c)=>/^\s*(a|b)\s*=\s*$/m.test(c), say:"One of your variables has nothing after the <code>=</code>. Every assignment needs a value on the right."}
+  ],
+  iv:[{q:"What is a variable, in one sentence?",
+       a:"<b>A name pointing at a value.</b> Not a box holding it — a label stuck on it. That distinction is why <code>b = a</code> never copies a list."}]
+},
+{
+  id:'read-number', stage:'First contact', title:'Read a number and double it',
+  brief:"The person types <b>5</b>. Read it, double it, print the result. The test will type <code>5</code> for you.",
+  starter:"n = input()\n", check:"", expect:"10", stdin:["5"],
+  hints:[
+    {when:(c,o)=>o.trim()==="55", say:"You got <code>55</code> — that's <b>text repeated twice</b>, not maths. <code>input()</code> handed you the string <code>\"5\"</code>, and <code>\"5\" * 2</code> means \"repeat it\". Wrap it: <code>int(input())</code>."},
+    {when:(c,o,e)=>/TypeError/.test(e||''), say:"That TypeError is the classic one: you're doing maths on text. Everything from <code>input()</code> is a string until you call <code>int()</code> on it."}
+  ],
+  iv:[{q:"What type does input() return?",
+       a:"<b>Always a string</b>, no matter what was typed. Wrap it in <code>int()</code> the moment you need arithmetic."},
+      {q:"What happens if they type \"abc\" and you call int() on it?",
+       a:"<code>ValueError</code>. If it needs handling, wrap it in <code>try/except ValueError</code> and ask again."}]
+},
+/* ---------------- STAGE 2 ---------------- */
+{
+  id:'double-fn', stage:'Return, not print', title:'Write a function that hands back a value',
+  brief:"Write <code>double(n)</code> that <b>returns</b> n times 2. Don't print inside it — the test does the printing.",
+  starter:"def double(n):\n    ", check:"print(double(5))\nprint(double(0))", expect:"10\n0",
+  hints:[
+    {when:(c)=>!/return/.test(c), say:"There's no <code>return</code> in your function. Without it the function hands back <code>None</code>, so the test sees nothing useful."},
+    {when:(c)=>/print/.test(c), say:"You have a <code>print</code> inside the function. Printing shows a value and hands back <b>nothing</b>. Swap it for <code>return</code>."}
+  ],
+  iv:[{q:"What's the difference between return and print?",
+       a:"<b>Printing shows a value and hands back None. Returning gives the caller something they can use.</b> A test checks what came back, never what was on screen."}]
+},
+{
+  id:'fix-print', stage:'Return, not print', title:'Fix the broken one',
+  brief:"This function looks right and runs fine — but it's broken. <b>Find it and fix it.</b> Run it first to see what actually happens.",
+  starter:"def double(n):\n    print(n * 2)\n", check:"print(double(5))", expect:"10",
+  hints:[
+    {when:(c,o)=>/None/.test(o), say:"Look at your output: <code>10</code> then <code>None</code>. The <code>10</code> is the function's own print. The <code>None</code> is what it <b>handed back</b> — nothing. That None is the bug."},
+    {when:(c)=>/print/.test(c.split('\n').slice(0,3).join('\n')) && !/return/.test(c), say:"The <code>print</code> inside the function needs to become <code>return</code>. Show versus hand back — that's the whole difference."}
+  ],
+  iv:[{q:"Your function works when you run it, but the tests all fail. Why?",
+       a:"<b>It prints instead of returning, so the test gets None.</b> The harness calls the function and checks the value that came back; it never reads the screen."},
+      {q:"Where should print go, then?",
+       a:"<b>Only at the outermost layer</b> — the part that shows results to a person. Functions return; the top level prints."}]
+},
+{
+  id:'find-index', stage:'Return, not print', title:'Return early, and handle "not there"',
+  brief:"Write <code>find(nums, target)</code> that returns the <b>position</b> of target, or <b>-1</b> if it isn't in the list. Watch the third test — an empty list.",
+  starter:"def find(nums, target):\n    ", check:"print(find([4, 9, 2], 9))\nprint(find([4, 9, 2], 7))\nprint(find([], 1))", expect:"1\n-1\n-1",
+  hints:[
+    {when:(c,o)=>/None/.test(o), say:"A <code>None</code> appeared, which means some path through your function reaches the end without returning. That's the <b>not found</b> case — it needs its own <code>return -1</code> after the loop."},
+    {when:(c)=>/return\s+-1/.test(c) && /^\s{8,}return\s+-1/m.test(c), say:"Your <code>return -1</code> looks like it's <b>inside</b> the loop. That makes it give up after checking only the first item. Move it out, level with the <code>for</code>."}
+  ],
+  iv:[{q:"Do you need a break after that return?",
+       a:"<b>No — return exits the whole function immediately</b>, loop included."},
+      {q:"Why is the final return -1 so important?",
+       a:"It's the <b>not-found</b> answer. Without it the function falls off the end and hands back <code>None</code>, which crashes somewhere far away from the real cause."}]
+},
+/* ---------------- STAGE 3 ---------------- */
+{
+  id:'total', stage:'Walking through data', title:'Add up a list, by hand',
+  brief:"Write <code>total(nums)</code> that adds every number and returns the sum. <b>Don't use <code>sum()</code></b> — write the loop, because this shape is under half the problems you'll ever solve.",
+  starter:"def total(nums):\n    s = 0\n    ", check:"print(total([3, 1, 4]))\nprint(total([]))\nprint(total([-2, 2]))", expect:"8\n0\n0",
+  hints:[
+    {when:(c)=>/\bsum\s*\(/.test(c), say:"You used <code>sum()</code>. It's the right tool in real life, but the point here is the loop — a running total is the pattern behind counting, maxing and Kadane's algorithm later."},
+    {when:(c)=>!/for\b/.test(c), say:"There's no loop. You need to visit every item: <code>for n in nums:</code>"},
+    {when:(c)=>/^\s*s\s*=\s*0/m.test(c) && /for/.test(c) && !/s\s*=\s*s\s*\+|s\s*\+=/.test(c), say:"You start the total at 0 and loop, but nothing adds to <code>s</code> inside the loop. That's the missing line."}
+  ],
+  iv:[{q:"Why start s at 0 and not at nums[0]?",
+       a:"<b>So an empty list returns 0 instead of crashing.</b> Starting at <code>nums[0]</code> raises IndexError on empty input — and that's exactly the edge case interviewers probe."},
+      {q:"What's the time complexity?",
+       a:"<b>O(n)</b> — one pass, each item touched once."}]
+},
+{
+  id:'count-evens', stage:'Walking through data', title:'Count the ones that match',
+  brief:"Write <code>count_evens(nums)</code> returning how many numbers are even. A number is even when <code>n % 2 == 0</code>.",
+  starter:"def count_evens(nums):\n    ", check:"print(count_evens([1, 2, 3, 4]))\nprint(count_evens([1, 3]))\nprint(count_evens([]))", expect:"2\n0\n0",
+  hints:[
+    {when:(c)=>/%\s*2\s*=[^=]/.test(c), say:"You wrote <code>=</code> where you need <code>==</code>. One <code>=</code> assigns a value; two <code>==</code> asks a question."},
+    {when:(c)=>!/if\b/.test(c), say:"You need an <code>if</code> inside the loop — you're only counting <i>some</i> of the items, not all of them."}
+  ],
+  iv:[{q:"What does the % operator actually do?",
+       a:"<b>Gives the remainder.</b> <code>7 % 2</code> is 1, so <code>n % 2 == 0</code> means \"divides evenly\" — the standard even test."}]
+},
+{
+  id:'biggest', stage:'Walking through data', title:'Find the largest, without max()',
+  brief:"Write <code>biggest(nums)</code> returning the largest number. <b>No <code>max()</code>.</b> Careful with the all-negative case.",
+  starter:"def biggest(nums):\n    ", check:"print(biggest([3, 9, 2]))\nprint(biggest([-5, -1]))\nprint(biggest([7]))", expect:"9\n-1\n7",
+  hints:[
+    {when:(c)=>/best\s*=\s*0|biggest\s*=\s*0|m\s*=\s*0/.test(c), say:"You start the champion at <b>0</b>. That breaks on all-negative input — every number loses to 0, so you return 0 instead of -1. Start at <code>nums[0]</code> instead."},
+    {when:(c)=>/\bmax\s*\(/.test(c), say:"You used <code>max()</code>. Write the comparison loop — it's the same running-state shape you'll need for Kadane's algorithm."}
+  ],
+  iv:[{q:"Why start at nums[0] rather than 0?",
+       a:"<b>Because the answer might be negative.</b> Starting at 0 quietly returns 0 for an all-negative list. Interviewers plant that case on purpose."},
+      {q:"What if the list is empty?",
+       a:"<code>nums[0]</code> raises IndexError. Say it out loud and ask what they want: raise, or return None."}]
+},
+{
+  id:'evens-list', stage:'Walking through data', title:'Build a new list',
+  brief:"Write <code>evens(nums)</code> returning a <b>new list</b> containing only the even numbers. The original list must be left alone.",
+  starter:"def evens(nums):\n    out = []\n    ", check:"print(evens([1, 2, 3, 4]))\nprint(evens([1, 3]))", expect:"[2, 4]\n[]",
+  hints:[
+    {when:(c)=>!/append/.test(c) && !/\[.*for .* in .*\]/.test(c), say:"Nothing gets added to <code>out</code>. Use <code>out.append(n)</code> inside the <code>if</code>."},
+    {when:(c)=>/nums\.remove|del nums|nums\.pop/.test(c), say:"You're modifying <code>nums</code> while looping over it — that silently skips items, and it also destroys the caller's list. Build a new list instead."}
+  ],
+  iv:[{q:"Why build a new list instead of removing from the original?",
+       a:"<b>Two reasons.</b> The caller still holds that list, so removing is a side effect they didn't ask for. And deleting while looping shifts the indexes under you, which silently skips items."},
+      {q:"Could this be a comprehension?",
+       a:"Yes — <code>[n for n in nums if n % 2 == 0]</code>. Same thing in one line, once the loop version is second nature."}]
+},
+{
+  id:'index-of', stage:'Walking through data', title:'You need the position too',
+  brief:"Write <code>index_of(words, target)</code> returning the position of target, or -1. Use <b><code>enumerate</code></b> — this is what it's for.",
+  starter:"def index_of(words, target):\n    ", check:"print(index_of(['a', 'b', 'c'], 'b'))\nprint(index_of(['a'], 'z'))", expect:"1\n-1",
+  hints:[
+    {when:(c)=>!/enumerate/.test(c) && /for\s+\w+\s+in/.test(c), say:"Your loop gives you the <b>value</b> but not the <b>position</b>, and the position is the answer. <code>for i, w in enumerate(words):</code> gives you both."},
+    {when:(c)=>/\.index\(/.test(c), say:"<code>.index()</code> does the job in real code, but it raises ValueError when the item is missing — and here you're practising the loop."}
+  ],
+  iv:[{q:"enumerate or range(len())?",
+       a:"<b>enumerate</b>, because it hands you the index and the value together and you can't build an index that doesn't exist. Use <code>range(len())</code> only when you must <i>write back</i> into the list."}]
+},
+{
+  id:'double-place', stage:'Walking through data', title:'Change the list itself',
+  brief:"Write <code>double_all(nums)</code> that doubles every number <b>in place</b>. No return, no new list — change the list the caller handed you.",
+  starter:"def double_all(nums):\n    ", check:"data = [3, 1, 4]\ndouble_all(data)\nprint(data)", expect:"[6, 2, 8]",
+  hints:[
+    {when:(c)=>/for\s+\w+\s+in\s+nums\s*:/.test(c) && !/range\s*\(\s*len/.test(c), say:"<code>for n in nums</code> gives you the value, not its address — changing <code>n</code> just repoints your loop variable. You need the index: <code>for i in range(len(nums)):</code>"},
+    {when:(c)=>/nums\s*=\s*\[/.test(c), say:"Assigning <code>nums = [...]</code> rebinds your local name and leaves the caller's list untouched. To change theirs, assign into the slots: <code>nums[i] = ...</code>"}
+  ],
+  iv:[{q:"Why can't 'for n in nums' modify the list?",
+       a:"<b>Because n is a copy of the reference, not the slot.</b> Rebinding it changes your loop variable, nothing else. Only <code>nums[i] = ...</code> writes into the list."},
+      {q:"What's the difference between nums = other and nums[:] = other?",
+       a:"<b>The first rebinds your local name; the caller sees nothing.</b> The second overwrites the contents in place, which the caller does see."}]
+},
+{
+  id:'dict-total', stage:'Walking through data', title:'Loop a dictionary properly',
+  brief:"Write <code>total_stock(stock)</code> that adds up all the <b>values</b> in a dict like <code>{'apple': 3, 'pear': 5}</code>.",
+  starter:"def total_stock(stock):\n    ", check:"print(total_stock({'apple': 3, 'pear': 5}))\nprint(total_stock({}))", expect:"8\n0",
+  hints:[
+    {when:(c,o,e)=>/TypeError/.test(e||''), say:"You're adding the <b>keys</b>, which are text. Looping a dict bare gives you the keys — use <code>.items()</code> for both, or <code>.values()</code> for just the numbers."},
+    {when:(c)=>/for\s+\w+\s+in\s+stock\s*:/.test(c), say:"<code>for k in stock</code> gives you the <b>keys only</b>. You want <code>for k, v in stock.items():</code> or <code>for v in stock.values():</code>"}
+  ],
+  iv:[{q:"What do you get when you loop over a dictionary?",
+       a:"<b>The keys.</b> That surprises people. Use <code>.items()</code> for pairs, <code>.values()</code> for values."},
+      {q:"Are dictionaries ordered?",
+       a:"<b>Yes, insertion order, since Python 3.7.</b> It's a language guarantee now, not an implementation detail."}]
+},
+{
+  id:'zip-pairs', stage:'Walking through data', title:'Two lists, side by side',
+  brief:"Write <code>pair_up(names, scores)</code> returning a list like <code>['ana:90', 'bo:85']</code>. Use <b><code>zip</code></b>. Look closely at the second test.",
+  starter:"def pair_up(names, scores):\n    out = []\n    ", check:"print(pair_up(['ana', 'bo'], [90, 85]))\nprint(pair_up(['ana', 'bo', 'cy'], [90, 85]))", expect:"['ana:90', 'bo:85']\n['ana:90', 'bo:85']",
+  hints:[
+    {when:(c,o,e)=>/TypeError/.test(e||''), say:"You can't join text and a number with <code>+</code>. Convert first: <code>n + ':' + str(s)</code>."},
+    {when:(c)=>!/zip/.test(c), say:"Use <code>zip(names, scores)</code> — it walks both lists in step and hands you a pair each time."}
+  ],
+  iv:[{q:"The second test has 3 names and 2 scores — what happened to 'cy'?",
+       a:"<b>zip stops at the shorter list, silently.</b> No error, no warning. If mismatched lengths would be a bug, check the lengths yourself first."}]
+},
+/* ---------------- STAGE 4 ---------------- */
+{
+  id:'sum-line', stage:'Text in, answer out', title:'Read a line of numbers',
+  brief:"The person types <code>3 1 4</code> on one line. Print the total. <b>This is the single most useful input line in Python</b> — type it until it's automatic.",
+  starter:"", check:"", expect:"8", stdin:["3 1 4"],
+  hints:[
+    {when:(c,o,e)=>/ValueError/.test(e||''), say:"<code>int(\"3 1 4\")</code> can't work — int takes <b>one</b> number. Split first, then convert each piece."},
+    {when:(c)=>/input\(\)/.test(c) && !/split/.test(c), say:"You read the line but never cut it up. <code>.split()</code> turns <code>\"3 1 4\"</code> into <code>['3', '1', '4']</code>."},
+    {when:(c)=>/split/.test(c) && !/int\s*\(/.test(c), say:"You split it, but the pieces are still <b>text</b>. Convert each one: <code>[int(x) for x in input().split()]</code>"}
+  ],
+  iv:[{q:"Read a line of space-separated integers.",
+       a:"<code>nums = [int(x) for x in input().split()]</code> — and say why while typing: <b>split gives me strings, so I convert each one.</b>"},
+      {q:"What does split() do with extra spaces?",
+       a:"<b>Bare <code>split()</code> collapses any run of whitespace and trims the ends</b>, which is why it's safer than <code>split(' ')</code> for keyboard input."}]
+},
+{
+  id:'reverse-string', stage:'Text in, answer out', title:'Reverse a string',
+  brief:"Write <code>reverse(s)</code> returning the string backwards. The slice trick is fine here — you'll do it the hard way in the last stage.",
+  starter:"def reverse(s):\n    ", check:"print(reverse('hello'))\nprint(reverse(''))", expect:"olleh\n",
+  hints:[
+    {when:(c)=>/\.reverse\(\)/.test(c), say:"<code>.reverse()</code> is a <b>list</b> method and it returns None. For a string, use the slice <code>s[::-1]</code>."},
+    {when:(c,o)=>o.trim()==="None", say:"You got None — either there's no <code>return</code>, or you returned the result of a method that changes things in place."}
+  ],
+  iv:[{q:"How does s[::-1] work?",
+       a:"<b>[start:stop:step] with a step of -1</b> — walk the whole sequence backwards. Same syntax works on lists."},
+      {q:"Can you reverse a string in place?",
+       a:"<b>No — strings are immutable.</b> You'd convert with <code>list(s)</code>, swap, then <code>\"\".join(...)</code>."}]
+},
+{
+  id:'count-vowels', stage:'Text in, answer out', title:'Walk a string character by character',
+  brief:"Write <code>count_vowels(s)</code> returning how many of <code>a e i o u</code> are in the string.",
+  starter:"def count_vowels(s):\n    ", check:"print(count_vowels('hello'))\nprint(count_vowels('xyz'))", expect:"2\n0",
+  hints:[
+    {when:(c)=>!/for\b/.test(c), say:"You need to visit each character: <code>for ch in s:</code> — a string walks just like a list."},
+    {when:(c)=>/in\s*\[.*\]/.test(c) && !/in\s*['\"]aeiou/.test(c), say:"A list of vowels works, but <code>if ch in 'aeiou':</code> is shorter and does the same job — <code>in</code> checks substrings on text."}
+  ],
+  iv:[{q:"Does 'in' work the same on strings and lists?",
+       a:"<b>Close, but not identical.</b> On a list it checks membership; on a string it checks for a <i>substring</i>, so <code>'ell' in 'hello'</code> is also True."}]
+},
+{
+  id:'join-numbers', stage:'Text in, answer out', title:'Numbers back out as one line',
+  brief:"Write <code>as_line(nums)</code> that turns <code>[3, 1, 4]</code> into the string <code>\"3 1 4\"</code>. This trips almost everyone once.",
+  starter:"def as_line(nums):\n    ", check:"print(as_line([3, 1, 4]))\nprint(as_line([]))", expect:"3 1 4\n",
+  hints:[
+    {when:(c,o,e)=>/expected str/.test(e||''), say:"There it is — <b>join only accepts strings</b>. Convert each number first: <code>' '.join(str(n) for n in nums)</code>."},
+    {when:(c)=>/join/.test(c) && !/str\s*\(/.test(c), say:"Your <code>join</code> is being handed numbers. It refuses to convert for you — wrap each one in <code>str()</code>."}
+  ],
+  iv:[{q:"Why does \" \".join([1, 2, 3]) fail?",
+       a:"<b>join only accepts strings</b> — the error is literally <code>expected str instance, int found</code>. Convert first, or use <code>print(*nums)</code> if you're only printing."}]
+},
+/* ---------------- STAGE 5 ---------------- */
+{
+  id:'palindrome', stage:'Ready check', title:'Palindrome',
+  brief:"Write <code>is_pal(s)</code> returning <b>True</b> if the string reads the same backwards. Think about the empty string before you run it.",
+  starter:"def is_pal(s):\n    ", check:"print(is_pal('racecar'))\nprint(is_pal('hello'))\nprint(is_pal(''))", expect:"True\nFalse\nTrue",
+  hints:[
+    {when:(c)=>/return\s+True\s*$/m.test(c) && !/==/.test(c), say:"You return True but never compare anything. The check is: does the string equal its own reverse?"},
+    {when:(c,o)=>/None/.test(o), say:"A None appeared — some path doesn't return. Both the True and the False case need their own return."}
+  ],
+  iv:[{q:"Solve it with two pointers instead of the slice.",
+       a:"<code>left, right = 0, len(s)-1</code>, then <code>while left &lt; right:</code> compare and step inward. <b>Same answer, O(1) extra space</b> instead of building a reversed copy."},
+      {q:"How would you ignore case and punctuation?",
+       a:"Skip non-alphanumeric characters as the pointers move, and lowercase as you compare — rather than cleaning the whole string first, which costs extra memory."}]
+},
+{
+  id:'reverse-place', stage:'Ready check', title:'Two pointers, in place',
+  brief:"Write <code>reverse_in_place(arr)</code> that reverses the list <b>in place</b> — no new list, no slice, no <code>.reverse()</code>. Two pointers walking toward each other.",
+  starter:"def reverse_in_place(arr):\n    left = 0\n    right = len(arr) - 1\n    ", check:"a = ['A', 'B', 'C', 'D']\nreverse_in_place(a)\nprint(a)\nb = [1]\nreverse_in_place(b)\nprint(b)", expect:"['D', 'C', 'B', 'A']\n[1]",
+  hints:[
+    {when:(c,o,e)=>/TimeLimit/.test(e||''), say:"Infinite loop — your <code>while</code> condition never becomes false. <b>Point at the lines that move <code>left</code> and <code>right</code>.</b> If they aren't inside the loop, it runs forever."},
+    {when:(c)=>/\[::-1\]|\.reverse\(\)/.test(c), say:"That's the shortcut. Here the exercise <i>is</i> the two-pointer swap — it's the pattern behind half of the string problems you'll be asked."},
+    {when:(c)=>/while/.test(c) && !/left\s*\+=|left\s*=\s*left/.test(c), say:"Nothing moves <code>left</code> inside the loop, so the condition never changes. That's an infinite loop waiting to happen."},
+    {when:(c)=>/<=/.test(c), say:"You used <code>left &lt;= right</code>. When they land on the same middle item it swaps it with itself — harmless, but <code>&lt;</code> is the correct stopping point."}
+  ],
+  iv:[{q:"Why does the loop stop when left meets right?",
+       a:"<b>Because every pair has already been swapped.</b> Each pass fixes two cells, so the loop runs <code>len(arr) // 2</code> times — not <code>len(arr)</code>."},
+      {q:"Why doesn't this need a temporary variable?",
+       a:"<b>Python builds the whole right side first</b>, as a tuple, then unpacks it. Both old values are captured before anything is overwritten."}]
+},
+{
+  id:'first-dup', stage:'Ready check', title:'First repeat — with a set',
+  brief:"Write <code>first_dup(nums)</code> returning the first number that appears twice, or -1. Use a <b>set</b> to remember what you've seen.",
+  starter:"def first_dup(nums):\n    seen = set()\n    ", check:"print(first_dup([1, 3, 2, 3, 1]))\nprint(first_dup([1, 2, 3]))", expect:"3\n-1",
+  hints:[
+    {when:(c)=>/seen\s*=\s*\[\]/.test(c), say:"You used a <b>list</b> for <code>seen</code>. It works, but <code>x in list</code> scans every item each time — a set answers instantly. That difference is the whole point of this exercise."},
+    {when:(c)=>/\.append/.test(c) && /seen/.test(c), say:"Sets use <code>.add()</code>, not <code>.append()</code>."},
+    {when:(c,o)=>o.trim().startsWith("1"), say:"You returned <code>1</code> but the expected answer is <code>3</code> — the <b>first repeat you meet</b>, not the smallest. Check membership <i>before</i> adding, and return immediately."}
+  ],
+  iv:[{q:"Why a set and not a list?",
+       a:"<b>Sets are hash tables, so membership is roughly constant time.</b> With a list it's a linear scan, making the whole function O(n²) instead of O(n)."},
+      {q:"What's the space cost?",
+       a:"<b>O(n)</b> — you trade memory for speed. That trade is the single most common one in interview answers."}]
+},
+{
+  id:'fizzbuzz', stage:'Ready check', title:'FizzBuzz',
+  brief:"Print 1 to 15. Multiples of 3 print <code>Fizz</code>, of 5 print <code>Buzz</code>, of both print <code>FizzBuzz</code>. <b>The order of your conditions is the whole test.</b>",
+  starter:"for i in range(1, 16):\n    ", check:"", expect:"1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz",
+  hints:[
+    {when:(c,o)=>/^Fizz$/m.test(o) && !/FizzBuzz/.test(o), say:"No <code>FizzBuzz</code> in your output. Your <code>% 3</code> check runs first and wins for 15. Check <b>15 first</b>, or build the string by appending."},
+    {when:(c)=>/range\s*\(\s*15\s*\)/.test(c), say:"<code>range(15)</code> gives 0 to 14. You want <code>range(1, 16)</code> — start inclusive, stop exclusive."},
+    {when:(c)=>/if.*%\s*3/.test(c) && /if.*%\s*15/.test(c) && c.indexOf('% 3') < c.indexOf('% 15'), say:"Your <code>% 3</code> test sits above the <code>% 15</code> test, so 15 never reaches the FizzBuzz branch. Most specific condition goes first."}
+  ],
+  iv:[{q:"Why does the order of the conditions matter?",
+       a:"<b>The first matching branch wins.</b> 15 is divisible by 3, so a <code>% 3</code> check placed first prints Fizz and never reaches FizzBuzz. Most specific first — the same rule as ordering except clauses."},
+      {q:"Can you do it without checking 15?",
+       a:"Yes — build a string: append \"Fizz\" if divisible by 3, append \"Buzz\" if by 5, then print the string or the number if it's still empty. <b>Scales to Fizz/Buzz/Bazz without new branches.</b>"}]
+}
+];
+EX.forEach((e, i) => e.n = i);
+const STAGES = [...new Set(EX.map(e => e.stage))];
+
+/* =========================================================================
+   PYTHON RUNNER (Skulpt)
+   ========================================================================= */
+function pyRun(code, stdin){
+  if (typeof Sk === 'undefined') return { ok:false, out:'', err:'ENGINE_MISSING' };
+  let out = '';
+  const queue = (stdin || []).slice();
+  Sk.configure({
+    output: t => { out += t },
+    read: f => {
+      if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][f] === undefined)
+        throw "File not found: '" + f + "'";
+      return Sk.builtinFiles["files"][f];
+    },
+    __future__: Sk.python3,
+    execLimit: 4000,
+    inputfun: () => queue.length ? queue.shift() : '',
+    inputfunTakesPrompt: true
+  });
+  try {
+    Sk.misceval.retryOptionalSuspensionOrThrow(Sk.importMainWithBody("<stdin>", false, code, true));
+    return { ok:true, out };
+  } catch (e) {
+    return { ok:false, out, err: (e && e.toString) ? e.toString() : String(e) };
+  }
+}
+
+/* Plain-language explanations for the exceptions you'll actually hit */
+const ERRORS = [
+  [/TimeLimitError/, "Your program never stopped.", "Almost always a <code>while</code> loop whose condition never becomes false. <b>Find the line that moves the loop variable</b> — and check that every branch reaches it."],
+  [/IndentationError|bad input/, "The indentation is off.", "Python decides what's inside a block by how far it's pushed in. Lines under a <code>def</code>, <code>for</code>, <code>while</code> or <code>if</code> need <b>4 spaces</b> — and every line in the same block needs the same amount."],
+  [/SyntaxError/, "Python couldn't read your code.", "Usually a missing colon at the end of a <code>def</code>/<code>for</code>/<code>if</code> line, or an unclosed bracket or quote. Look at the line named below, then the line just above it."],
+  [/NameError/, "You used a name Python doesn't know.", "A typo, or a variable used before it was created. Check the spelling against where you defined it."],
+  [/TypeError.*concatenate|TypeError.*unsupported operand|cannot concatenate/, "You mixed text and numbers.", "Python never converts silently. If it came from <code>input()</code> it's a <b>string</b> — wrap it in <code>int()</code>. Going the other way, wrap the number in <code>str()</code>."],
+  [/expected str/, "join was handed numbers.", "<code>join</code> only accepts strings. Convert first: <code>' '.join(str(x) for x in nums)</code>."],
+  [/IndexError/, "You reached past the end of the list.", "A list of 3 items has positions 0, 1, 2 — there is no position 3. This is usually an off-by-one in the loop bounds, or an empty list you didn't expect."],
+  [/KeyError/, "That key isn't in the dictionary.", "Use <code>d.get(key)</code> for <code>None</code> instead of a crash, or <code>d.get(key, 0)</code> for a default."],
+  [/ValueError.*invalid literal/, "int() was given something that isn't a number.", "<code>int(\"3 1 4\")</code> fails because int takes <b>one</b> number. Split the line first, then convert each piece."],
+  [/ValueError/, "Right type, wrong value.", "The type was fine but the value couldn't be used — the classic case is <code>int(\"abc\")</code>."],
+  [/ZeroDivisionError/, "Something was divided by zero.", "Usually an empty list — you divided by <code>len(nums)</code> and the list had nothing in it. Check for empty before dividing."],
+  [/AttributeError/, "That thing doesn't have that method.", "Very often the value is <code>None</code> because a function forgot to return, or you called a list method on a string."],
+  [/unhashable/, "You used a list as a dict key or set member.", "Only frozen things can be keys — numbers, strings, tuples. A list can't."],
+  [/does not support item assignment/, "You tried to change something that can't be changed.", "Strings and tuples are immutable. Build a new one instead, or convert to a list first."]
+];
+function explainError(err){
+  for (const [re, head, body] of ERRORS) if (re.test(err)) return { head, body };
+  return { head: "Your code raised an error.", body: "Read the message below — the exception name tells you the category, and the line number tells you where." };
+}
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+const store = {
+  read(){ try { return JSON.parse(localStorage.getItem('tio')) || {} } catch { return {} } },
+  write(s){ try { localStorage.setItem('tio', JSON.stringify(s)) } catch {} }
+};
+let S = store.read();
+const isDone = id => !!(S[id] && S[id].done);
+const saveCode = (id, code) => { S[id] = Object.assign({}, S[id], { code }); store.write(S) };
+const markDone = id => { S[id] = Object.assign({}, S[id], { done: true }); store.write(S) };
+
+const stageEl = document.getElementById('stage');
+const crumb = document.getElementById('crumb');
+const foot = document.getElementById('foot');
+let cur = null, onKey = null;
+function bindKey(fn){ if (onKey) removeEventListener('keydown', onKey); onKey = fn; addEventListener('keydown', onKey); }
+document.getElementById('brand').onclick = menu;
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+/* =========================================================================
+   MENU
+   ========================================================================= */
+function menu(){
+  cur = null;
+  crumb.textContent = '';
+  foot.innerHTML = 'Your code and progress are saved in this browser';
+  const done = EX.filter(e => isDone(e.id)).length;
+  const engineDown = typeof Sk === 'undefined';
+  stageEl.innerHTML = `
+    <div class="card menu">
+      <h1>Stop reading.<br>Start <em>typing.</em></h1>
+      <p class="lede">Twenty-two exercises that run real Python in this page. Type the code yourself, press Run, and when it's wrong I'll tell you <b>what</b> is wrong — not just that it failed. Every one ends with the question an interviewer asks about it.</p>
+      ${engineDown ? `<div class="banner"><b>The Python engine didn't load.</b> Check your connection and reload the page — everything here needs it.</div>` : ''}
+      <div>
+        <div class="row" style="justify-content:space-between;margin-bottom:6px">
+          <span class="count">${done} of ${EX.length} solved</span>
+          <span class="count">${Math.round(done / EX.length * 100)}%</span>
+        </div>
+        <div class="bar"><i style="width:${done / EX.length * 100}%"></i></div>
+      </div>
+      ${STAGES.map(st => `
+        <div class="stage">
+          <h3>${st}</h3>
+          <div class="exlist">
+            ${EX.filter(e => e.stage === st).map(e => `
+              <button class="exbtn ${isDone(e.id) ? 'done' : ''}" data-n="${e.n}">
+                <span class="tick">${isDone(e.id) ? '✓' : ''}</span>
+                <span class="nm">${e.title}<span class="sub">${e.brief.replace(/<[^>]+>/g, '').slice(0, 68)}…</span></span>
+              </button>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>`;
+  stageEl.querySelectorAll('.exbtn').forEach(b => b.onclick = () => open(+b.dataset.n));
+  bindKey(e => { if (e.key === 'Enter'){ const nx = EX.find(x => !isDone(x.id)); if (nx) open(nx.n) } });
+  scrollTo(0, 0);
+}
+
+/* =========================================================================
+   EXERCISE
+   ========================================================================= */
+function open(n){
+  cur = EX[n];
+  const saved = (S[cur.id] && S[cur.id].code);
+  crumb.textContent = `${n + 1} / ${EX.length}`;
+  foot.innerHTML = 'Tab indents · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> runs';
+  stageEl.innerHTML = `
+    <div class="card">
+      <div class="eyebrow"><s>${cur.stage}</s> ${isDone(cur.id) ? 'solved' : ''}</div>
+      <p class="task">${cur.title}</p>
+      <p class="brief">${cur.brief}</p>
+      ${cur.stdin ? `<div class="expect"><h4>The test types this in</h4><div class="mono small">${esc(cur.stdin.join('\n'))}</div></div>` : ''}
+      ${cur.check ? `<div class="expect"><h4>This code will be run against yours</h4><div class="mono small">${esc(cur.check)}</div></div>` : ''}
+      <div class="expect"><h4>It must print exactly</h4><div class="mono">${esc(cur.expect) || '<span style="opacity:.5">(nothing)</span>'}</div></div>
+      <div class="edwrap">
+        <div class="edbar"><span>your code</span><button id="reset">reset</button></div>
+        <textarea id="ed" spellcheck="false" autocapitalize="off" autocorrect="off">${esc(saved !== undefined ? saved : cur.starter)}</textarea>
+      </div>
+      <div class="row">
+        <button class="btn" id="run">Run it →</button>
+        <button class="btn ghost" id="back">All exercises</button>
+      </div>
+      <div id="result"></div>
+    </div>`;
+
+  const ed = document.getElementById('ed');
+  ed.addEventListener('keydown', edKeys);
+  ed.addEventListener('input', () => saveCode(cur.id, ed.value));
+  document.getElementById('run').onclick = runNow;
+  document.getElementById('back').onclick = menu;
+  document.getElementById('reset').onclick = () => { ed.value = cur.starter; saveCode(cur.id, cur.starter); ed.focus() };
+  bindKey(e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)){ e.preventDefault(); runNow() } });
+  ed.focus();
+  ed.setSelectionRange(ed.value.length, ed.value.length);
+  scrollTo(0, 0);
+}
+
+/* Tab to indent, auto-indent after a colon */
+function edKeys(e){
+  const ta = e.target;
+  if (e.key === 'Tab'){
+    e.preventDefault();
+    const s = ta.selectionStart, en = ta.selectionEnd;
+    ta.value = ta.value.slice(0, s) + '    ' + ta.value.slice(en);
+    ta.selectionStart = ta.selectionEnd = s + 4;
+    saveCode(cur.id, ta.value);
+  }
+  if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey){
+    const s = ta.selectionStart;
+    const line = ta.value.slice(0, s).split('\n').pop();
+    const indent = (line.match(/^\s*/) || [''])[0];
+    const extra = /:\s*$/.test(line) ? '    ' : '';
+    if (indent || extra){
+      e.preventDefault();
+      const ins = '\n' + indent + extra;
+      ta.value = ta.value.slice(0, s) + ins + ta.value.slice(ta.selectionEnd);
+      ta.selectionStart = ta.selectionEnd = s + ins.length;
+      saveCode(cur.id, ta.value);
+    }
+  }
+}
+
+/* =========================================================================
+   RUN + DIAGNOSE
+   ========================================================================= */
+function runNow(){
+  const code = document.getElementById('ed').value;
+  const res = document.getElementById('result');
+  saveCode(cur.id, code);
+
+  if (typeof Sk === 'undefined'){
+    res.innerHTML = `<div class="verdict"><div class="banner"><b>The Python engine isn't loaded.</b> Reload the page and try again.</div></div>`;
+    return;
+  }
+
+  const full = cur.check ? code + '\n' + cur.check : code;
+  const r = pyRun(full, cur.stdin);
+  const got = (r.out || '').replace(/\s+$/, '');
+  const want = cur.expect.replace(/\s+$/, '');
+  const passed = r.ok && got === want;
+
+  let blocks = '';
+
+  if (!r.ok){
+    const ex = explainError(r.err);
+    blocks += `<div class="diag"><h4>What went wrong</h4><p><b>${ex.head}</b> ${ex.body}</p></div>
+      <div class="expect"><h4>Python said</h4><div class="mono" style="color:#FF8A7E">${esc(r.err)}</div></div>`;
+  }
+
+  /* the printed-instead-of-returned tell */
+  if (r.ok && !passed && /(^|\n)None\s*$|(^|\n)None(\n|$)/.test(got) && !/None/.test(want)){
+    blocks += `<div class="diag"><h4>What went wrong</h4><p><b>There's a <code>None</code> in your output that shouldn't be there.</b> That means your function <i>printed</i> a value instead of <i>returning</i> one — or a path through it reaches the end with no <code>return</code>. Printing shows a value and hands back nothing.</p></div>`;
+  }
+
+  /* per-exercise hints */
+  for (const h of (cur.hints || [])){
+    try { if (h.when(code, got, r.err || '')) { blocks += `<div class="diag"><h4>Look here</h4><p>${h.say}</p></div>`; break } } catch {}
+  }
+
+  /* side-by-side comparison */
+  if (r.ok && !passed){
+    const wl = want.split('\n'), gl = got.split('\n');
+    const rows = Math.max(wl.length, gl.length);
+    const fmt = (arr, other) => {
+      let s = '';
+      for (let i = 0; i < rows; i++){
+        const v = arr[i];
+        if (v === undefined) s += `<span class="line miss">(nothing)</span>\n`;
+        else s += `<span class="line ${v !== other[i] ? 'bad' : ''}">${esc(v) || ' '}</span>\n`;
+      }
+      return s;
+    };
+    blocks += `<div class="cmp">
+      <div class="want"><h4>Expected</h4><div class="mono">${fmt(wl, gl)}</div></div>
+      <div class="got"><h4>You got</h4><div class="mono">${fmt(gl, wl)}</div></div>
+    </div>`;
+  }
+
+  if (passed){
+    markDone(cur.id);
+    blocks = `${r.out ? `<div class="expect"><h4>Your output</h4><div class="mono">${esc(got)}</div></div>` : ''}` + blocks;
+  }
+
+  const nextEx = EX[cur.n + 1];
+  res.innerHTML = `
+    <div class="verdict">
+      <div class="vhead ${passed ? 'ok' : 'no'}">${passed ? '✓ &nbsp;That\'s it.' : '✕ &nbsp;Not yet.'}</div>
+      ${blocks}
+      ${passed ? `
+        <div class="iv">
+          <h4><b>Q</b> Now the interviewer asks</h4>
+          <div id="ivbody"><button class="reveal" id="showiv">Answer out loud first, then reveal →</button></div>
+        </div>
+        <div class="row">
+          ${nextEx ? `<button class="btn next" id="nextb">Next: ${nextEx.title} →</button>` : ''}
+          <button class="btn ghost" id="menub">All exercises</button>
+        </div>` : ''}
+    </div>`;
+
+  if (passed){
+    const showiv = document.getElementById('showiv');
+    if (showiv) showiv.onclick = () => {
+      document.getElementById('ivbody').innerHTML = cur.iv.map(x =>
+        `<div class="qa"><p class="q">${x.q}</p><p class="a">${x.a}</p></div>`).join('');
+    };
+    const nb = document.getElementById('nextb');
+    if (nb) nb.onclick = () => open(cur.n + 1);
+    document.getElementById('menub').onclick = menu;
+    bindKey(e => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)){ e.preventDefault(); runNow(); return }
+      if (e.key === 'Enter' && nextEx){ e.preventDefault(); open(cur.n + 1) }
+    });
+  }
+  res.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+menu();
+</script>
