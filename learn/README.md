@@ -1,10 +1,11 @@
 # Python revision pages
 
-Nine interactive pages built as a learn-then-drill shelf. Source is here; the
+Eleven interactive pages built as a learn-then-drill shelf. Source is here; the
 published, shareable versions are linked below.
 
 | Page | What it's for | Live |
 |---|---|---|
+| `five-moves.html` | **where to start on a blank page** — the five moves every function is made of | https://claude.ai/artifact/W9m1jNiqszJaPeKqvap3bh |
 | `four-boxes.html` | list / tuple / dict / set, explained | https://claude.ai/code/artifact/b42031ed-1c95-44b1-823b-09ae36cd72c2 |
 | `set-or-regret.html` | those four, drilled under a timer | https://claude.ai/code/artifact/6f976c55-1230-45fb-bc09-e445b78fcb75 |
 | `day-one-explained.html` | the rest of Day 1, explained | https://claude.ai/code/artifact/64f95123-a9ed-4a95-9c5e-3a84b1b73646 |
@@ -14,11 +15,33 @@ published, shareable versions are linked below.
 | `fifteen-pictures.html` | the same 15 ideas as pictures, with spaced repetition | https://claude.ai/code/artifact/216eed8b-f415-431e-b198-b7f131a92606 |
 | `type-it-out.html` | **22 exercises you type and run** — real Python in the page | https://claude.ai/code/artifact/dcdf9c06-3259-4d8c-a959-6e2ecc11c67d |
 | `fizzbuzz-order.html` | drag-the-rules game for the FizzBuzz condition-order trap | https://claude.ai/code/artifact/40d8012b-c751-4fb3-8916-15f75b83194d |
+| `django-machine.html` | Django's request/response cycle, animated, + the `urls.py` order trap | https://claude.ai/artifact/C4Mzd21FUeV37akBdPdjjq |
 
-Read order: **Four Boxes → Set or Regret → Day One, Explained → Reload Arcade**
+Read order: start at **The Five Moves** (what to type first, on any problem),
+then **Four Boxes → Set or Regret → Day One, Explained → Reload Arcade**
 for the language, then **The Plumbing** (how data gets in and answers get out),
 then **Type It Out** (write code, don't read it), then **Eight Techniques**
-for problem-solving.
+for problem-solving. **The Django Machine** is separate — it's for web work,
+not for the Python fundamentals.
+
+`five-moves.html` is the answer to "where do I start?". It names the fixed
+order every function is written in — door (`def`), box (the accumulator),
+walk (the loop), work (the one-item logic), hand back (`return`, at the outer
+indent) — then makes you build three functions line by line, picking each move
+from three candidates. Wrong picks aren't punished, they're explained with the
+actual error Python raises. Covers the three accumulator shapes: a number
+(`0`), a list (`[]`), a dict (`{}`). Ends with the indent trap (`return`
+inside vs after the loop, both run for real, 3 vs 10) and an eight-question
+"name the box" drill.
+
+Verification: all three reference solutions and both indent-trap variants were
+run on **real CPython** and then through **Skulpt with the page's exact
+harness** — 5/5 match on both. The assembled code was checked to be byte-identical
+to the code that actually runs. Every error message quoted in a wrong-answer
+explanation was produced by running that wrong code; four claims were corrected
+as a result (`UnboundLocalError` not `NameError` for a missing accumulator;
+`'int' object is not iterable` for `list += int`; `[0, 2]` not `[1, 3]` for the
+`range(len(...))` mistake; and Python's actual `=` vs `==` hint text).
 
 `fizzbuzz-order.html` is a focused companion to Type It Out's FizzBuzz
 exercise: drag Fizz/Buzz/FizzBuzz into any order and watch a live 1-15 belt

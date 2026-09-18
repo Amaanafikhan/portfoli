@@ -1,0 +1,392 @@
+<title>The Django Machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+
+<style>
+:root{
+  --ground:#E9E7F2; --panel:#FFFFFF; --panel-2:#F3F1F9;
+  --ink:#1A1726; --ink-soft:#5C5570; --ink-faint:#8B84A0; --rule:#D6D2E4;
+  --accent:#0C4B33;
+  --url:#2F5BEA; --view:#D91A63; --model:#B96C05; --tmpl:#0F9E76;
+  --good:#0F9E76; --bad:#D9342B;
+  --console:#0E1F17; --console-ink:#B8F5D8;
+  --shadow:0 2px 0 rgba(26,23,38,.12), 0 14px 32px -18px rgba(26,23,38,.55);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F1712; --panel:#16211A; --panel-2:#1C2A21;
+    --ink:#E9F5EE; --ink-soft:#A9C4B5; --ink-faint:#6F8B7B; --rule:#2A3B31;
+    --accent:#4FD397;
+    --url:#7C9BFF; --view:#FF4B87; --model:#F0A93C; --tmpl:#4FD397;
+    --good:#4FD397; --bad:#FF6B60;
+    --console:#0A140F; --console-ink:#9DEFC4;
+    --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0F1712; --panel:#16211A; --panel-2:#1C2A21;
+  --ink:#E9F5EE; --ink-soft:#A9C4B5; --ink-faint:#6F8B7B; --rule:#2A3B31;
+  --accent:#4FD397;
+  --url:#7C9BFF; --view:#FF4B87; --model:#F0A93C; --tmpl:#4FD397;
+  --good:#4FD397; --bad:#FF6B60;
+  --console:#0A140F; --console-ink:#9DEFC4;
+  --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6;display:flex;justify-content:center;padding:26px 16px 48px}
+.wrap{width:100%;max-width:760px;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1{font-size:clamp(34px,7vw,50px);font-weight:800;line-height:.98}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-size:clamp(21px,4vw,26px);font-weight:800;line-height:1.1}
+p{margin:0}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.87em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px}
+b{font-weight:800}
+section{display:flex;flex-direction:column;gap:16px}
+.step{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.lede{font-size:16px;line-height:1.55;color:var(--ink-soft);max-width:60ch}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:16px}
+hr{border:none;border-top:1px solid var(--rule);margin:0}
+
+.banner{border-radius:11px;padding:13px 16px;font-size:14px;line-height:1.5;border:1.5px solid var(--rule);background:var(--panel-2);color:var(--ink-soft)}
+.banner b{color:var(--ink)}
+
+/* ---- pipeline ---- */
+.pipeline{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center}
+.pnode{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:12px 14px;border-radius:11px;border:2px solid var(--rule);background:var(--panel-2);
+  font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px;min-width:88px;text-align:center;
+  transition:all .25s;
+}
+.pnode small{font-family:"Public Sans",sans-serif;font-weight:400;font-size:10.5px;color:var(--ink-faint)}
+.pnode.on{transform:scale(1.08);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 22%,transparent)}
+.pnode[data-c="url"]{--c:var(--url)} .pnode[data-c="view"]{--c:var(--view)}
+.pnode[data-c="model"]{--c:var(--model)} .pnode[data-c="tmpl"]{--c:var(--tmpl)}
+.pnode[data-c="browser"]{--c:var(--ink-faint)}
+.pnode.on{border-color:var(--c);color:var(--c)}
+.parrow{font-size:20px;color:var(--ink-faint)}
+
+.stagebox{display:flex;flex-direction:column;gap:10px;min-height:150px}
+.stagehead{display:flex;align-items:center;gap:9px}
+.stagehead .dot{width:11px;height:11px;border-radius:50%}
+.stagehead b{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;letter-spacing:-.02em}
+.stagefile{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint)}
+.mono{font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--console);color:var(--console-ink);border-radius:9px;padding:12px 14px;white-space:pre;overflow-x:auto;line-height:1.6}
+.staget{font-size:14.5px;line-height:1.55;color:var(--ink-soft)}
+.staget b{color:var(--ink)}
+
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font-family:"Public Sans",sans-serif;font-weight:800;font-size:14.5px;color:#fff;background:var(--accent);border:none;border-radius:10px;padding:12px 20px;cursor:pointer;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.ghost{font-family:"Public Sans",sans-serif;font-weight:800;font-size:13px;background:none;border:1.5px solid var(--rule);color:var(--ink);border-radius:9px;padding:10px 15px;cursor:pointer}
+
+/* ---- url ordering puzzle ---- */
+.chips{display:flex;flex-direction:column;gap:8px}
+.chip{
+  display:flex;align-items:center;gap:12px;background:var(--panel-2);border:1.5px solid var(--rule);border-radius:10px;
+  padding:11px 14px;cursor:grab;user-select:none;font-family:"JetBrains Mono",monospace;font-size:13.5px;font-weight:700;
+}
+.chip:active{cursor:grabbing}
+.chip.drag{opacity:.4}
+.chip .rank{width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-family:"Public Sans",sans-serif;font-weight:800;font-size:12px;color:#fff;background:var(--accent)}
+.chip .txt{flex:1}
+.chip .txt small{display:block;font-family:"Public Sans",sans-serif;font-weight:400;font-size:11.5px;color:var(--ink-faint);margin-top:2px}
+.chip .handle{color:var(--ink-faint);font-size:18px}
+
+.urlbelt{display:flex;flex-wrap:wrap;gap:5px}
+.uslot{
+  width:64px;height:48px;border-radius:8px;border:1.5px solid var(--rule);background:var(--panel-2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  font-family:"JetBrains Mono",monospace;font-weight:700;font-size:11px;color:var(--ink-faint);transition:all .15s;
+}
+.uslot .n{font-size:9px;font-weight:400}
+.uslot.now{border-color:var(--accent);transform:scale(1.08);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+.uslot.ok{background:color-mix(in srgb,var(--good) 16%,var(--panel));border-color:var(--good);color:var(--ink)}
+.uslot.bad{background:color-mix(in srgb,var(--bad) 18%,var(--panel));border-color:var(--bad);color:var(--ink)}
+.verdictline{font-size:14.5px;line-height:1.55;color:var(--ink-soft);min-height:44px}
+.verdictline b{color:var(--ink)}
+.verdictline.win{color:var(--good)} .verdictline.lose{color:var(--bad)}
+
+/* ---- flashcards ---- */
+.flash{position:relative;perspective:1000px;height:150px;cursor:pointer}
+.flashin{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flash.up .flashin{transform:rotateY(180deg)}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;border:1.5px solid var(--rule);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;gap:6px;
+}
+.face.front{background:var(--panel-2)}
+.face.back{background:var(--panel);transform:rotateY(180deg)}
+.face b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:19px;letter-spacing:-.02em}
+.face p{font-size:13.5px;line-height:1.45;color:var(--ink-soft)}
+.face .tag{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.deck{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (max-width:520px){.deck{grid-template-columns:1fr}}
+.count{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:16px">
+  <h1>You can't run Django<br>in a browser tab. <em>So watch it.</em></h1>
+  <p class="lede">Django needs a real server and a real database — nothing here can fake that honestly. What <i>can</i> be shown is the one thing that's hardest to picture from docs: what actually happens, in order, between someone hitting a URL and getting a page back. That's what this animates.</p>
+</header>
+
+<hr>
+
+<!-- ===== 01: the request/response cycle ===== -->
+<section>
+  <div class="step">01 — Press Step through it</div>
+  <h2>What happens when someone visits <code>/tasks/</code></h2>
+  <p class="lede">Four files, one request. Watch which file lights up at each stage, and what it actually does.</p>
+
+  <div class="card">
+    <div class="pipeline" id="pipeline"></div>
+    <hr>
+    <div class="stagebox" id="stagebox"></div>
+    <div class="row">
+      <button class="btn" id="step">Step →</button>
+      <button class="ghost" id="restart">Restart</button>
+      <span class="count" id="pcount"></span>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ===== 02: url ordering puzzle ===== -->
+<section>
+  <div class="step">02 — Same trap, new file</div>
+  <h2>Django's urls.py has FizzBuzz's exact bug</h2>
+  <p class="lede">Django checks your URL patterns <b>top to bottom</b> and stops at the first match — identical to <code>if/elif</code>. Drag these three patterns into an order, then send a request to <code>/tasks/new/</code> and see which one catches it.</p>
+
+  <div class="card">
+    <div class="chips" id="uchips"></div>
+    <div class="row">
+      <button class="btn" id="uplay">Send GET /tasks/new/ →</button>
+      <button class="ghost" id="ureset">Reset order</button>
+    </div>
+    <div class="urlbelt" id="ubelt"></div>
+    <p class="verdictline" id="uverdict">Arrange the three patterns, then send the request. Watch which one intercepts <code>/tasks/new/</code>.</p>
+  </div>
+
+  <div class="banner"><b>The accurate rule:</b> a pattern only shadows a later one if it <i>can actually match</i>. <code>tasks/&lt;int:id&gt;/</code> is harmless above <code>tasks/new/</code>, because <code>int</code> only accepts digits. The real danger is a <b>catch-all</b> like <code>tasks/&lt;str:slug&gt;/</code>, which matches anything — always put specific paths above it.</div>
+</section>
+
+<hr>
+
+<!-- ===== 03: flashcards ===== -->
+<section>
+  <div class="step">03 — Say it before you flip it</div>
+  <h2>The eight terms you'll actually hear</h2>
+  <p class="lede">Click a card. Answer out loud first — the pictures and traces you've been doing all week work the same way here.</p>
+  <div class="deck" id="deck"></div>
+</section>
+
+</div>
+
+<script>
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+/* =========================================================================
+   PART 1 — the request/response pipeline
+   ========================================================================= */
+const NODES = [
+  { key:'browser', label:'Browser', c:'browser' },
+  { key:'url',     label:'urls.py',    c:'url' },
+  { key:'view',    label:'views.py',   c:'view' },
+  { key:'model',   label:'models.py',  c:'model' },
+  { key:'tmpl',    label:'template',   c:'tmpl' },
+  { key:'browser2',label:'Browser', c:'browser' }
+];
+const STAGES = [
+  { node:'browser', file:'—', dot:'browser',
+    head:'You visit /tasks/',
+    body:'GET /tasks/',
+    text:"The browser sends a plain HTTP request for the path <code>/tasks/</code>. It has no idea Django exists — it just asks a URL for a page, same as any website." },
+  { node:'url', file:'urls.py', dot:'url',
+    head:'Django checks its list of patterns',
+    body:'urlpatterns = [\n    path("tasks/", views.task_list),\n    path("tasks/&lt;int:id&gt;/", views.task_detail),\n]',
+    text:"<b>urls.py is a lookup table</b> — it matches the path against patterns top to bottom and calls the first function that fits. <code>/tasks/</code> matches the first line, so <code>views.task_list</code> gets the call." },
+  { node:'view', file:'views.py', dot:'view',
+    head:'The view function runs',
+    body:'def task_list(request):\n    tasks = Task.objects.all()\n    return render(request, "tasks/list.html", {"tasks": tasks})',
+    text:"This is <b>just a Python function</b> — same shape as everything you built in Type It Out. It takes a request, does some work, and must <code>return</code> a response. No return, no page — the exact rule from Day 1." },
+  { node:'model', file:'models.py', dot:'model',
+    head:'The ORM fetches real data',
+    body:'class Task(models.Model):\n    title = models.CharField(max_length=200)\n    done = models.BooleanField(default=False)\n\n# Task.objects.all() runs roughly:\n# SELECT * FROM tasks_task;',
+    text:"<code>Task.objects.all()</code> asks the database for every row and hands you back a list of <b>Task objects</b> — Python objects, not raw rows. You never write SQL by hand; the ORM translates your Python into it." },
+  { node:'tmpl', file:'list.html', dot:'tmpl',
+    head:'The template turns data into HTML',
+    body:'&lt;ul&gt;\n{% for task in tasks %}\n  &lt;li&gt;{{ task.title }}&lt;/li&gt;\n{% endfor %}\n&lt;/ul&gt;',
+    text:"<code>{% for task in tasks %}</code> is your Python <code>for</code> loop, in template syntax. It walks the list the view handed it and prints one line per task — same loop, different punctuation." },
+  { node:'browser2', file:'—', dot:'browser',
+    head:'The browser renders the response',
+    body:'&lt;ul&gt;\n  &lt;li&gt;Buy milk&lt;/li&gt;\n  &lt;li&gt;Finish report&lt;/li&gt;\n&lt;/ul&gt;',
+    text:"The finished HTML travels back and the browser draws it. <b>Every one of the last four steps is Python you already know</b> — a lookup, a function with a return, a class, and a loop — wearing Django's syntax." }
+];
+
+let stageAt = 0;
+const pipeline = document.getElementById('pipeline');
+const stagebox = document.getElementById('stagebox');
+const pcount = document.getElementById('pcount');
+
+function paintPipeline(){
+  pipeline.innerHTML = NODES.map((n, i) => {
+    const on = i === stageAt;
+    return `<div class="pnode ${on?'on':''}" data-c="${n.c}">${n.label}${n.key.includes('browser')?'<small>you</small>':`<small>${n.c}</small>`}</div>` +
+      (i < NODES.length - 1 ? `<span class="parrow">→</span>` : '');
+  }).join('');
+}
+function paintStage(){
+  const s = STAGES[stageAt];
+  pcount.textContent = `${stageAt + 1} / ${STAGES.length}`;
+  stagebox.innerHTML = `
+    <div class="stagehead"><span class="dot" style="background:var(--${s.dot})"></span><b>${s.head}</b></div>
+    <div class="stagefile">${s.file}</div>
+    <div class="mono">${s.body}</div>
+    <p class="staget">${s.text}</p>`;
+  document.getElementById('step').textContent = stageAt >= STAGES.length - 1 ? 'Done — restart to replay' : 'Step →';
+  document.getElementById('step').disabled = stageAt >= STAGES.length - 1;
+}
+document.getElementById('step').onclick = () => { if (stageAt < STAGES.length - 1){ stageAt++; paintPipeline(); paintStage() } };
+document.getElementById('restart').onclick = () => { stageAt = 0; paintPipeline(); paintStage() };
+paintPipeline(); paintStage();
+
+/* =========================================================================
+   PART 2 — url.py ordering puzzle (same engine shape as the FizzBuzz one)
+   ========================================================================= */
+const PATTERNS = {
+  exact: { label: 'tasks/new/',        sub: 'exact match — the "create" page', test: p => p === 'new', view: 'task_create' },
+  id:    { label: 'tasks/<int:id>/',   sub: 'any number — the "detail" page',  test: p => /^\d+$/.test(p), view: 'task_detail' },
+  slug:  { label: 'tasks/<str:slug>/', sub: 'any word at all — catch-all',     test: p => true, view: 'task_by_slug' }
+};
+let uorder = ['id', 'slug', 'exact'];   // deliberately wrong-ish default
+const REQUEST_PATH = 'new';
+
+function paintUChips(){
+  const box = document.getElementById('uchips');
+  box.innerHTML = uorder.map((key, i) => {
+    const r = PATTERNS[key];
+    return `<div class="chip" draggable="true" data-i="${i}">
+      <span class="rank">${i + 1}</span>
+      <span class="txt">${r.label}<small>${r.sub}</small></span>
+      <span class="handle">⠿</span>
+    </div>`;
+  }).join('');
+  wireUDrag();
+}
+let uDragFrom = null;
+function wireUDrag(){
+  [...document.querySelectorAll('#uchips .chip')].forEach(c => {
+    c.addEventListener('dragstart', () => { uDragFrom = +c.dataset.i; c.classList.add('drag') });
+    c.addEventListener('dragend', () => c.classList.remove('drag'));
+    c.addEventListener('dragover', e => e.preventDefault());
+    c.addEventListener('drop', () => {
+      const to = +c.dataset.i;
+      if (uDragFrom === null || uDragFrom === to) return;
+      const item = uorder.splice(uDragFrom, 1)[0];
+      uorder.splice(to, 0, item);
+      paintUChips();
+    });
+  });
+}
+function matchedView(order, path){
+  for (const key of order){ if (PATTERNS[key].test(path)) return { key, view: PATTERNS[key].view }; }
+  return null;
+}
+function buildUBelt(){
+  const belt = document.getElementById('ubelt');
+  belt.innerHTML = '';
+  uorder.forEach((key, i) => {
+    const d = document.createElement('div');
+    d.className = 'uslot';
+    d.id = 'uslot-' + i;
+    d.innerHTML = `<div class="n">try #${i+1}</div><div class="v">${PATTERNS[key].label.split('/')[1] || PATTERNS[key].label}</div>`;
+    belt.appendChild(d);
+  });
+}
+buildUBelt();
+
+let uplaying = false;
+document.getElementById('uplay').onclick = () => {
+  if (uplaying) return;
+  uplaying = true;
+  buildUBelt();
+  const verdict = document.getElementById('uverdict');
+  verdict.className = 'verdictline';
+  let i = 0;
+  const step = () => {
+    if (i >= uorder.length){
+      uplaying = false;
+      verdict.className = 'verdictline lose';
+      verdict.innerHTML = `<b>No pattern matched.</b> That shouldn't happen here — reset and try again.`;
+      return;
+    }
+    const key = uorder[i];
+    const el = document.getElementById('uslot-' + i);
+    el.classList.add('now');
+    const matches = PATTERNS[key].test(REQUEST_PATH);
+    setTimeout(() => {
+      el.classList.remove('now');
+      if (matches){
+        el.classList.add(key === 'exact' ? 'ok' : 'bad');
+        uplaying = false;
+        if (key === 'exact'){
+          verdict.className = 'verdictline win';
+          const skipped = uorder.indexOf('id') < uorder.indexOf('exact');
+          verdict.innerHTML = `<b>Correct — you got <code>task_create</code>.</b> ` +
+            (skipped
+              ? `Notice <code>tasks/&lt;int:id&gt;/</code> sat above it and was <i>skipped</i>: the <code>int</code> converter only matches digits, and "new" isn't a number. Order only bites you when an earlier pattern <i>can</i> match.`
+              : `The exact pattern was checked first, so nothing had a chance to intercept it.`);
+        } else {
+          verdict.className = 'verdictline lose';
+          verdict.innerHTML = `<b>Wrong page.</b> <code>${PATTERNS[key].label}</code> caught it first and called <code>${PATTERNS[key].view}</code> instead of <code>task_create</code>. ` +
+            `A <code>&lt;str:slug&gt;</code> pattern is a <b>catch-all</b> — it matches literally any text, including the word "new". ` +
+            `Drag <code>tasks/new/</code> above it.`;
+        }
+      } else {
+        el.classList.add('bad');
+        i++;
+        step();
+      }
+    }, 380);
+  };
+  step();
+};
+document.getElementById('ureset').onclick = () => {
+  uorder = ['id', 'slug', 'exact'];
+  paintUChips(); buildUBelt();
+  document.getElementById('uverdict').className = 'verdictline';
+  document.getElementById('uverdict').innerHTML = 'Arrange the three patterns, then send the request. Watch which one intercepts <code>/tasks/new/</code>.';
+};
+paintUChips();
+
+/* =========================================================================
+   PART 3 — flashcards
+   ========================================================================= */
+const CARDS = [
+  { tag:'MVT', term:'Model', def:'A Python class describing one kind of data. Django turns it into a real database table.' },
+  { tag:'MVT', term:'View', def:'A function that takes a request and returns a response. Business logic lives here.' },
+  { tag:'MVT', term:'Template', def:'The HTML file with Python-ish tags — {% for %}, {{ var }} — that renders your data.' },
+  { tag:'data', term:'ORM', def:'Object-Relational Mapper. Lets you query the database with Python (Task.objects.all()) instead of writing SQL.' },
+  { tag:'data', term:'Migration', def:'A generated file that turns a change to your model class into a real change to the database schema.' },
+  { tag:'routing', term:'urls.py', def:'A top-to-bottom list of patterns. First matching pattern wins — the same rule as if/elif.' },
+  { tag:'routing', term:'Middleware', def:'Code that runs on every request before it reaches your view — auth checks, logging, CORS headers.' },
+  { tag:'admin', term:'Admin panel', def:'A working CRUD interface for any model, generated for free just by registering it — no view or template needed.' }
+];
+const deck = document.getElementById('deck');
+deck.innerHTML = CARDS.map((c, i) => `
+  <div class="flash" id="card-${i}">
+    <div class="flashin">
+      <div class="face front"><span class="tag">${c.tag}</span><b>${c.term}</b><p>tap to reveal</p></div>
+      <div class="face back"><span class="tag">${c.tag}</span><b>${c.term}</b><p>${c.def}</p></div>
+    </div>
+  </div>`).join('');
+CARDS.forEach((_, i) => document.getElementById('card-' + i).onclick = function(){ this.classList.toggle('up') });
+</script>

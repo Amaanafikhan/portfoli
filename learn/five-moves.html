@@ -1,0 +1,693 @@
+<title>The Five Moves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+
+<style>
+:root{
+  --ground:#F2EDE6; --panel:#FFFFFF; --panel-2:#F6F1EA;
+  --ink:#231C14; --ink-soft:#63574A; --ink-faint:#938575; --rule:#E0D6C8;
+  --accent:#B8430A;
+  --m1:#2563EB; --m2:#7C3AED; --m3:#0E9488; --m4:#B8430A; --m5:#BE185D;
+  --good:#0E8A63; --bad:#C62828;
+  --console:#221B14; --console-ink:#F3EDE4;
+  --shadow:0 2px 0 rgba(35,28,20,.10), 0 14px 32px -18px rgba(35,28,20,.5);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#16120E; --panel:#211B15; --panel-2:#2A231B;
+    --ink:#F5EFE7; --ink-soft:#C0B2A2; --ink-faint:#8B7D6D; --rule:#382F25;
+    --accent:#FF9145;
+    --m1:#7AA5FF; --m2:#B794FF; --m3:#3FCFB8; --m4:#FF9145; --m5:#FF7BB0;
+    --good:#34D399; --bad:#FF6B60;
+    --console:#0E0B08; --console-ink:#EFE7DC;
+    --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#16120E; --panel:#211B15; --panel-2:#2A231B;
+  --ink:#F5EFE7; --ink-soft:#C0B2A2; --ink-faint:#8B7D6D; --rule:#382F25;
+  --accent:#FF9145;
+  --m1:#7AA5FF; --m2:#B794FF; --m3:#3FCFB8; --m4:#FF9145; --m5:#FF7BB0;
+  --good:#34D399; --bad:#FF6B60;
+  --console:#0E0B08; --console-ink:#EFE7DC;
+  --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+body{background:var(--ground);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6;margin:0;display:flex;justify-content:center;padding:26px 16px 56px}
+.wrap{width:100%;max-width:720px;display:flex;flex-direction:column;gap:46px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1{font-size:clamp(34px,7.5vw,52px);font-weight:800;line-height:.97}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-size:clamp(21px,4.2vw,27px);font-weight:800;line-height:1.1}
+h3{font-size:16px;font-weight:800}
+p{margin:0}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.86em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px;word-break:break-word}
+b{font-weight:800}
+section{display:flex;flex-direction:column;gap:16px}
+.step{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.lede{font-size:16px;line-height:1.55;color:var(--ink-soft);max-width:60ch}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:15px}
+hr{border:none;border-top:1px solid var(--rule);margin:0;width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---- the five move cards ---- */
+.moves{display:flex;flex-direction:column;gap:9px}
+.move{display:flex;gap:13px;align-items:flex-start;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:13px 15px;box-shadow:var(--shadow)}
+.move .num{width:26px;height:26px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;margin-top:1px}
+.move[data-m="1"] .num{background:var(--m1)} .move[data-m="2"] .num{background:var(--m2)}
+.move[data-m="3"] .num{background:var(--m3)} .move[data-m="4"] .num{background:var(--m4)}
+.move[data-m="5"] .num{background:var(--m5)}
+.move .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.move .nm{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:16px;letter-spacing:-.02em}
+.move .q{font-size:13.5px;color:var(--ink-soft)}
+.move .ln{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink-faint);white-space:pre-wrap;word-break:break-word}
+
+/* ---- code pane ---- */
+.pane{background:var(--console);border-radius:11px;padding:14px 15px;overflow-x:auto}
+.pane .cl{display:block;font-family:"JetBrains Mono",monospace;font-size:13.5px;line-height:1.75;color:var(--console-ink);white-space:pre;border-radius:3px}
+.pane .cl.new{background:rgba(255,145,69,.24);box-shadow:-6px 0 0 rgba(255,145,69,.24)}
+.pane .cl.ghost{color:#6B5F52}
+.pane .cl.cursor::after{content:"▌";color:var(--accent);animation:bl 1s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+
+/* ---- buttons ---- */
+.runbtn{align-self:flex-start;font-family:"Public Sans",sans-serif;font-weight:800;font-size:14.5px;color:#fff;background:var(--accent);border:none;border-radius:10px;padding:12px 20px;cursor:pointer;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s}
+.runbtn:active{transform:translateY(2px);box-shadow:none}
+.runbtn:disabled{opacity:.4;cursor:default;box-shadow:none}
+.runbtn:focus-visible,.ghostbtn:focus-visible,.opt:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.ghostbtn{font-family:"Public Sans",sans-serif;font-weight:800;font-size:13px;background:none;border:1.5px solid var(--rule);color:var(--ink);border-radius:9px;padding:10px 15px;cursor:pointer}
+.ghostbtn:disabled{opacity:.4;cursor:default}
+
+/* ---- option buttons ---- */
+.prompt{font-size:15px;font-weight:800;line-height:1.4}
+.prompt small{display:block;font-weight:400;font-size:13px;color:var(--ink-soft);margin-top:3px}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{text-align:left;width:100%;background:var(--panel-2);border:1.5px solid var(--rule);border-radius:10px;padding:12px 14px;cursor:pointer;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.6;color:var(--ink);white-space:pre-wrap;word-break:break-word;transition:border-color .12s,background .12s}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 13%,var(--panel))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 13%,var(--panel))}
+.opt.dim{opacity:.45}
+.why{font-family:"Public Sans",sans-serif;font-size:13.5px;line-height:1.55;margin-top:7px;padding-top:7px;border-top:1px dashed var(--rule);color:var(--ink-soft);white-space:normal}
+.why b{color:var(--ink)}
+
+.spec{font-size:14px;color:var(--ink-soft);background:var(--panel-2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 13px}
+.spec b{color:var(--ink)}
+
+.note{font-size:14.5px;line-height:1.6;color:var(--ink-soft);min-height:44px}
+.note b{color:var(--ink)}
+.note.win{color:var(--good)} .note.lose{color:var(--bad)}
+
+.out{font-family:"JetBrains Mono",monospace;font-size:13px;background:var(--console);color:var(--console-ink);border-radius:9px;padding:11px 13px;white-space:pre-wrap;word-break:break-word;line-height:1.65}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media (max-width:540px){.cmp{grid-template-columns:1fr}}
+.cmp h4{margin:0 0 5px;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-weight:800;font-family:"Public Sans",sans-serif}
+.cmp .a h4{color:var(--bad)} .cmp .b h4{color:var(--good)}
+
+.ask{background:var(--panel-2);border-radius:10px;padding:13px 15px;display:flex;flex-direction:column;gap:5px}
+.ask .hdr{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.ask .q{font-size:14.5px;font-weight:800;line-height:1.45}
+.ask .a{font-size:14px;line-height:1.55;color:var(--ink-soft)}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:4px 10px;background:var(--panel-2);color:var(--ink-faint);border:1px solid var(--rule)}
+.score{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink-faint)}
+footer{color:var(--ink-faint);font-size:13px;line-height:1.6;border-top:1px solid var(--rule);padding-top:18px}
+.tog{position:fixed;top:12px;right:12px;z-index:9;font-size:11px;font-weight:800;border:1px solid var(--rule);background:var(--panel);color:var(--ink-soft);border-radius:8px;padding:7px 10px;cursor:pointer}
+</style>
+
+<button class="tog" id="tog">theme</button>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:14px">
+  <span class="step">Where to start · 01</span>
+  <h1>Every function you<br>write is the <em>same<br>five moves</em>.</h1>
+  <p class="lede">You do not freeze because you lack Python. You freeze because a blank editor gives you no order to work in. So here is the order. It never changes — not for a list, not for a dict, not in an interview. Learn the five moves and the blank page stops being blank.</p>
+</header>
+
+<section>
+  <span class="step">§01 — the frame</span>
+  <h2>Door, box, walk, work, hand back.</h2>
+  <div class="moves" id="moves"></div>
+  <p class="lede">Notice what is <b>not</b> on that list: cleverness. Moves 1, 2, 3 and 5 are almost identical in every problem you will ever be given. Only move 4 — the work — actually changes. That is the whole trick: four of the five are free.</p>
+</section>
+
+<section>
+  <span class="step">§02 — watch it happen</span>
+  <h2>One problem, five presses.</h2>
+  <div class="spec"><b>The problem.</b> Given a list of prices, give back the total. <code>total_price([3, 5, 2])</code> should come back as <code>10</code>.</div>
+  <div class="card">
+    <div class="pane" id="openpane"></div>
+    <div class="note" id="opennote"></div>
+    <div class="row">
+      <button class="runbtn" id="opennext">Type move 1</button>
+      <button class="ghostbtn" id="openback" disabled>Back</button>
+      <span class="score" id="openscore">0 / 5</span>
+    </div>
+  </div>
+  <div class="ask">
+    <span class="hdr">Q · the interviewer asks</span>
+    <p class="q">"Talk me through how you'd approach this before you write anything."</p>
+    <p class="a">Say the moves out loud: <i>"One parameter, the list. I need a running total starting at zero, before the loop. Loop over each price, add it on. Return the total after the loop finishes — not inside it."</i> That sentence, said before typing, is most of what they are scoring.</p>
+  </div>
+</section>
+
+<section>
+  <span class="step">§03 — your turn</span>
+  <h2>Build three, line by line.</h2>
+  <p class="lede">Same five moves, three different shapes of answer — a number, a list, a table. Pick each line. Wrong picks are not punished, they are <b>explained</b>: you find out exactly what Python would have done. At the end the finished function runs for real, in this page.</p>
+  <div id="builds" style="display:flex;flex-direction:column;gap:30px"></div>
+</section>
+
+<section>
+  <span class="step">§04 — the one that gets everyone</span>
+  <h2>Four spaces or eight?</h2>
+  <p class="lede">This is the bug you have written four times already. The code is identical except for the indent of one line — and the indent is what decides whether <code>return</code> belongs to the loop or to the function. Run both. Real Python, right here.</p>
+  <div class="card">
+    <div class="row">
+      <button class="runbtn" id="indentrun">Run both versions</button>
+      <span class="score" id="indentscore">not run yet</span>
+    </div>
+    <div class="cmp">
+      <div class="a">
+        <h4>return inside the loop — 8 spaces</h4>
+        <div class="pane"><span class="cl">def total_price(prices):</span><span class="cl">    total = 0</span><span class="cl">    for p in prices:</span><span class="cl">        total += p</span><span class="cl new">        return total</span><span class="cl"> </span><span class="cl">print(total_price([3, 5, 2]))</span></div>
+        <div class="out" id="indentA">—</div>
+      </div>
+      <div class="b">
+        <h4>return after the loop — 4 spaces</h4>
+        <div class="pane"><span class="cl">def total_price(prices):</span><span class="cl">    total = 0</span><span class="cl">    for p in prices:</span><span class="cl">        total += p</span><span class="cl new">    return total</span><span class="cl"> </span><span class="cl">print(total_price([3, 5, 2]))</span></div>
+        <div class="out" id="indentB">—</div>
+      </div>
+    </div>
+    <div class="note" id="indentnote">Both are valid Python. Both run. Only one is right — and nothing will warn you.</div>
+  </div>
+  <div class="ask">
+    <span class="hdr">Q · the interviewer asks</span>
+    <p class="q">"Your function returns 3 instead of 10. Where's the bug?"</p>
+    <p class="a">The answer they want in one line: <b>"<code>return</code> is inside the loop, so it exits on the first item."</b> <code>return</code> does not mean "remember this" — it means <i>stop the function now and hand this back</i>. If it sits at the same indent as the body of the loop, it fires on iteration one and the other items are never seen.</p>
+  </div>
+</section>
+
+<section>
+  <span class="step">§05 — the first decision</span>
+  <h2>Name the box.</h2>
+  <p class="lede">Move 2 is the move that decides everything after it. Get the box right and the rest of the function almost writes itself; get it wrong and you fight the code for ten minutes. Read the problem, pick the box. Eight of them.</p>
+  <div class="card">
+    <div class="spec" id="boxq">—</div>
+    <div class="opts" id="boxopts"></div>
+    <div class="note" id="boxnote">Which empty container does the answer collect in?</div>
+    <div class="row">
+      <button class="ghostbtn" id="boxnext" disabled>Next</button>
+      <span class="score" id="boxscore">0 / 8</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <span class="step">§06 — carry this</span>
+  <h2>The card that goes in your head.</h2>
+  <div class="card">
+    <div class="pane"><span class="cl ghost"># 1. door  — what comes in?</span><span class="cl">def name(data):</span><span class="cl ghost">    # 2. box   — where does the answer collect?</span><span class="cl">    out = 0        # or []  or {}  or set()  or ""</span><span class="cl ghost">    # 3. walk  — visit each one</span><span class="cl">    for x in data:</span><span class="cl ghost">        # 4. work  — what happens to ONE item?</span><span class="cl">        out += x</span><span class="cl ghost">    # 5. back  — after the loop, four spaces</span><span class="cl">    return out</span></div>
+    <p class="lede" style="max-width:none">Write that skeleton first. Every time. Before you have any idea how to solve the problem, you can already type moves 1, 2, 3 and 5 — because they only depend on <i>what goes in</i> and <i>what comes out</i>, which the question already told you. Then you sit and think about move 4 with four fifths of the function already on screen. That is the difference between staring at a blank editor and staring at one small gap.</p>
+  </div>
+  <div class="ask">
+    <span class="hdr">Q · the interviewer asks</span>
+    <p class="q">"You've gone quiet. What are you thinking?"</p>
+    <p class="a">Never go quiet. Type the skeleton and narrate it: <i>"I'm setting up the shape first — takes a list, returns a count, so I need a counter before the loop and a return after it. Now let me think about the condition."</i> You have said something true and useful while buying yourself thinking time.</p>
+  </div>
+</section>
+
+<footer>
+  Real Python runs in this page via Skulpt — nothing is faked and nothing is sent anywhere. Every expected output here was produced by running the code first.
+</footer>
+
+</div>
+
+<script>
+/* ---------------- theme ---------------- */
+document.getElementById('tog').onclick = function(){
+  var r = document.documentElement;
+  var cur = r.getAttribute('data-theme');
+  if (!cur) cur = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  r.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+};
+
+/* ---------------- python runner ---------------- */
+function pyRun(code){
+  if (typeof Sk === 'undefined') return { ok:false, out:'', err:'ENGINE_MISSING' };
+  var out = '';
+  Sk.configure({
+    output: function(t){ out += t; },
+    read: function(f){
+      if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][f] === undefined)
+        throw "File not found: '" + f + "'";
+      return Sk.builtinFiles["files"][f];
+    },
+    __future__: Sk.python3,
+    execLimit: 4000
+  });
+  try {
+    Sk.misceval.retryOptionalSuspensionOrThrow(Sk.importMainWithBody("<stdin>", false, code, true));
+    return { ok:true, out:out };
+  } catch (e) {
+    return { ok:false, out:out, err:(e && e.toString) ? e.toString() : String(e) };
+  }
+}
+
+/* ---------------- §01 the five moves ---------------- */
+var MOVES = [
+  {n:1, nm:'The door',      q:'What comes in?',                    ln:'def total_price(prices):'},
+  {n:2, nm:'The box',       q:'Where does the answer collect?',    ln:'    total = 0'},
+  {n:3, nm:'The walk',      q:'How do I visit them one at a time?',ln:'    for p in prices:'},
+  {n:4, nm:'The work',      q:'What happens to ONE item?',         ln:'        total += p'},
+  {n:5, nm:'The hand-back', q:'How does the answer get out?',      ln:'    return total'}
+];
+document.getElementById('moves').innerHTML = MOVES.map(function(m){
+  return '<div class="move" data-m="'+m.n+'">' +
+    '<span class="num">'+m.n+'</span>' +
+    '<div class="body"><span class="nm">'+m.nm+'</span>' +
+    '<span class="q">'+m.q+'</span>' +
+    '<span class="ln">'+m.ln.replace(/</g,'&lt;')+'</span></div></div>';
+}).join('');
+
+/* ---------------- §02 the opening stepper ---------------- */
+var OPEN = [
+  {ln:'def total_price(prices):',
+   note:'<b>Move 1 — the door.</b> You have not solved anything yet, and that is fine. The question said "given a list of prices" — so the list is what comes in, and it becomes the parameter. The name says what comes back out. Two facts from the question, typed. Nothing invented.'},
+  {ln:'    total = 0',
+   note:'<b>Move 2 — the box.</b> The answer is one number that grows, so you need somewhere for it to grow. It must be created <i>before</i> the loop — put it inside and it resets to 0 on every single price. It starts at <code>0</code> because adding 0 to anything changes nothing.'},
+  {ln:'    for p in prices:',
+   note:'<b>Move 3 — the walk.</b> <code>p</code> is one price, handed to you fresh each time round. Not an index, not a position — the value itself. You do not need <code>range(len(prices))</code> here because you never need to know <i>where</i> a price is, only what it is.'},
+  {ln:'        total += p',
+   note:'<b>Move 4 — the work.</b> The only line that required thinking, and it only ever describes <i>one</i> item. Never try to reason about the whole list at once. Answer "if I am holding exactly one price, what do I do with it?" — add it to the box.'},
+  {ln:'    return total',
+   note:'<b>Move 5 — the hand-back.</b> Four spaces, level with the <code>for</code>, not inside it. The loop finishes, <i>then</i> you hand back. Eight spaces here and the function quits on the first price and returns 3. This is the single most common bug in the language.'}
+];
+var oi = 0;
+var openpane = document.getElementById('openpane');
+var opennote = document.getElementById('opennote');
+var opennext = document.getElementById('opennext');
+var openback = document.getElementById('openback');
+var openscore = document.getElementById('openscore');
+
+function paintOpen(){
+  var html = '';
+  if (oi === 0){
+    html = '<span class="cl ghost"># the blank editor. this is the bit that scares people.</span><span class="cl cursor"></span>';
+  } else {
+    for (var i = 0; i < oi; i++){
+      html += '<span class="cl'+(i === oi-1 ? ' new' : '')+'">' + OPEN[i].ln.replace(/</g,'&lt;').replace(/ /g,'&nbsp;') + '</span>';
+    }
+    if (oi < 5) html += '<span class="cl cursor"></span>';
+  }
+  openpane.innerHTML = html;
+  opennote.innerHTML = oi === 0
+    ? 'Press the button. Five presses, and a working function exists — in an order you can repeat forever.'
+    : OPEN[oi-1].note;
+  opennote.className = 'note' + (oi === 5 ? ' win' : '');
+  openscore.textContent = oi + ' / 5';
+  openback.disabled = oi === 0;
+  if (oi >= 5){
+    opennext.disabled = true;
+    opennext.textContent = 'Done — that is a whole function';
+    opennote.innerHTML = OPEN[4].note + ' <b>Five lines, five moves, zero staring.</b>';
+  } else {
+    opennext.disabled = false;
+    opennext.textContent = 'Type move ' + (oi + 1);
+  }
+}
+opennext.onclick = function(){ if (oi < 5){ oi++; paintOpen(); } };
+openback.onclick  = function(){ if (oi > 0){ oi--; paintOpen(); } };
+paintOpen();
+
+/* ---------------- §03 build three ---------------- */
+var BUILDS = [
+  {
+    id:'sum',
+    title:'A number comes out',
+    spec:'<b>total_price(prices)</b> — add up a list of prices. <code>total_price([3, 5, 2])</code> → <code>10</code>',
+    expect:'10',
+    final:'def total_price(prices):\n    total = 0\n    for p in prices:\n        total += p\n    return total\n\nprint(total_price([3, 5, 2]))',
+    ask:{q:'"Why did you start the total at zero?"',
+         a:'Because zero is the identity for addition — adding it changes nothing, so the first real price lands correctly. If you were multiplying you would start at <code>1</code> for the same reason. And if you were finding a maximum you would start at the <i>first item</i>, not 0, because 0 is wrong the moment the list has negatives in it.'},
+    steps:[
+      {ask:'Move 1 — the door', sub:'What comes in?', opts:[
+        {t:'def total_price(prices):', ok:true, why:'One parameter for the list. The question handed you the input and the output — you just typed them.'},
+        {t:'def total_price():', ok:false, why:'No door. The list cannot get in, so you would have to hardcode it inside the function — and then it only ever works for that one bill.'},
+        {t:'def total_price(3, 5, 2):', ok:false, why:'Parameters are <b>names</b>, not values. You are saying "the thing arriving will be called...", and <code>3</code> is not a name. Python stops with a <code>SyntaxError</code> before anything runs.'}
+      ]},
+      {ask:'Move 2 — the box', sub:'Where does the answer collect?', opts:[
+        {t:'    total = 0', ok:true, why:'A number that grows, created before the loop. Start at 0 because adding 0 changes nothing.'},
+        {t:'    total = []', ok:false, why:'A list is for collecting many answers. Here one number comes out — and <code>total += p</code> on a list means "extend me with each item of p", so Python replies <code>TypeError: \'int\' object is not iterable</code>.'},
+        {t:'    (skip it — go straight to the loop)', ok:false, why:'Then <code>total += p</code> stops with <code>UnboundLocalError: cannot access local variable \'total\' where it is not associated with a value</code>. Python read the whole function, saw you assigning to <code>total</code>, and marked it local — but on the first pass there is nothing in it yet. You cannot add to a box that was never made. The box always comes before the walk.'}
+      ]},
+      {ask:'Move 3 — the walk', sub:'How do I visit them one at a time?', opts:[
+        {t:'    for p in prices:', ok:true, why:'<code>p</code> is one price, fresh each time round. The value itself, not its position.'},
+        {t:'    for p in range(prices):', ok:false, why:'<code>range</code> wants a number, you gave it a list → <code>TypeError</code>. You only reach for <code>range(len(prices))</code> when you genuinely need the index — here you never do.'},
+        {t:'    while p < prices:', ok:false, why:'<code>p</code> does not exist yet, and nothing inside would move you forward. A <code>while</code> that never changes its own condition runs forever.'}
+      ]},
+      {ask:'Move 4 — the work', sub:'What happens to ONE price?', opts:[
+        {t:'        total += p', ok:true, why:'Short for <code>total = total + p</code>. One item\'s worth of work, run once per price. Never reason about the whole list here — only about the one you are holding.'},
+        {t:'        total = p', ok:false, why:'Overwrite, not add. Each price wipes the last one, so after the loop <code>total</code> is just the final price — <code>2</code>, not <code>10</code>. No error, no warning, wrong answer.'},
+        {t:'        total += prices', ok:false, why:'Adding the whole list to a number, once per item. <code>TypeError: unsupported operand type(s) for +=: \'int\' and \'list\'</code>.'}
+      ]},
+      {ask:'Move 5 — the hand-back', sub:'How does the answer get out?', opts:[
+        {t:'    return total', ok:true, why:'Four spaces — level with the <code>for</code>, outside it. The loop finishes, then you hand back.'},
+        {t:'        return total', ok:false, why:'Eight spaces puts it <i>inside</i> the loop. <code>return</code> means "stop the function now", so it fires on the very first price and hands back <code>3</code>.'},
+        {t:'    print(total)', ok:false, why:'Shows 10 on screen and hands back <code>None</code>. <code>total_price([3,5,2]) * 2</code> would then crash with <code>TypeError</code>. Show is not give.'}
+      ]}
+    ]
+  },
+  {
+    id:'evens',
+    title:'A list comes out',
+    spec:'<b>only_evens(nums)</b> — keep just the even numbers. <code>only_evens([1, 2, 3, 4])</code> → <code>[2, 4]</code>',
+    expect:'[2, 4]',
+    final:'def only_evens(nums):\n    out = []\n    for n in nums:\n        if n % 2 == 0:\n            out.append(n)\n    return out\n\nprint(only_evens([1, 2, 3, 4]))',
+    ask:{q:'"Could you write that in one line?"',
+         a:'Yes — <code>return [n for n in nums if n % 2 == 0]</code>, a list comprehension. Say it, because it shows range. But write the loop version first in an interview: it is easier to debug out loud, and nobody has ever failed a round for being readable.'},
+    steps:[
+      {ask:'Move 1 — the door', sub:'What comes in?', opts:[
+        {t:'def only_evens(nums):', ok:true, why:'One parameter. The empty list you are about to build is your business, not the caller\'s.'},
+        {t:'def only_evens(nums, out):', ok:false, why:'You are asking whoever calls you to hand over an empty list. That is your job — make it inside. It also means <code>only_evens([1,2,3,4])</code> fails with <code>missing 1 required positional argument</code>.'},
+        {t:'def only_evens[nums]:', ok:false, why:'Square brackets are for indexing into things. A <code>def</code> uses round brackets. <code>SyntaxError</code>.'}
+      ]},
+      {ask:'Move 2 — the box', sub:'Where does the answer collect?', opts:[
+        {t:'    out = []', ok:true, why:'Several answers are coming, and their order matters → an empty list you append to.'},
+        {t:'    out = 0', ok:false, why:'A number holds exactly one value. The moment you reach <code>out.append(n)</code> you get <code>AttributeError: \'int\' object has no attribute \'append\'</code> — numbers have no append, only lists do.'},
+        {t:'    out = nums', ok:false, why:'That is not a copy — it is a second name for the <i>same</i> list. Anything you do to <code>out</code> happens to the caller\'s list too. Use <code>nums[:]</code> if you ever genuinely want a copy.'}
+      ]},
+      {ask:'Move 3 — the walk', sub:'How do I visit them one at a time?', opts:[
+        {t:'    for n in nums:', ok:true, why:'<code>n</code> is the number itself, which is what you want to test.'},
+        {t:'    for n in range(len(nums)):', ok:false, why:'Now <code>n</code> is 0, 1, 2, 3 — <i>positions</i>, not values. <code>n % 2 == 0</code> tests the index, and <code>out.append(n)</code> stores the index, so you get <code>[0, 2]</code> instead of <code>[2, 4]</code>. It runs, it looks plausible, it is wrong. Only reach for <code>range(len(...))</code> when you genuinely need the position.'},
+        {t:'    for nums in n:', ok:false, why:'Backwards. The collection goes on the right of <code>in</code>, the one-item name on the left. And <code>n</code> does not exist → <code>NameError</code>.'}
+      ]},
+      {ask:'Move 4 — the work', sub:'What happens to ONE number?', opts:[
+        {t:'        if n % 2 == 0:\n            out.append(n)', ok:true, why:'Test it, and only if it passes, put it in the box. <code>%</code> is the remainder — <code>n % 2 == 0</code> means "divides by 2 with nothing left over".'},
+        {t:'        if n % 2 = 0:\n            out.append(n)', ok:false, why:'One <code>=</code> assigns a value, two <code>==</code> compare. Python will not even start — and it tells you outright: <code>SyntaxError: cannot assign to expression here. Maybe you meant \'==\' instead of \'=\'?</code>'},
+        {t:'        if n % 2 == 0:\n            out = out.append(n)', ok:false, why:'<code>.append()</code> changes the list <i>and hands back <code>None</code></i>. So you have just thrown the list away and put <code>None</code> in its place — the next append is <code>AttributeError: \'NoneType\' object has no attribute \'append\'</code>. Never assign the result of <code>.append</code>, <code>.sort</code> or <code>.reverse</code>.'}
+      ]},
+      {ask:'Move 5 — the hand-back', sub:'How does the answer get out?', opts:[
+        {t:'    return out', ok:true, why:'Four spaces. Outside the <code>for</code>, outside the <code>if</code>. Every number gets its turn first.'},
+        {t:'            return out', ok:false, why:'Twelve spaces — inside the <code>if</code>, inside the <code>for</code>. It quits the moment it finds the first even number, handing back <code>[2]</code>.'},
+        {t:'    return out.sort()', ok:false, why:'Same trap as append: <code>.sort()</code> reorders in place and hands back <code>None</code>. You would return nothing at all. If you need it sorted, use <code>return sorted(out)</code>.'}
+      ]}
+    ]
+  },
+  {
+    id:'count',
+    title:'A table comes out',
+    spec:'<b>count_words(words)</b> — how many times does each word appear? <code>count_words(["a", "b", "a"])</code> → <code>{\'a\': 2, \'b\': 1}</code>',
+    expect:"{'a': 2, 'b': 1}",
+    final:'def count_words(words):\n    counts = {}\n    for w in words:\n        counts[w] = counts.get(w, 0) + 1\n    return counts\n\nprint(count_words(["a", "b", "a"]))',
+    ask:{q:'"What happens the first time you see a word?"',
+         a:'That is the whole question, and it is why <code>counts[w] = counts[w] + 1</code> fails. On a brand-new word the key does not exist yet, so reading it is a <code>KeyError</code>. <code>counts.get(w, 0)</code> means "the count so far, or 0 if there isn\'t one" — it makes the first time and every later time the same line of code.'},
+    steps:[
+      {ask:'Move 1 — the door', sub:'What comes in?', opts:[
+        {t:'def count_words(words):', ok:true, why:'Plural name, because a list of them arrives. Small thing, but it stops you looping over the letters of a single string by mistake.'},
+        {t:'def count_words(words)', ok:false, why:'No colon. The <code>:</code> is what opens the indented block underneath. <code>SyntaxError: expected \':\'</code>.'},
+        {t:'count_words(words):', ok:false, why:'No <code>def</code>. Without it this is not a definition at all — Python reads it as a broken call.'}
+      ]},
+      {ask:'Move 2 — the box', sub:'Where does the answer collect?', opts:[
+        {t:'    counts = {}', ok:true, why:'Each word needs its own running number, so you need labels → a dict. Empty braces to start.'},
+        {t:'    counts = []', ok:false, why:'A list is looked up by position, not by label. <code>counts[\'a\']</code> gives <code>TypeError: list indices must be integers or slices, not str</code>.'},
+        {t:'    counts = set()', ok:false, why:'A set remembers <i>which</i> words appeared but never <i>how many times</i> — it throws duplicates away, which is exactly the information you are trying to keep. Perfect tool for "have I seen this before", wrong tool for counting.'}
+      ]},
+      {ask:'Move 3 — the walk', sub:'How do I visit them one at a time?', opts:[
+        {t:'    for w in words:', ok:true, why:'<code>w</code> is one word. You are looping over the <i>input</i> list, not over the dict you are building.'},
+        {t:'    for w in words.items():', ok:false, why:'<code>.items()</code> is a dict method. <code>words</code> is a list → <code>AttributeError: \'list\' object has no attribute \'items\'</code>. You will use <code>.items()</code> later, when you loop over <code>counts</code>.'},
+        {t:'    for w, c in words:', ok:false, why:'Two names on the left means "each item is a pair, split it". Each item here is a single string, so Python tries to split <code>\'a\'</code> into two and fails: <code>ValueError: not enough values to unpack</code>.'}
+      ]},
+      {ask:'Move 4 — the work', sub:'What happens to ONE word?', opts:[
+        {t:'        counts[w] = counts.get(w, 0) + 1', ok:true, why:'"Whatever this word\'s count is, or 0 if it has none — add one, put it back." One line that handles the first sighting and the tenth identically.'},
+        {t:'        counts[w] = counts[w] + 1', ok:false, why:'Reads the key before it exists. On the very first <code>\'a\'</code>: <code>KeyError: \'a\'</code>. It would only work if you had pre-filled every possible word with 0 — which you cannot.'},
+        {t:'        counts[w] += w', ok:false, why:'Adding the word to the count. Even ignoring the missing key, <code>0 + \'a\'</code> is <code>TypeError: unsupported operand type(s) for +: \'int\' and \'str\'</code>. You want to add <b>1</b>, not the word.'}
+      ]},
+      {ask:'Move 5 — the hand-back', sub:'How does the answer get out?', opts:[
+        {t:'    return counts', ok:true, why:'The whole table, after every word has been counted.'},
+        {t:'        return counts', ok:false, why:'Inside the loop. Hands back after the first word only: <code>{\'a\': 1}</code>.'},
+        {t:'    return counts[w]', ok:false, why:'One count instead of the table — and <code>w</code> is whatever the loop happened to leave behind, which is <code>\'a\'</code> here purely by accident of the input.'}
+      ]}
+    ]
+  }
+];
+
+var bstate = {};
+BUILDS.forEach(function(b){ bstate[b.id] = { i:0, picked:[], wrong:0, lines:[] }; });
+
+var buildsHost = document.getElementById('builds');
+buildsHost.innerHTML = BUILDS.map(function(b){
+  return '<div>' +
+    '<h3 style="margin-bottom:10px">' + b.title + '</h3>' +
+    '<div class="spec" style="margin-bottom:12px">' + b.spec + '</div>' +
+    '<div class="card">' +
+      '<div class="pane" id="pane-' + b.id + '"></div>' +
+      '<div class="prompt" id="prompt-' + b.id + '"></div>' +
+      '<div class="opts" id="opts-' + b.id + '"></div>' +
+      '<div class="note" id="note-' + b.id + '"></div>' +
+      '<div class="row">' +
+        '<button class="runbtn" id="run-' + b.id + '" disabled>Run the finished function</button>' +
+        '<button class="ghostbtn" id="reset-' + b.id + '">Start over</button>' +
+        '<span class="score" id="sc-' + b.id + '">move 1 of 5</span>' +
+      '</div>' +
+      '<div class="out" id="out-' + b.id + '" style="display:none"></div>' +
+    '</div>' +
+    '<div class="ask" style="margin-top:12px">' +
+      '<span class="hdr">Q · the interviewer asks</span>' +
+      '<p class="q">' + b.ask.q + '</p>' +
+      '<p class="a">' + b.ask.a + '</p>' +
+    '</div>' +
+  '</div>';
+}).join('');
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function paintBuild(b){
+  var st = bstate[b.id];
+  var pane = document.getElementById('pane-' + b.id);
+  var prompt = document.getElementById('prompt-' + b.id);
+  var opts = document.getElementById('opts-' + b.id);
+  var note = document.getElementById('note-' + b.id);
+  var sc = document.getElementById('sc-' + b.id);
+  var run = document.getElementById('run-' + b.id);
+
+  // code pane
+  if (st.lines.length === 0){
+    pane.innerHTML = '<span class="cl ghost"># nothing yet</span><span class="cl cursor"></span>';
+  } else {
+    var html = '';
+    st.lines.forEach(function(group, gi){
+      group.split('\n').forEach(function(l){
+        html += '<span class="cl' + (gi === st.lines.length-1 ? ' new' : '') + '">' +
+                esc(l).replace(/ /g,'&nbsp;') + '</span>';
+      });
+    });
+    if (st.i < 5) html += '<span class="cl cursor"></span>';
+    pane.innerHTML = html;
+  }
+
+  if (st.i >= 5){
+    prompt.innerHTML = 'All five moves placed.';
+    opts.innerHTML = '';
+    run.disabled = false;
+    sc.textContent = st.wrong === 0 ? 'clean run — no wrong picks' : st.wrong + ' wrong pick' + (st.wrong === 1 ? '' : 's') + ' along the way';
+    if (!note.dataset.keep){ note.innerHTML = 'Now run it. Real Python, real output.'; note.className = 'note win'; }
+    return;
+  }
+
+  var step = b.steps[st.i];
+  prompt.innerHTML = step.ask + '<small>' + step.sub + '</small>';
+  sc.textContent = 'move ' + (st.i + 1) + ' of 5';
+  run.disabled = true;
+
+  opts.innerHTML = step.opts.map(function(o, k){
+    return '<button class="opt" data-k="' + k + '">' + esc(o.t) + '</button>';
+  }).join('');
+
+  Array.prototype.forEach.call(opts.querySelectorAll('.opt'), function(btn){
+    btn.onclick = function(){ pick(b, parseInt(btn.dataset.k, 10)); };
+  });
+}
+
+function pick(b, k){
+  var st = bstate[b.id];
+  var step = b.steps[st.i];
+  var o = step.opts[k];
+  var opts = document.getElementById('opts-' + b.id);
+  var note = document.getElementById('note-' + b.id);
+  var btns = opts.querySelectorAll('.opt');
+
+  btns[k].className = 'opt ' + (o.ok ? 'right' : 'wrong');
+  btns[k].insertAdjacentHTML('beforeend', '<span class="why">' + o.why + '</span>');
+  Array.prototype.forEach.call(btns, function(bb, i){
+    bb.disabled = true;
+    if (i !== k) bb.classList.add('dim');
+  });
+
+  if (o.ok){
+    st.lines.push(o.t);
+    note.innerHTML = '<b>Yes.</b> That line goes in. Next move.';
+    note.className = 'note win';
+    setTimeout(function(){
+      st.i++;
+      delete note.dataset.keep;
+      paintBuild(b);
+      // re-show the running note after repaint
+      var n2 = document.getElementById('note-' + b.id);
+      if (st.i < 5){ n2.innerHTML = 'Read the question again before you pick.'; n2.className = 'note'; }
+    }, 1500);
+  } else {
+    st.wrong++;
+    note.innerHTML = '<b>That one breaks.</b> Read why, then pick again — the right line is still on screen.';
+    note.className = 'note lose';
+    setTimeout(function(){
+      // re-enable the other options, keep the explanation visible
+      Array.prototype.forEach.call(btns, function(bb, i){
+        if (i !== k && !bb.querySelector('.why')){ bb.disabled = false; bb.classList.remove('dim'); }
+      });
+    }, 900);
+  }
+}
+
+BUILDS.forEach(function(b){
+  paintBuild(b);
+  document.getElementById('note-' + b.id).innerHTML = 'Read the question again before you pick.';
+  document.getElementById('reset-' + b.id).onclick = function(){
+    bstate[b.id] = { i:0, picked:[], wrong:0, lines:[] };
+    document.getElementById('out-' + b.id).style.display = 'none';
+    paintBuild(b);
+    document.getElementById('note-' + b.id).innerHTML = 'Read the question again before you pick.';
+    document.getElementById('note-' + b.id).className = 'note';
+  };
+  document.getElementById('run-' + b.id).onclick = function(){
+    var out = document.getElementById('out-' + b.id);
+    var note = document.getElementById('note-' + b.id);
+    out.style.display = 'block';
+    out.textContent = 'running...';
+    setTimeout(function(){
+      var r = pyRun(b.final);
+      if (!r.ok){
+        out.textContent = (r.out || '') + '\n' + (r.err || 'error');
+        note.innerHTML = '<b>The engine errored.</b> That is this page, not your logic.';
+        note.className = 'note lose';
+        return;
+      }
+      var got = r.out.replace(/\s+$/,'');
+      out.textContent = '>>> ' + b.final.split('\n').filter(function(l){ return l.indexOf('print(') === 0; })[0] + '\n' + got;
+      if (got === b.expect){
+        note.innerHTML = '<b>' + esc(got) + '</b> — exactly what the problem asked for. Five moves, no cleverness required.';
+        note.className = 'note win';
+      } else {
+        note.innerHTML = 'Expected <code>' + esc(b.expect) + '</code>, got <code>' + esc(got) + '</code>.';
+        note.className = 'note lose';
+      }
+      note.dataset.keep = '1';
+    }, 120);
+  };
+});
+
+/* ---------------- §04 the indent trap ---------------- */
+var CODE_IN  = 'def total_price(prices):\n    total = 0\n    for p in prices:\n        total += p\n        return total\n\nprint(total_price([3, 5, 2]))';
+var CODE_OUT = 'def total_price(prices):\n    total = 0\n    for p in prices:\n        total += p\n    return total\n\nprint(total_price([3, 5, 2]))';
+
+document.getElementById('indentrun').onclick = function(){
+  var A = document.getElementById('indentA');
+  var B = document.getElementById('indentB');
+  var note = document.getElementById('indentnote');
+  var sc = document.getElementById('indentscore');
+  A.textContent = 'running...'; B.textContent = 'running...';
+  setTimeout(function(){
+    var ra = pyRun(CODE_IN);
+    var rb = pyRun(CODE_OUT);
+    var ga = (ra.ok ? ra.out : ra.err).replace(/\s+$/,'');
+    var gb = (rb.ok ? rb.out : rb.err).replace(/\s+$/,'');
+    A.textContent = ga;
+    B.textContent = gb;
+    sc.textContent = ga + '  vs  ' + gb;
+    note.innerHTML = 'Four spaces of difference, and <b>7 of the 10</b> went missing. The left one is not a crash — it is a confident, silent wrong answer, which is far worse. It added 3, hit <code>return</code>, and walked out of the function before prices 5 and 2 were ever looked at.';
+    note.className = 'note';
+  }, 120);
+};
+
+/* ---------------- §05 name the box ---------------- */
+var BOXES = [
+  {q:'Add up all the numbers in a list.', a:'0',
+   why:'One running number. Start at <code>0</code> — adding zero changes nothing, so the first real value lands clean.'},
+  {q:'Keep only the even numbers, in the same order.', a:'[]',
+   why:'Several answers come out and their order matters → a list you <code>.append()</code> to.'},
+  {q:'Count how many times each word appears.', a:'{}',
+   why:'Every word needs its own running number → a dict, word to count. This is the single most-asked shape in interviews.'},
+  {q:'Have I already seen this number? Stop at the first repeat.', a:'set()',
+   why:'You only need yes-or-no membership, and you need it fast. <code>x in some_set</code> is instant; <code>x in some_list</code> scans the whole thing.'},
+  {q:'Glue a list of words into one sentence.', a:'""',
+   why:'Text growing → an empty string. Though in real code you collect the pieces in a list and finish with <code>" ".join(parts)</code>, because <code>+=</code> on strings rebuilds the whole string every time.'},
+  {q:'How many of the words are longer than five letters?', a:'0',
+   why:'"How many" is always a counter. One number, starting at 0, <code>+= 1</code> when the test passes.'},
+  {q:'Double every number, giving back a new list.', a:'[]',
+   why:'One output per input, order preserved → a list. "Giving back a new list" is the giveaway — you are not changing the original.'},
+  {q:'Which distinct letters appear in this word?', a:'set()',
+   why:'Duplicates are noise here, you only want which ones. A set throws the repeats away for free.'}
+];
+var BOXOPTS = ['0', '[]', '{}', 'set()', '""'];
+var bi = 0, bright = 0, banswered = false;
+var boxq = document.getElementById('boxq');
+var boxopts = document.getElementById('boxopts');
+var boxnote = document.getElementById('boxnote');
+var boxnext = document.getElementById('boxnext');
+var boxscore = document.getElementById('boxscore');
+
+function paintBox(){
+  if (bi >= BOXES.length){
+    boxq.innerHTML = '<b>Eight done.</b>';
+    boxopts.innerHTML = '';
+    boxnote.innerHTML = 'You got <b>' + bright + ' of 8</b>. Every one of those was move 2 — and once move 2 is right, move 4 has almost no room left to go wrong. That is why the box is the decision worth slowing down for.';
+    boxnote.className = 'note win';
+    boxnext.textContent = 'Go again';
+    boxnext.disabled = false;
+    boxnext.onclick = function(){ bi = 0; bright = 0; banswered = false; boxnext.onclick = nextBox; boxnext.textContent = 'Next'; paintBox(); };
+    boxscore.textContent = bright + ' / 8';
+    return;
+  }
+  var c = BOXES[bi];
+  banswered = false;
+  boxq.innerHTML = '<b>' + c.q + '</b> &nbsp;What do you type on the line before the loop?';
+  boxopts.innerHTML = BOXOPTS.map(function(o){
+    return '<button class="opt" data-a="' + esc(o) + '">out = ' + esc(o) + '</button>';
+  }).join('');
+  Array.prototype.forEach.call(boxopts.querySelectorAll('.opt'), function(btn){
+    btn.onclick = function(){ answerBox(btn, btn.dataset.a.replace(/&quot;/g,'"')); };
+  });
+  boxnote.innerHTML = 'Which empty container does the answer collect in?';
+  boxnote.className = 'note';
+  boxnext.disabled = true;
+  boxscore.textContent = bright + ' / 8 · question ' + (bi + 1);
+}
+
+function answerBox(btn, val){
+  if (banswered) return;
+  banswered = true;
+  var c = BOXES[bi];
+  var ok = (val === c.a);
+  if (ok) bright++;
+  Array.prototype.forEach.call(boxopts.querySelectorAll('.opt'), function(bb){
+    bb.disabled = true;
+    var v = bb.dataset.a.replace(/&quot;/g,'"');
+    if (v === c.a) bb.classList.add('right');
+    else if (bb === btn) bb.classList.add('wrong');
+    else bb.classList.add('dim');
+  });
+  boxnote.innerHTML = (ok ? '<b>Yes.</b> ' : '<b>No — it is <code>' + esc(c.a) + '</code>.</b> ') + c.why;
+  boxnote.className = 'note ' + (ok ? 'win' : 'lose');
+  boxnext.disabled = false;
+  boxscore.textContent = bright + ' / 8 · question ' + (bi + 1);
+}
+
+function nextBox(){ bi++; paintBox(); }
+boxnext.onclick = nextBox;
+paintBox();
+</script>
