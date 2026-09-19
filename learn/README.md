@@ -1,10 +1,11 @@
 # Python revision pages
 
-Twelve interactive pages built as a learn-then-drill shelf. Source is here; the
+Thirteen interactive pages built as a learn-then-drill shelf. Source is here; the
 published, shareable versions are linked below.
 
 | Page | What it's for | Live |
 |---|---|---|
+| `read-it-first.html` | **why each OOP keyword exists** (without-it vs with-it) + how to *read* code | https://claude.ai/artifact/9daLxZmWSiHHB8c6bj6L67 |
 | `five-moves.html` | **where to start on a blank page** — the five moves every function is made of | https://claude.ai/artifact/W9m1jNiqszJaPeKqvap3bh |
 | `oop-picture-book.html` | **OOP as nine animated images** — 4 pillars, 5 types of inheritance, every keyword | https://claude.ai/artifact/KohX1ZeUiBSaMnB2zB7kMN |
 | `four-boxes.html` | list / tuple / dict / set, explained | https://claude.ai/code/artifact/b42031ed-1c95-44b1-823b-09ae36cd72c2 |
@@ -43,6 +44,37 @@ explanation was produced by running that wrong code; four claims were corrected
 as a result (`UnboundLocalError` not `NameError` for a missing accumulator;
 `'int' object is not iterable` for `list += int`; `[0, 2]` not `[1, 3]` for the
 `range(len(...))` mistake; and Python's actual `=` vs `==` hint text).
+
+`read-it-first.html` came from the most useful thing the learner said: *"I am
+not understanding the code structure."* Writing was being taught on top of a
+reading skill that was never taught. Two halves:
+
+**Why / when / how for all ten rungs of the OOP ladder.** Each keyword shows
+the code **without it** first — broken, stale, repetitive — then the same code
+**with it**, on a toggle. A keyword only sticks once you have felt the problem
+it removes. Highlights: `@property` shown as an area that goes stale when the
+radius changes (`12.56636` when it should be `314.159`); inheritance shown as
+an `ElectricCar` that inherits `refuel()`; `ABC` shown as a forgotten `area()`
+silently returning `None`.
+
+**How to read a block of code.** The one rule — every line belongs to the
+nearest line above it that is less indented — as a tap-a-line explorer that
+marks the owner and the owned. A three-pass reader that reveals code by indent
+depth instead of by line. "Anatomy of a line", tapping the parts of
+`self.balance += amount`. And the game: **which lines actually run?** — tap the
+lines whose body does work, in order, over three rounds.
+
+The game's execution orders are not hand-reasoned: they were recorded with a
+real Python line tracer (`sys.settrace`). Round 2 is the learner's own
+recurring bug — `return` indented under the `for` — and tapping through it
+makes the function stop on the first item in front of them, output `3` not `10`.
+
+Verification: every before/after output was produced by running the code. The
+finished page was then driven in headless Chromium — all 10 toggles swap the
+code, the explorer resolves ownership correctly (tapping `return total` marks
+the `for` as its owner), the three-pass reader reveals 3 → 6 → 12 → 16 lines,
+all three game rounds were played to completion, a wrong tap was confirmed to
+explain itself, and there is no horizontal scroll at 420px.
 
 `oop-picture-book.html` exists because reading OOP never stuck — it gives every
 concept **one image and one sentence** so it can be recalled under pressure, not

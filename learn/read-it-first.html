@@ -1,0 +1,863 @@
+<title>Read It First</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+
+<style>
+:root{
+  --ground:#E7EDEA; --panel:#FFFFFF; --panel-2:#F0F5F3;
+  --ink:#0F1A18; --ink-soft:#485A56; --ink-faint:#82958F; --rule:#C8D7D2;
+  --accent:#0A6C72;
+  --own:#7A4BD6; --kid:#0A6C72; --act:#C2660A;
+  --good:#0B7D5B; --bad:#C0392B;
+  --console:#0C1614; --console-ink:#DDE9E5;
+  --shadow:0 2px 0 rgba(15,26,24,.09), 0 14px 32px -18px rgba(15,26,24,.5);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0A1210; --panel:#121D1B; --panel-2:#182623;
+    --ink:#E7F0ED; --ink-soft:#A2B5B0; --ink-faint:#6B807B; --rule:#223330;
+    --accent:#45CFD9;
+    --own:#B79BFF; --kid:#45CFD9; --act:#F0A93C;
+    --good:#34D399; --bad:#FF6B60;
+    --console:#050B0A; --console-ink:#DDE9E5;
+    --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0A1210; --panel:#121D1B; --panel-2:#182623;
+  --ink:#E7F0ED; --ink-soft:#A2B5B0; --ink-faint:#6B807B; --rule:#223330;
+  --accent:#45CFD9;
+  --own:#B79BFF; --kid:#45CFD9; --act:#F0A93C;
+  --good:#34D399; --bad:#FF6B60;
+  --console:#050B0A; --console-ink:#DDE9E5;
+  --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+body{background:var(--ground);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6;margin:0;display:flex;justify-content:center;padding-block:26px 64px;padding-left:16px;padding-right:16px}
+.wrap{width:100%;max-width:730px;display:flex;flex-direction:column;gap:46px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1{font-size:clamp(33px,7.2vw,50px);font-weight:800;line-height:.98}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-size:clamp(21px,4.2vw,27px);font-weight:800;line-height:1.12}
+h3{font-size:16.5px;font-weight:800}
+p{margin:0}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.86em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px;word-break:break-word}
+b{font-weight:800}
+section{display:flex;flex-direction:column;gap:15px}
+.eyebrow{display:flex;align-items:baseline;gap:10px;font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.eyebrow b{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--panel);background:var(--ink-faint);border-radius:4px;padding:2px 6px;letter-spacing:.05em}
+.lede{font-size:16px;line-height:1.55;color:var(--ink-soft);max-width:62ch}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:14px}
+hr{border:none;border-top:1px solid var(--rule);margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font-family:"Public Sans",sans-serif;font-weight:800;font-size:13.5px;color:#fff;background:var(--accent);border:none;border-radius:9px;padding:10px 16px;cursor:pointer;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default;box-shadow:none}
+.btn.q{background:none;color:var(--ink);border:1.5px solid var(--rule);box-shadow:none}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.cnt{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint);margin-left:auto;font-variant-numeric:tabular-nums}
+
+/* ---------- code blocks ---------- */
+.code{background:var(--console);border-radius:10px;padding:12px 0;overflow-x:auto}
+.code .ln{display:block;font-family:"JetBrains Mono",monospace;font-size:12.7px;line-height:1.75;color:#BCCFC9;white-space:pre;padding:0 14px}
+.code .ln.cm{color:#66807A}
+.code .ln.ok{color:#7FE0BE}
+.code .ln.no{color:#FF9C92}
+
+/* ---------- §01 why/when/how ---------- */
+.rung{background:var(--panel);border:1px solid var(--rule);border-radius:13px;box-shadow:var(--shadow);overflow:hidden}
+.rhead{display:flex;gap:12px;align-items:flex-start;padding:15px 17px;border-bottom:1px solid var(--rule)}
+.rhead .n{width:26px;height:26px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12.5px;background:var(--accent);margin-top:2px}
+.rhead .t{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:14px;letter-spacing:-.01em;line-height:1.4;word-break:break-word}
+.rbody{padding:15px 17px;display:flex;flex-direction:column;gap:13px}
+.wwh{display:flex;flex-direction:column;gap:9px}
+.wwh .r{display:grid;grid-template-columns:54px 1fr;gap:11px;align-items:baseline}
+@media (max-width:520px){.wwh .r{grid-template-columns:1fr;gap:2px}}
+.wwh .k{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.wwh .v{font-size:14.5px;line-height:1.5}
+.wwh .v b{color:var(--ink)}
+.wwh .r.why .k{color:var(--bad)} .wwh .r.when .k{color:var(--act)} .wwh .r.how .k{color:var(--good)}
+.tabs{display:flex;border:1.5px solid var(--rule);border-radius:9px;overflow:hidden;align-self:flex-start}
+.tabs button{font-family:"Public Sans",sans-serif;font-weight:800;font-size:12.5px;background:none;border:none;color:var(--ink-soft);padding:8px 14px;cursor:pointer;white-space:nowrap}
+.tabs button.on{background:var(--ink);color:var(--panel)}
+.tabs button:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.panebox{position:relative}
+.outline{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;padding:9px 12px;border-radius:8px;margin-top:9px}
+.outline.no{background:color-mix(in srgb,var(--bad) 13%,var(--panel));color:var(--bad);border:1px solid color-mix(in srgb,var(--bad) 35%,var(--rule))}
+.outline.ok{background:color-mix(in srgb,var(--good) 13%,var(--panel));color:var(--good);border:1px solid color-mix(in srgb,var(--good) 35%,var(--rule))}
+
+/* ---------- §02 indent explorer ---------- */
+.expl .ln{cursor:pointer;position:relative;transition:background .18s,color .18s;border-left:3px solid transparent}
+.expl .ln:hover{background:rgba(255,255,255,.05)}
+.expl .ln.act{background:color-mix(in srgb,var(--act) 34%,transparent);color:#fff;border-left-color:var(--act)}
+.expl .ln.own{background:color-mix(in srgb,var(--own) 30%,transparent);color:#fff;border-left-color:var(--own)}
+.expl .ln.kid{background:color-mix(in srgb,var(--kid) 26%,transparent);color:#fff;border-left-color:var(--kid)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;font-weight:700}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.readout{font-size:14.5px;line-height:1.55;color:var(--ink-soft);min-height:48px;border-top:1px solid var(--rule);padding-top:11px}
+.readout b{color:var(--ink)}
+
+/* ---------- §03 three-pass reader ---------- */
+.pass .ln{transition:opacity .3s,filter .3s}
+.pass .ln.hid{opacity:.13}
+
+/* ---------- §04 the game ---------- */
+.game .ln{cursor:pointer;position:relative;transition:background .18s;border-left:3px solid transparent}
+.game .ln:hover{background:rgba(255,255,255,.05)}
+.game .ln.got{background:color-mix(in srgb,var(--good) 30%,transparent);color:#fff;border-left-color:var(--good)}
+.game .ln.wrong{background:color-mix(in srgb,var(--bad) 32%,transparent);color:#fff;border-left-color:var(--bad)}
+.game .ln .ord{position:absolute;right:10px;font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:700;background:var(--good);color:#fff;border-radius:99px;padding:1px 7px}
+.gnote{font-size:14.5px;line-height:1.55;color:var(--ink-soft);min-height:50px}
+.gnote b{color:var(--ink)}
+.gnote .win{color:var(--good);font-weight:800}
+.gnote .lose{color:var(--bad);font-weight:800}
+.score{display:flex;gap:6px}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--rule)}
+.dot.on{background:var(--good)}
+.dot.off{background:var(--bad)}
+
+/* ---------- §05 anatomy ---------- */
+.anat{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;padding:6px 0}
+.tk{font-family:"JetBrains Mono",monospace;font-size:clamp(14px,3.4vw,19px);font-weight:700;padding:7px 9px;border-radius:8px;border:1.5px solid transparent;cursor:pointer;background:var(--panel-2);transition:all .18s}
+.tk:hover{border-color:var(--accent)}
+.tk.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tk.plain{background:none;cursor:default;border-color:transparent;color:var(--ink-faint)}
+.tk.plain:hover{border-color:transparent}
+
+/* ---------- checklist ---------- */
+.seven{display:flex;flex-direction:column;counter-reset:s;margin:0;padding:0}
+.seven li{list-style:none;counter-increment:s;display:grid;grid-template-columns:auto 1fr;gap:0 14px;padding:12px 0;border-bottom:1px solid var(--rule);align-items:baseline}
+.seven li:last-child{border-bottom:none}
+.seven li::before{content:counter(s);font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:18px;color:var(--ink-faint)}
+.seven li span{font-size:15.5px;line-height:1.5}
+
+footer{color:var(--ink-faint);font-size:13px;line-height:1.6;border-top:1px solid var(--rule);padding-top:18px}
+.tog{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:9;font-size:11px;font-weight:800;border:1px solid var(--rule);background:var(--panel);color:var(--ink-soft);border-radius:8px;padding:7px 10px;cursor:pointer}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<button class="tog" id="tog">theme</button>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:14px">
+  <span class="eyebrow"><b>00</b> before you write another line</span>
+  <h1>Reading code is a<br><em>separate skill.</em><br>Nobody teaches it.</h1>
+  <p class="lede">You have been trying to write code you cannot yet read. That is backwards, and it is why the keyword lists feel like noise. So: first <b>why each keyword exists</b> — the pain it removes, which is the only thing that makes a name stick. Then <b>how to look at a block of code</b> and know what you are looking at.</p>
+</header>
+
+<hr>
+
+<!-- ============ 01 WHY / WHEN / HOW ============ -->
+<section>
+  <span class="eyebrow"><b>01</b> the ladder, explained</span>
+  <h2>Why it exists · when to reach for it · how to type it</h2>
+  <p class="lede">A keyword only makes sense once you have felt the problem it solves. So each rung shows the code <b>without</b> it first — which is broken, ugly or repetitive — then the same code <b>with</b> it. Press the toggle and watch what changes. Every output shown here came from really running it.</p>
+  <div style="display:flex;flex-direction:column;gap:14px" id="rungs"></div>
+</section>
+
+<hr>
+
+<!-- ============ 02 INDENT OWNERSHIP ============ -->
+<section>
+  <span class="eyebrow"><b>02</b> the one rule</span>
+  <h2>Indentation is ownership</h2>
+  <p class="lede">There is exactly one rule for reading Python's shape, and it has no exceptions:</p>
+  <div class="card" style="gap:8px">
+    <p style="font-size:17px;line-height:1.5"><b>Every line belongs to the nearest line above it that is <em style="font-style:normal;color:var(--accent)">less indented</em>.</b></p>
+    <p class="lede" style="max-width:none">A <code>:</code> at the end of a line means "a body follows, indented underneath". That's it. That single rule explains classes, functions, loops, ifs — all of them.</p>
+  </div>
+  <p class="lede"><b>Tap any line.</b> It shows you who owns that line, and which lines it owns.</p>
+  <div class="card">
+    <div class="legend">
+      <span><i style="background:var(--act)"></i>you tapped</span>
+      <span><i style="background:var(--own)"></i>its owner</span>
+      <span><i style="background:var(--kid)"></i>what it owns</span>
+    </div>
+    <div class="code expl" id="expl"></div>
+    <p class="readout" id="explOut">Tap a line above.</p>
+  </div>
+  <div class="card" style="border-left:4px solid var(--bad)">
+    <h3 style="color:var(--bad)">This is your bug, seen from the reading side</h3>
+    <p class="lede" style="max-width:none">Tap line 5 (<code>return total</code>) in the block above. Its owner is the <code>for</code> loop — so it runs on the <b>first</b> price and the function ends immediately, giving <code>3</code> instead of <code>10</code>. Now tap line 4. Same owner. That is the whole bug: <b>you wanted <code>return</code> to belong to the function, and the indentation gave it to the loop.</b> You have been fixing this as a writing mistake. It is a reading mistake.</p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 03 THREE PASS ============ -->
+<section>
+  <span class="eyebrow"><b>03</b> the method</span>
+  <h2>Read by levels, not by lines</h2>
+  <p class="lede">Never read code top to bottom on the first pass — that is how it turns into soup. Read <b>one indent level at a time</b>, and stop as soon as you understand enough. Most of the time you never need level 3 at all.</p>
+  <div class="card">
+    <div class="tabs" id="passTabs"></div>
+    <div class="code pass" id="passCode"></div>
+    <p class="readout" id="passOut"></p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 04 THE GAME ============ -->
+<section>
+  <span class="eyebrow"><b>04</b> the game</span>
+  <h2>Which lines actually run?</h2>
+  <p class="lede">The one thing that confuses everyone about a file full of <code>def</code>: <b>defining is not running.</b> Tap the lines whose body actually does work, <b>in the order it happens</b>. Wrong taps explain themselves. Three rounds.</p>
+  <div class="card">
+    <div class="row">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:700" id="gTitle"></span>
+      <span class="score" id="gScore"></span>
+      <span class="cnt" id="gCnt"></span>
+    </div>
+    <p class="lede" style="font-size:14.5px" id="gAsk"></p>
+    <div class="code game" id="gCode"></div>
+    <p class="gnote" id="gNote"></p>
+    <div class="row">
+      <button class="btn" id="gNext" disabled>Next round</button>
+      <button class="btn q" id="gReset">Restart round</button>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 05 ANATOMY ============ -->
+<section>
+  <span class="eyebrow"><b>05</b> one line at a time</span>
+  <h2>Anatomy of a line</h2>
+  <p class="lede">When a single line looks like gibberish, it is because you are reading it as one thing. It is four or five things. <b>Tap each part.</b></p>
+  <div class="card">
+    <div class="tabs" id="anatTabs"></div>
+    <div class="anat" id="anat"></div>
+    <p class="readout" id="anatOut">Tap a part of the line.</p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 06 CHECKLIST ============ -->
+<section>
+  <span class="eyebrow"><b>06</b> carry this</span>
+  <h2>What to do when code looks like a wall</h2>
+  <ol class="seven">
+    <li><span><b>Read only the left edge first.</b> Ignore everything indented. Those few lines are the table of contents.</span></li>
+    <li><span><b>Go in one level.</b> Read the <code>def</code> names only, not their bodies. Now you know what the thing can do.</span></li>
+    <li><span><b>Pick one body</b> — the one you actually care about — and only then read inside it.</span></li>
+    <li><span><b>For any confusing line, find its owner.</b> Look straight up for the first line that starts further left. That line owns it.</span></li>
+    <li><span><b>Ask "does this run, or is it being filed?"</b> A <code>def</code> line files a recipe. Only a call cooks it.</span></li>
+    <li><span><b>Find the bottom.</b> The lines at the left edge near the end are usually what actually starts everything.</span></li>
+    <li><span><b>Say the shape out loud</b> before any detail: <i>"It's one class, with three methods, and the last two lines use it."</i> If you can say that, you can read it.</span></li>
+  </ol>
+</section>
+
+<footer>
+  Every output on this page was produced by running the code on real Python — including the execution orders in the game, which were recorded with a line tracer rather than worked out by hand.
+</footer>
+
+</div>
+
+<script>
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+document.getElementById('tog').onclick = function(){
+  var r = document.documentElement, cur = r.getAttribute('data-theme');
+  if (!cur) cur = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  r.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+};
+function renderCode(lines, cls){
+  return lines.map(function(l, i){
+    var ind = l.length - l.replace(/^ +/, '').length;
+    var k = /^\s*#/.test(l) ? ' cm' : (cls && cls[i] ? ' ' + cls[i] : '');
+    return '<span class="ln' + k + '" data-i="' + i + '" data-ind="' + ind + '">' +
+           (esc(l).replace(/ /g, '&nbsp;') || '&nbsp;') + '</span>';
+  }).join('');
+}
+
+/* ================= 01 THE LADDER ================= */
+var RUNGS = [
+  {n:1, t:'class · __init__ · self',
+   why:'Without a class, the data and the functions that work on it drift apart. You pass the same thing into every function by hand, and nothing stops you passing the wrong one.',
+   when:'You notice the same two or three variables being handed to every function.',
+   how:'<code>class Name:</code> then <code>def __init__(self, ...)</code> then <code>self.x = x</code>',
+   badOut:'you must pass the account into every single call',
+   goodOut:'the account is already inside — that is what self is',
+   bad:['# no class: the data is loose and every function must be handed it',
+        'account = {"owner": "amaan", "balance": 100}',
+        '',
+        'def deposit(acc, amount):',
+        '    acc["balance"] += amount',
+        '',
+        'def withdraw(acc, amount):',
+        '    acc["balance"] -= amount',
+        '',
+        'deposit(account, 50)',
+        'withdraw(account, 30)'],
+   good:['class BankAccount:',
+         '    def __init__(self, owner, balance=0):',
+         '        self.owner = owner',
+         '        self.balance = balance',
+         '',
+         '    def deposit(self, amount):',
+         '        self.balance += amount',
+         '',
+         '    def withdraw(self, amount):',
+         '        self.balance -= amount',
+         '',
+         'acc = BankAccount("amaan", 100)',
+         'acc.deposit(50)',
+         'acc.withdraw(30)']},
+
+  {n:2, t:'instance vs class attributes',
+   why:'A list written at class level is created ONCE and shared by every object. Change it through one object and every other object changes too — silently, with no error.',
+   when:'The value is a list, dict or set. Then it goes in <code>__init__</code>. Always.',
+   how:'<code>self.items = []</code> inside <code>__init__</code>, never <code>items = []</code> at class level',
+   badOut:"b.items is ['apple'] — and b was never touched",
+   goodOut:'b.items is [] — each cart got its own list',
+   bad:['class Cart:',
+        '    items = []          # ONE list, shared by every Cart',
+        '    def add(self, x):',
+        '        self.items.append(x)',
+        '',
+        'a, b = Cart(), Cart()',
+        'a.add("apple")',
+        'print(b.items)          # [\'apple\']'],
+   good:['class Cart:',
+         '    def __init__(self):',
+         '        self.items = []     # a fresh list per Cart',
+         '    def add(self, x):',
+         '        self.items.append(x)',
+         '',
+         'a, b = Cart(), Cart()',
+         'a.add("apple")',
+         'print(b.items)              # []']},
+
+  {n:3, t:'__str__ vs __repr__',
+   why:'Without them, printing your own object tells you nothing at all — just a class name and a memory address. You cannot debug what you cannot see.',
+   when:'Every class you will ever have to debug. Which is every class.',
+   how:'<code>def __repr__(self): return f"Cart({self.items})"</code> — write <code>__repr__</code> first; <code>str()</code> falls back to it',
+   badOut:'a memory address. Useless.',
+   goodOut:'you can finally see what is inside',
+   bad:['class Cart:',
+        '    def __init__(self):',
+        '        self.items = ["apple"]',
+        '',
+        'print(Cart())',
+        '# <__main__.Cart object at 0x7f2a1c3d5e90>'],
+   good:['class Cart:',
+         '    def __init__(self):',
+         '        self.items = ["apple"]',
+         '    def __repr__(self):',
+         '        return f"Cart({self.items})"',
+         '',
+         'print(Cart())',
+         "# Cart(['apple'])"]},
+
+  {n:4, t:'inheritance · super()',
+   why:'Without it you copy and paste the parent class, and from then on every bug has to be fixed in two places. One of them you will forget.',
+   when:'The new thing IS-A kind of the old thing and shares most of its behaviour.',
+   how:'<code>class Savings(Account):</code> and call <code>super().__init__(...)</code> on the first line of the child\'s <code>__init__</code>',
+   badOut:'deposit and withdraw written twice — fix a bug here, forget it there',
+   goodOut:'written once. The child adds only what is new.',
+   bad:['class BankAccount:',
+        '    def __init__(self, owner, balance=0):',
+        '        self.owner = owner',
+        '        self.balance = balance',
+        '    def deposit(self, amount):',
+        '        self.balance += amount',
+        '',
+        'class SavingsAccount:            # copy-paste starts here',
+        '    def __init__(self, owner, balance=0, rate=0.05):',
+        '        self.owner = owner       # again',
+        '        self.balance = balance   # again',
+        '        self.rate = rate',
+        '    def deposit(self, amount):   # again',
+        '        self.balance += amount'],
+   good:['class SavingsAccount(BankAccount):',
+         '    def __init__(self, owner, balance=0, rate=0.05):',
+         '        super().__init__(owner, balance)   # run the parent setup',
+         '        self.rate = rate                   # then add your own',
+         '',
+         '    def add_interest(self):',
+         '        self.balance += self.balance * self.rate',
+         '        return self.balance',
+         '',
+         's = SavingsAccount("amaan", 1000)',
+         'print(s.add_interest())   # 1050.0',
+         'print(s.owner)            # amaan  — free from the parent']},
+
+  {n:5, t:'polymorphism · duck typing',
+   why:'Without it you write an if/elif chain on the type, and every new kind of thing means going back and editing that same function. Forever.',
+   when:'You catch yourself writing <code>if type == ...</code> anywhere.',
+   how:'Give every class a method with the <b>same name</b>, then just call it. No base class needed.',
+   badOut:'adding a Robot means editing this function again',
+   goodOut:'adding a Robot means adding a class. Nothing else changes.',
+   bad:['def speak(animal):',
+        '    if animal["type"] == "dog":',
+        '        return "Woof"',
+        '    elif animal["type"] == "cat":',
+        '        return "Meow"',
+        '    # a robot? come back and edit this. and again. and again.'],
+   good:['class Dog:',
+         '    def speak(self): return "Woof"',
+         'class Cat:',
+         '    def speak(self): return "Meow"',
+         'class Robot:',
+         '    def speak(self): return "Beep"   # nothing else changes',
+         '',
+         'for t in (Dog(), Cat(), Robot()):',
+         '    print(t.speak())',
+         "# ['Woof', 'Meow', 'Beep']"]},
+
+  {n:6, t:'@property',
+   why:'A value worked out once in <code>__init__</code> is frozen. Change what it depends on and it silently keeps the old, wrong answer.',
+   when:'A value depends on another value, or needs validating, or must be read-only.',
+   how:'Put <code>@property</code> on the line above a method, and read it with <b>no brackets</b>',
+   badOut:'radius changed to 10, area still says 12.56636 — WRONG',
+   goodOut:'radius changed to 10, area says 314.159 — recomputed on every read',
+   bad:['class Circle:',
+        '    def __init__(self, radius):',
+        '        self.radius = radius',
+        '        self.area = 3.14159 * radius ** 2   # frozen at birth',
+        '',
+        'c = Circle(2)',
+        'c.radius = 10',
+        'print(c.area)     # 12.56636   <- stale'],
+   good:['class Circle:',
+         '    def __init__(self, radius):',
+         '        self.radius = radius',
+         '',
+         '    @property',
+         '    def area(self):',
+         '        return 3.14159 * self.radius ** 2   # fresh every read',
+         '',
+         'c = Circle(2)',
+         'c.radius = 10',
+         'print(c.area)     # 314.159   <- correct']},
+
+  {n:7, t:'@staticmethod vs @classmethod',
+   why:'Some things belong to the class but do not need a particular object — most often, a second way of building one. Without them, every caller does the conversion by hand and someone gets it wrong.',
+   when:'<b>classmethod</b> → an alternative constructor. <b>staticmethod</b> → a helper that needs no <code>self</code>.',
+   how:'<code>@classmethod</code> takes <code>cls</code> and can <code>return cls(...)</code>. <code>@staticmethod</code> takes nothing.',
+   badOut:'the conversion is repeated at every call site',
+   goodOut:'one obvious way in: Temp.from_fahrenheit(212)',
+   bad:['class Temp:',
+        '    def __init__(self, celsius):',
+        '        self.celsius = celsius',
+        '',
+        '# every caller repeats the maths, and can get it wrong',
+        't1 = Temp((212 - 32) * 5 / 9)',
+        't2 = Temp((98.6 - 32) * 5 / 9)',
+        't3 = Temp((32 - 32) * 9 / 5)   # wrong formula. nobody notices.'],
+   good:['class Temp:',
+         '    def __init__(self, celsius):',
+         '        self.celsius = celsius',
+         '',
+         '    @classmethod',
+         '    def from_fahrenheit(cls, f):     # gets the CLASS -> can build',
+         '        return cls((f - 32) * 5 / 9)',
+         '',
+         '    @staticmethod',
+         '    def is_freezing(c):              # gets NOTHING',
+         '        return c <= 0',
+         '',
+         'print(Temp.from_fahrenheit(212).celsius)   # 100.0',
+         'print(Temp.is_freezing(-5))                # True']},
+
+  {n:8, t:'composition vs inheritance',
+   why:'Inheritance drags in <b>everything</b> the parent has, including the parts that make no sense for the child. Deep family trees get rigid and you cannot get out.',
+   when:'IS-A → inheritance. HAS-A → composition. When unsure, composition.',
+   how:'Store the other object as an attribute: <code>self.engine = engine</code>',
+   badOut:'an electric car that can refuel with petrol',
+   goodOut:'the car HAS an engine — swap in any engine you like',
+   bad:['class Car:',
+        '    def start(self): return "vroom"',
+        '    def refuel(self): return "pumping petrol"',
+        '',
+        'class ElectricCar(Car):     # inherits refuel() too',
+        '    pass',
+        '',
+        'print(ElectricCar().refuel())   # "pumping petrol"  <- nonsense'],
+   good:['class Engine:',
+         '    def start(self): return "running"',
+         '',
+         'class Car:',
+         '    def __init__(self, engine):',
+         '        self.engine = engine        # HAS-A: pick the part',
+         '    def start(self):',
+         '        return self.engine.start()',
+         '',
+         'print(Car(Engine()).start())    # "running"']},
+
+  {n:9, t:'@dataclass',
+   why:'For a class that is mostly data you write <code>__init__</code>, <code>__repr__</code> and <code>__eq__</code> by hand every time. Twelve lines of noise that hide the two lines that matter.',
+   when:'The class is mostly data and has little behaviour.',
+   how:'<code>@dataclass</code> above <code>class</code>, attributes with type hints. Mutable defaults need <code>field(default_factory=list)</code>',
+   badOut:'twelve lines to say "a task has a title and a done flag"',
+   goodOut:'the same three methods, generated. Two lines say it.',
+   bad:['class Task:',
+        '    def __init__(self, title, done=False):',
+        '        self.title = title',
+        '        self.done = done',
+        '    def __repr__(self):',
+        '        return f"Task({self.title!r}, {self.done})"',
+        '    def __eq__(self, other):',
+        '        return (self.title, self.done) == (other.title, other.done)'],
+   good:['from dataclasses import dataclass',
+         '',
+         '@dataclass',
+         'class Task:',
+         '    title: str',
+         '    done: bool = False',
+         '',
+         'print(Task("learn"))          # Task(title=\'learn\', done=False)',
+         'print(Task("a") == Task("a")) # True']},
+
+  {n:10, t:'ABC · @abstractmethod',
+   why:'A subclass forgets to implement a required method, the base class quietly returns <code>None</code>, and you find out much later when something downstream breaks.',
+   when:'You are writing a base class that others must fill in — a contract.',
+   how:'<code>class Shape(ABC):</code> with <code>@abstractmethod</code> on the methods they must write',
+   badOut:'area() returns None. Silent. You find out much later.',
+   goodOut:'refuses to build the object at all, immediately, with the reason',
+   bad:['class Shape:',
+        '    def area(self):',
+        '        pass              # subclasses are "supposed to" override',
+        '',
+        'class Square(Shape):',
+        '    def __init__(self, s): self.s = s',
+        '    # forgot area()',
+        '',
+        'print(Square(4).area())   # None  <- silently wrong'],
+   good:['from abc import ABC, abstractmethod',
+         '',
+         'class Shape(ABC):',
+         '    @abstractmethod',
+         '    def area(self): ...',
+         '',
+         'class Square(Shape):',
+         '    def __init__(self, s): self.s = s',
+         '    # forgot area()',
+         '',
+         'Square(4)',
+         "# TypeError: Can't instantiate abstract class Square",
+         '#            with abstract method area']}
+];
+
+document.getElementById('rungs').innerHTML = RUNGS.map(function(r){
+  return '<div class="rung">' +
+    '<div class="rhead"><span class="n">' + r.n + '</span><span class="t">' + r.t + '</span></div>' +
+    '<div class="rbody">' +
+      '<div class="wwh">' +
+        '<div class="r why"><span class="k">Why</span><span class="v">' + r.why + '</span></div>' +
+        '<div class="r when"><span class="k">When</span><span class="v">' + r.when + '</span></div>' +
+        '<div class="r how"><span class="k">How</span><span class="v">' + r.how + '</span></div>' +
+      '</div>' +
+      '<div class="tabs" data-r="' + r.n + '">' +
+        '<button type="button" data-v="bad" class="on">without it</button>' +
+        '<button type="button" data-v="good">with it</button>' +
+      '</div>' +
+      '<div class="panebox">' +
+        '<div class="code" id="rc' + r.n + '"></div>' +
+        '<div class="outline" id="ro' + r.n + '"></div>' +
+      '</div>' +
+    '</div></div>';
+}).join('');
+
+RUNGS.forEach(function(r){
+  function paint(v){
+    document.getElementById('rc' + r.n).innerHTML = renderCode(r[v]);
+    var o = document.getElementById('ro' + r.n);
+    o.className = 'outline ' + (v === 'bad' ? 'no' : 'ok');
+    o.textContent = (v === 'bad' ? '✗  ' : '✓  ') + (v === 'bad' ? r.badOut : r.goodOut);
+  }
+  var tabs = document.querySelector('.tabs[data-r="' + r.n + '"]');
+  tabs.querySelectorAll('button').forEach(function(b){
+    b.onclick = function(){
+      tabs.querySelectorAll('button').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      paint(b.dataset.v);
+    };
+  });
+  paint('bad');
+});
+
+/* ================= 02 INDENT EXPLORER ================= */
+var EXPL = [
+  'def total_price(prices):',
+  '    total = 0',
+  '    for p in prices:',
+  '        total += p',
+  '        return total',
+  '',
+  'print(total_price([3, 5, 2]))'
+];
+var explEl = document.getElementById('expl');
+var explOut = document.getElementById('explOut');
+explEl.innerHTML = renderCode(EXPL);
+var explLines = Array.prototype.slice.call(explEl.querySelectorAll('.ln'));
+var IND = EXPL.map(function(l){ return l.trim() === '' ? -1 : l.length - l.replace(/^ +/, '').length; });
+
+function ownerOf(i){
+  for (var j = i - 1; j >= 0; j--){ if (IND[j] >= 0 && IND[j] < IND[i]) return j; }
+  return -1;
+}
+function kidsOf(i){
+  var out = [];
+  for (var j = i + 1; j < EXPL.length; j++){
+    if (IND[j] < 0) continue;
+    if (IND[j] <= IND[i]) break;
+    out.push(j);
+  }
+  return out;
+}
+explLines.forEach(function(el, i){
+  el.onclick = function(){
+    explLines.forEach(function(x){ x.classList.remove('act','own','kid'); });
+    if (IND[i] < 0){ explOut.innerHTML = 'That line is blank — blank lines belong to nobody and change nothing.'; return; }
+    el.classList.add('act');
+    var o = ownerOf(i), k = kidsOf(i);
+    if (o >= 0) explLines[o].classList.add('own');
+    k.forEach(function(j){ explLines[j].classList.add('kid'); });
+    var msg = '<b>Line ' + (i + 1) + '</b> is indented <b>' + IND[i] + '</b> spaces. ';
+    msg += o >= 0
+      ? 'Looking straight up, the first line starting further left is <b>line ' + (o + 1) + '</b> — <code>' + esc(EXPL[o].trim()) + '</code>. <b>That line owns it.</b>'
+      : 'Nothing above it starts further left, so it is at the <b>top level</b> — it belongs to the file itself and runs when the file runs.';
+    if (k.length) msg += ' In turn it owns line' + (k.length > 1 ? 's ' : ' ') + k.map(function(j){ return j + 1; }).join(', ') + '.';
+    else msg += ' It owns nothing — no line under it is indented further.';
+    explOut.innerHTML = msg;
+  };
+});
+
+/* ================= 03 THREE-PASS READER ================= */
+var PASS = [
+  'class BankAccount:',
+  '    def __init__(self, owner, balance=0):',
+  '        self.owner = owner',
+  '        self.balance = balance',
+  '',
+  '    def __repr__(self):',
+  '        return f"BankAccount({self.owner!r}, {self.balance})"',
+  '',
+  '    def deposit(self, amount):',
+  '        if amount <= 0:',
+  '            raise ValueError("deposit must be positive")',
+  '        self.balance += amount',
+  '        return self.balance',
+  '',
+  'acc = BankAccount("amaan", 100)',
+  'acc.deposit(50)'
+];
+var PASS_IND = PASS.map(function(l){ return l.trim() === '' ? 99 : l.length - l.replace(/^ +/, '').length; });
+var PASSES = [
+  {tab:'Pass 1 — the edge', max:0,
+   note:'Only the lines at the far left. <b>Two things happen in this file: a BankAccount is defined, and then one is made and used.</b> That is the entire first pass, and you already know the shape of the file.'},
+  {tab:'Pass 2 — one level in', max:4,
+   note:'Now the <code>def</code> names, still no bodies. <b>A BankAccount is born with an owner and a balance, it can show itself, and it can take a deposit.</b> You now understand the class — and you have read six lines, none of them hard.'},
+  {tab:'Pass 3 — one body', max:8,
+   note:'Only now go inside, and only into the body you actually care about. Notice <code>raise</code> is indented under <code>if</code>, so it runs <b>only for a bad amount</b> — while the last two lines are level with the <code>if</code>, so they <b>always</b> run.'},
+  {tab:'All of it', max:99,
+   note:'The whole thing — which is only readable <i>because</i> you did the first three passes. Reading it in this order is the difference between "a wall of code" and "oh, it is just an account".'}
+];
+var passTabs = document.getElementById('passTabs');
+var passCode = document.getElementById('passCode');
+var passOut = document.getElementById('passOut');
+passCode.innerHTML = renderCode(PASS);
+var passLines = Array.prototype.slice.call(passCode.querySelectorAll('.ln'));
+function paintPass(n){
+  passTabs.querySelectorAll('button').forEach(function(b, k){ b.classList.toggle('on', k === n); });
+  passLines.forEach(function(el, i){ el.classList.toggle('hid', PASS_IND[i] > PASSES[n].max); });
+  passOut.innerHTML = PASSES[n].note;
+}
+PASSES.forEach(function(p, n){
+  var b = document.createElement('button');
+  b.type = 'button'; b.textContent = p.tab;
+  b.onclick = function(){ paintPass(n); };
+  passTabs.appendChild(b);
+});
+paintPass(0);
+
+/* ================= 04 THE GAME =================
+   Execution orders below were recorded with a real Python line tracer,
+   then reduced to the lines whose BODY does work.
+   ============================================== */
+var ROUNDS = [
+  {
+    title:'Round 1 · a function',
+    ask:'Tap the lines whose body actually does work, in the order it happens.',
+    code:['def double(n):',
+          '    return n * 2',
+          '',
+          'x = double(5)',
+          'print(x)'],
+    order:[3, 1, 4],
+    notes:['<b>Line 4 runs first.</b> Python read line 1, filed the recipe away, and skipped straight past the body.',
+           '<b>Now line 2</b> — calling <code>double(5)</code> jumped <i>backwards</i> into the body. Code does not only run downwards.',
+           '<span class="win">Round complete.</span> Output: <code>10</code>. Three lines did work; the <code>def</code> line only filed a recipe.'],
+    wrong:{0:'<code>def double(n):</code> does run — but only to <b>file the recipe under the name "double"</b>. Its body is skipped until something calls it. We are tracking bodies.',
+           2:'A blank line. Nothing there.'},
+    out:'10'
+  },
+  {
+    title:'Round 2 · your own bug',
+    ask:'Same again — and watch closely what happens at the end.',
+    code:['def total(prices):',
+          '    total = 0',
+          '    for p in prices:',
+          '        total += p',
+          '        return total',
+          '',
+          'print(total([3, 5, 2]))'],
+    order:[6, 1, 2, 3, 4],
+    notes:['<b>Line 7.</b> Nothing above it ran yet — the <code>def</code> was only filed.',
+           'Into the body: <code>total = 0</code>.',
+           'The <code>for</code> begins. First price is <b>3</b>.',
+           '<code>total += p</code> → total is now <b>3</b>.',
+           '<span class="lose">And it stops.</span> <code>return</code> is indented under the <code>for</code>, so it fires on the <b>first</b> price and leaves the function. Prices 5 and 2 are never seen. Output: <b>3</b>, not 10. <b>This is the bug you have written four times</b> — and from the reading side it is obvious: look at which line owns the <code>return</code>.'],
+    wrong:{0:'Filed, not run. The body waits for line 7 to call it.',
+           5:'A blank line.'},
+    out:'3'
+  },
+  {
+    title:'Round 3 · a class',
+    ask:'Now the one that confuses everyone. Same rule: bodies that do work, in order.',
+    code:['class Dog:',
+          '    def __init__(self, name):',
+          '        self.name = name',
+          '    def speak(self):',
+          '        return "Woof!"',
+          '',
+          'd = Dog("Rex")',
+          'print(d.speak())'],
+    order:[6, 2, 7, 4],
+    notes:['<b>Line 7 first.</b> The whole class above it was just being <i>defined</i> — no dog existed until now.',
+           'Creating <code>Dog("Rex")</code> calls <code>__init__</code>, so line 3 runs and stores the name.',
+           'Line 8: <code>print(d.speak())</code>.',
+           '<span class="win">Round complete.</span> Output: <code>Woof!</code>. Notice you never tapped a <code>class</code> or <code>def</code> line — <b>the whole top of the file was setup, and the real work started at the bottom.</b> That is what most Python files look like.'],
+    wrong:{0:'<code>class Dog:</code> builds the blueprint. <b>No dog exists yet</b> and nothing has been printed.',
+           1:'A <code>def</code> inside a class is still only filing a recipe. It runs when line 7 makes a Dog.',
+           3:'Also just filed. It runs when line 8 calls <code>.speak()</code>.',
+           5:'A blank line.'},
+    out:'Woof!'
+  }
+];
+var gi = 0, gstep = 0, gbad = 0;
+var gTitle = document.getElementById('gTitle'), gAsk = document.getElementById('gAsk');
+var gCode = document.getElementById('gCode'), gNote = document.getElementById('gNote');
+var gNext = document.getElementById('gNext'), gCnt = document.getElementById('gCnt');
+var gScore = document.getElementById('gScore');
+var results = [null, null, null];
+
+function paintScore(){
+  gScore.innerHTML = results.map(function(r){
+    return '<span class="dot' + (r === true ? ' on' : r === false ? ' off' : '') + '"></span>';
+  }).join('');
+}
+function startRound(){
+  var R = ROUNDS[gi];
+  gstep = 0; gbad = 0;
+  gTitle.textContent = R.title;
+  gAsk.textContent = R.ask;
+  gCode.innerHTML = renderCode(R.code);
+  gNote.innerHTML = 'Tap the first line that does work.';
+  gCnt.textContent = 'round ' + (gi + 1) + ' / 3';
+  gNext.disabled = true;
+  gNext.textContent = gi < 2 ? 'Next round' : 'Play again';
+  Array.prototype.forEach.call(gCode.querySelectorAll('.ln'), function(el, i){
+    el.onclick = function(){ tap(i); };
+  });
+  paintScore();
+}
+function tap(i){
+  var R = ROUNDS[gi];
+  var el = gCode.querySelectorAll('.ln')[i];
+  if (el.classList.contains('got')) return;
+  if (gstep >= R.order.length) return;
+
+  if (i === R.order[gstep]){
+    el.classList.remove('wrong');
+    el.classList.add('got');
+    el.insertAdjacentHTML('beforeend', '<span class="ord">' + (gstep + 1) + '</span>');
+    gNote.innerHTML = R.notes[gstep];
+    gstep++;
+    if (gstep === R.order.length){
+      if (results[gi] === null) results[gi] = gbad === 0;
+      gNote.innerHTML = R.notes[R.notes.length - 1] +
+        ' &nbsp;Output: <code>' + esc(R.out) + '</code>.' +
+        (gbad === 0 ? ' <span class="win">No wrong taps.</span>' : '');
+      gNext.disabled = false;
+      paintScore();
+    }
+  } else {
+    gbad++;
+    if (results[gi] === null) results[gi] = false;
+    el.classList.add('wrong');
+    setTimeout(function(){ el.classList.remove('wrong'); }, 1400);
+    gNote.innerHTML = R.wrong[i]
+      ? '<b>Not that one.</b> ' + R.wrong[i]
+      : '<b>Not yet.</b> That line does run — but something else happens before it. Ask: what is the <i>first</i> thing Python actually does when it reaches the bottom of the file?';
+    paintScore();
+  }
+}
+gNext.onclick = function(){
+  if (gi < 2){ gi++; }
+  else { gi = 0; results = [null, null, null]; }
+  startRound();
+};
+document.getElementById('gReset').onclick = function(){ results[gi] = null; startRound(); };
+startRound();
+
+/* ================= 05 ANATOMY ================= */
+var ANAT = [
+  {tab:'self.balance += amount',
+   parts:[
+     {t:'self',    d:'<b>Which object.</b> The account this method was called on. Without it you would be talking about no account in particular.'},
+     {t:'.',       d:'<b>"belonging to".</b> Read the dot as the word <i>of</i>: the balance <i>of</i> self.'},
+     {t:'balance', d:'<b>Which attribute</b> of that object. This is a name the object stores, set earlier in <code>__init__</code>.'},
+     {t:'+=',      d:'<b>Add to what is already there.</b> Short for <code>self.balance = self.balance + amount</code>. Not <code>=</code>, which would throw the old value away.'},
+     {t:'amount',  d:'<b>How much.</b> A parameter — a value handed in by whoever called the method.'}
+   ]},
+  {tab:'def deposit(self, amount):',
+   parts:[
+     {t:'def',     d:'<b>"I am defining, not doing."</b> This files a recipe under a name. Nothing runs yet.'},
+     {t:'deposit', d:'<b>The name</b> you will call it by later: <code>acc.deposit(...)</code>. A verb, because a method does something.'},
+     {t:'(',       d:'Opens the list of things that must be handed in.'},
+     {t:'self',    d:'<b>The hidden first seat.</b> You never pass it — Python puts the object here automatically.'},
+     {t:'amount',  d:'<b>A parameter.</b> Just a name for whatever value arrives. It does not exist until someone calls the method.'},
+     {t:')',       d:'Closes the list.'},
+     {t:':',       d:'<b>"A body follows."</b> Everything indented under this line belongs to this function.'}
+   ]},
+  {tab:'acc = BankAccount("amaan", 100)',
+   parts:[
+     {t:'acc',          d:'<b>The name you are giving it.</b> Left of the <code>=</code> is always the destination.'},
+     {t:'=',            d:'<b>"Put the right side into the left side."</b> Right side is worked out completely first.'},
+     {t:'BankAccount',  d:'<b>The class.</b> Using its name with brackets after it means <i>make one</i>.'},
+     {t:'(',            d:'Calling it. <b>This is what makes it happen</b> — without the brackets you are just naming the class, not building anything.'},
+     {t:'"amaan", 100', d:'<b>Arguments.</b> These land in <code>__init__</code>\'s parameters, in order: owner, then balance. <code>self</code> is filled in for you.'},
+     {t:')',            d:'Closes the call. Now an object exists and <code>acc</code> points at it.'}
+   ]}
+];
+var anatTabs = document.getElementById('anatTabs'), anatEl = document.getElementById('anat'), anatOut = document.getElementById('anatOut');
+function paintAnat(n){
+  anatTabs.querySelectorAll('button').forEach(function(b, k){ b.classList.toggle('on', k === n); });
+  anatEl.innerHTML = ANAT[n].parts.map(function(p, i){
+    return '<button type="button" class="tk" data-p="' + i + '">' + esc(p.t) + '</button>';
+  }).join('');
+  anatOut.innerHTML = 'Tap a part of the line.';
+  anatEl.querySelectorAll('.tk').forEach(function(b){
+    b.onclick = function(){
+      anatEl.querySelectorAll('.tk').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      anatOut.innerHTML = ANAT[n].parts[+b.dataset.p].d;
+    };
+  });
+}
+ANAT.forEach(function(a, n){
+  var b = document.createElement('button');
+  b.type = 'button'; b.textContent = a.tab;
+  b.onclick = function(){ paintAnat(n); };
+  anatTabs.appendChild(b);
+});
+paintAnat(0);
+</script>
