@@ -1089,13 +1089,16 @@ var SKEL = [
 (function(){
   var reveal = [1, 2, 4, 6, 11];   // lines visible after each move
   var build = '<div class="code" style="width:100%">' + SKEL.map(function(l, i){
-    return '<span class="cl k' + i + '" style="opacity:0;transition:opacity .35s">' + l.replace(/</g,'&lt;').replace(/ /g,'&nbsp;') + '</span>';
+    return '<span class="cl k' + i + '">' + l.replace(/</g,'&lt;').replace(/ /g,'&nbsp;') + '</span>';
   }).join('') + '</div>';
   var css = document.createElement('style');
   var rules = '';
   for (var f = 0; f < reveal.length; f++){
     for (var i = 0; i < reveal[f]; i++) rules += '#s10[data-f="' + f + '"] .k' + i + '{opacity:1}';
   }
+  // base state lives in the stylesheet, NOT inline: an inline opacity would
+  // outrank these reveal rules and nothing would ever appear.
+  rules += '#s10 .cl{opacity:0;transition:opacity .35s}';
   rules += '#s10{min-height:230px;display:flex;align-items:center;padding:14px}';
   css.textContent = rules;
   document.head.appendChild(css);
