@@ -10,7 +10,7 @@ published, shareable versions are linked below.
 | `set-or-regret.html` | those four, drilled under a timer | https://claude.ai/code/artifact/6f976c55-1230-45fb-bc09-e445b78fcb75 |
 | `day-one-explained.html` | the rest of Day 1, explained | https://claude.ai/code/artifact/64f95123-a9ed-4a95-9c5e-3a84b1b73646 |
 | `reload-arcade.html` | all of Day 1, drilled + interview lines | https://claude.ai/code/artifact/1c759e0a-4535-4fb9-a223-2dbd0ad42765 |
-| `eight-techniques.html` | the 8 patterns, with steppable traces | https://claude.ai/code/artifact/558e35f2-a737-4fa4-9a01-b986ceef0816 |
+| `eight-techniques.html` | the 8 patterns — **all 15 problems, each a steppable trace** | https://claude.ai/artifact/BZkrJF7UaTcjSAkB9kv95P |
 | `the-plumbing.html` | taking input, returning answers, looping through data | https://claude.ai/code/artifact/eb421301-3ce0-47f3-bab6-01509dbe20f8 |
 | `fifteen-pictures.html` | the same 15 ideas as pictures, with spaced repetition | https://claude.ai/code/artifact/216eed8b-f415-431e-b198-b7f131a92606 |
 | `type-it-out.html` | **22 exercises you type and run** — real Python in the page | https://claude.ai/code/artifact/dcdf9c06-3259-4d8c-a959-6e2ecc11c67d |
@@ -86,35 +86,41 @@ real interpreter.
 
 ## Where this left off
 
-In `eight-techniques.html`, six of the fifteen problems have full working
-implementations with recorded step-by-step traces — all verified to produce
-correct output:
+Nothing outstanding. `eight-techniques.html` now has a steppable trace for
+**all fifteen** problems, in problem order, so §04 doubles as a table of
+contents:
 
-| # | Problem | Verified |
-|---|---|---|
-| 1 | Reverse in place | `ABCDE` → `EDCBA` |
-| 3 | Longest substring, no repeats | `"abcabb"` → `3` |
-| 11 | Two Sum | `[2,7,11,15]`, target 9 → `[0,1]` |
-| 12 | Maximum subarray (Kadane) | `[-2,1,-3,4,-1,2,-5,4]` → `5` |
-| 13 | Merge sorted arrays | → `[1,2,3,4,5,6]` |
-| 14 | Move zeroes | `[0,1,0,3,12]` → `[1,3,12,0,0]` |
+| # | Problem | Technique shown | Verified |
+|---|---|---|---|
+| 1 | Reverse in place | two pointers | `ABCDE` → `EDCBA` |
+| 2 | Valid palindrome | two pointers, skipping junk | `"Ab, Ba"` → `True` |
+| 3 | Longest substring, no repeats | sliding window | `"abcabb"` → `3` |
+| 4 | Valid anagram | count up, then count down | `listen`/`silent` → `True` |
+| 5 | Group anagrams | canonical form as key | 3 buckets from 6 words |
+| 6 | FizzBuzz | condition order | 15 slots, `FizzBuzz` last |
+| 7 | Primes up to N | the sieve, and the √n bound | → `2,3,5,7,11,13,17,19` |
+| 8 | Reverse an integer | `% 10` peel, `// 10` drop | `1234` → `4321` |
+| 9 | Fibonacci | running state / DP collapse | `fib(10)` → `55` |
+| 10 | Count set bits | `n &= n - 1` | `13` → `3` |
+| 11 | Two Sum | hash map | `[2,7,11,15]`, 9 → `[0,1]` |
+| 12 | Maximum subarray | Kadane | `[-2,1,-3,4,-1,2,-5,4]` → `5` |
+| 13 | Merge sorted arrays | merge step, filled backwards | → `[1,2,3,4,5,6]` |
+| 14 | Move zeroes | read / write pointers | `[0,1,0,3,12]` → `[1,3,12,0,0]` |
+| 15 | Missing number | XOR pairs cancel | `[3,0,1]` → `2` |
 
-The other nine have a technique label and a one-line trick in the §04 index,
-but **no implementation**: #2 palindrome, #4 valid anagram, #5 group anagrams,
-#6 FizzBuzz, #7 primes and the sieve, #8 reverse an integer, #9 Fibonacci three
-ways, #10 count set bits, #15 missing number.
+Verification for the nine added: each reference implementation was run on
+**real CPython** to fix the expected result, the JS trace builders re-run the
+same algorithm to record every frame, and the two were compared
+programmatically — 10/10 match, including full intermediate sequences for the
+sieve, FizzBuzz and the Fibonacci table. The whole page was then rendered in
+**jsdom** and every tracer stepped through every frame: 15/15 mount, no blank
+notes, exactly one highlighted code line per frame, cells present throughout.
 
-### Next step, agreed but not started
+### Still open, offered but not started
 
-Add traces for the four with real mechanics worth watching — **#9** Fibonacci
-(recursion vs memo vs iteration, showing the call tree explode), **#10** count
-set bits (bits vanishing as `n &= n - 1` runs), **#15** missing number (XOR
-pairs cancelling), **#5** group anagrams (the canonical key forming) — and give
-the remaining five a full worked solution with edge cases, as a plain code block.
-
-Also open: a drill companion for `eight-techniques.html` — timed rounds on
-"name the technique from the question" and "which loop does this need", to match
-what the Arcade does for Day 1.
+A drill companion for `eight-techniques.html` — timed rounds on "name the
+technique from the question" and "which loop does this need", to match what the
+Arcade does for Day 1.
 
 ## Editing these
 

@@ -260,8 +260,9 @@ hr{border:none;border-top:1px solid var(--rule);margin:0}
 <!-- ===================== 03 TRACES ===================== -->
 <section>
   <div class="step"><b>03</b> Step through it</div>
-  <h2>Six patterns, one line at a time</h2>
-  <p class="lede">Press <b>Step</b> and watch. The highlighted line is what's executing; the pointers under the cells are where you are; the note explains what just changed and why. Nothing here is a picture of code — every frame was recorded by actually running the algorithm.</p>
+  <h2>All fifteen, one line at a time</h2>
+  <p class="lede">Press <b>Step</b> and watch. The highlighted line is what's executing; the pointers under the cells are where you are; the note explains what just changed and why. Nothing here is a picture of code — every frame was recorded by actually running the algorithm, and every result was checked against real Python.</p>
+  <p class="lede">They're in problem order, so §04 below doubles as the table of contents.</p>
 </section>
 
 <div id="tracers"></div>
@@ -387,8 +388,8 @@ function traceReverse(){
   snap(6, 'Done. Each pass fixed two cells, so the loop ran <b>len(arr) // 2</b> times — not len(arr).');
   return {code, frames:F,
     title:'Two pointers, converging',
-    prob:'#1 reverse in place · #2 palindrome',
-    when:'Use when the input is symmetric or sorted. The loop is <code>while left &lt; right</code> — never a <code>for</code>, because two things move.'};
+    prob:'#1 reverse a string in place',
+    when:'Use when the input is symmetric or sorted. The loop is <code>while left &lt; right</code> — never a <code>for</code>, because two things move. The next tracer is the same walk applied to a harder question.'};
 }
 
 function traceMoveZeroes(){
@@ -594,12 +595,368 @@ function traceMerge(){
     when:'Two sorted inputs, one output. Compare the fronts (or backs), take the winner, advance <b>only that one</b>. Filling backwards is what makes the in-place version safe.'};
 }
 
+/* ---------- #2 valid palindrome ---------- */
+function tracePalindrome(){
+  const code = [
+    'def is_pal(s):',
+    '    left, right = 0, len(s) - 1',
+    '    while left < right:',
+    '        if not s[left].isalnum():',
+    '            left += 1',
+    '        elif not s[right].isalnum():',
+    '            right -= 1',
+    '        elif s[left].lower() != s[right].lower():',
+    '            return False',
+    '        else:',
+    '            left += 1',
+    '            right -= 1',
+    '    return True'
+  ];
+  const raw = 'Ab, Ba';
+  const s = raw.split('').map(c => c === ' ' ? '␣' : c);
+  const real = raw.split('');
+  const alnum = c => /[a-z0-9]/i.test(c);
+  const F = [];
+  let left = 0, right = real.length - 1;
+  const snap = (line, note) => F.push({line, arr:[...s], ptrs:{left, right}, vars:{left, right}, note});
+
+  snap(1, `The string is <code>"${raw}"</code>. Same two-pointer walk as reversing — but now you are <b>comparing</b>, not swapping, and the junk characters have to be stepped over rather than removed.`);
+  for(;;){
+    snap(2, `<code>left &lt; right</code> → <code>${left} &lt; ${right}</code> is <b>${left < right}</b>. ${left < right ? 'Keep going.' : 'The pointers met. Every pair checked out.'}`);
+    if (!(left < right)) break;
+    if (!alnum(real[left])){
+      snap(3, `<code>s[${left}]</code> is <code>"${real[left] === ' ' ? 'space' : real[left]}"</code> — not a letter or digit. Skip it.`);
+      left++; snap(4, `<code>left</code> → <b>${left}</b>. Note that <code>right</code> did <i>not</i> move: you only advance the side that was junk.`);
+      continue;
+    }
+    if (!alnum(real[right])){
+      snap(5, `<code>s[${right}]</code> is <code>"${real[right] === ' ' ? 'space' : real[right]}"</code> — junk. Skip it.`);
+      right--; snap(6, `<code>right</code> → <b>${right}</b>.`);
+      continue;
+    }
+    const a = real[left].toLowerCase(), b = real[right].toLowerCase();
+    if (a !== b){
+      snap(7, `Compare <code>"${a}"</code> and <code>"${b}"</code> — <b>different</b>. One mismatch is enough.`);
+      snap(8, `<code>return False</code>. You do not need to check the rest, and you should not: bail out the moment you know.`);
+      return {code, frames:F, title:'Two pointers, skipping junk', prob:'#2 valid palindrome',
+        when:'The pattern for "is this symmetric?" — plus the real lesson, which is that the <i>skip</i> branches must not also advance the other pointer.'};
+    }
+    snap(7, `Compare <code>"${a}"</code> and <code>"${b}"</code> after <code>.lower()</code> — <b>same</b>. This pair is fine.`);
+    left++; right--;
+    snap(11, `Both pointers move inward: <code>left</code> → <b>${left}</b>, <code>right</code> → <b>${right}</b>. Only the matching branch moves <i>both</i>.`);
+  }
+  snap(12, `<code>return True</code>. The pointers crossed without ever disagreeing, so <code>"${raw}"</code> is a palindrome. <b>O(1) extra space</b> — you never built a cleaned copy of the string, which is exactly what the interviewer is checking for.`);
+  return {code, frames:F, title:'Two pointers, skipping junk', prob:'#2 valid palindrome',
+    when:'The pattern for "is this symmetric?" — plus the real lesson, which is that the <i>skip</i> branches must not also advance the other pointer.'};
+}
+
+/* ---------- #4 valid anagram ---------- */
+function traceAnagram(){
+  const code = [
+    'def is_anagram(a, b):',
+    '    if len(a) != len(b):',
+    '        return False',
+    '    counts = {}',
+    '    for ch in a:',
+    '        counts[ch] = counts.get(ch, 0) + 1',
+    '    for ch in b:',
+    '        if ch not in counts:',
+    '            return False',
+    '        counts[ch] -= 1',
+    '        if counts[ch] == 0:',
+    '            del counts[ch]',
+    '    return len(counts) == 0'
+  ];
+  const A = 'listen'.split(''), B = 'silent'.split('');
+  const F = [];
+  const counts = new Map();
+  const chips = () => [...counts.entries()].map(([k, v]) => `${k}:${v}`);
+  const snap = (line, note, i, j) => F.push({
+    line, arr:[...A], ptrs: i === undefined ? {} : {i},
+    arr2:[...B], ptrs2: j === undefined ? {} : {i:j},
+    vars:{left:counts.size}, extra:{label:'counts', items:chips()}, note
+  });
+  F.push({line:1, arr:[...A], arr2:[...B], ptrs:{}, ptrs2:{}, vars:{}, extra:{label:'counts', items:[]},
+    note:`Lengths are <b>${A.length}</b> and <b>${B.length}</b> — equal, so it is still possible. Different lengths would be an instant <code>False</code>, and checking it first saves you the whole loop.`});
+
+  for (let i = 0; i < A.length; i++){
+    counts.set(A[i], (counts.get(A[i]) || 0) + 1);
+    snap(5, `Add <code>"${A[i]}"</code> from the first word. <code>.get(ch, 0)</code> gives 0 the first time you meet a letter, so the same line works for a new letter and a repeat.`, i);
+  }
+  snap(5, `First word tallied. <b>${counts.size}</b> distinct letters. Now spend them.`, A.length - 1);
+
+  for (let j = 0; j < B.length; j++){
+    const ch = B[j];
+    if (!counts.has(ch)){
+      snap(8, `<code>"${ch}"</code> is not in the table at all. <code>return False</code> — the second word has a letter the first one never had.`, undefined, j);
+      return {code, frames:F, title:'Count up, then count down', prob:'#4 valid anagram',
+        when:'The hash-map staple. Build a tally from one side, spend it from the other. If the table ends empty, they matched.'};
+    }
+    counts.set(ch, counts.get(ch) - 1);
+    if (counts.get(ch) === 0){
+      counts.delete(ch);
+      snap(11, `<code>"${ch}"</code> dropped to 0, so delete the key. Keeping zero-valued keys would break the final <code>len(counts) == 0</code> check — this line is the one people forget.`, undefined, j);
+    } else {
+      snap(9, `Spend one <code>"${ch}"</code> → now <b>${counts.get(ch)}</b> left.`, undefined, j);
+    }
+  }
+  snap(12, `The table is <b>empty</b>, so every letter the second word spent was one the first word had, and nothing was left over. <code>return True</code>. <b>O(n)</b> — the sorting solution is O(n log n), and saying that out loud is worth a mark.`, undefined, B.length - 1);
+  return {code, frames:F, title:'Count up, then count down', prob:'#4 valid anagram',
+    when:'The hash-map staple. Build a tally from one side, spend it from the other. If the table ends empty, they matched.'};
+}
+
+/* ---------- #5 group anagrams ---------- */
+function traceGroup(){
+  const code = [
+    'def group_anagrams(words):',
+    '    buckets = {}',
+    '    for w in words:',
+    '        key = "".join(sorted(w))',
+    '        if key not in buckets:',
+    '            buckets[key] = []',
+    '        buckets[key].append(w)',
+    '    return list(buckets.values())'
+  ];
+  const words = ['eat','tea','tan','ate','nat','bat'];
+  const F = [];
+  const buckets = new Map();
+  const chips = () => [...buckets.entries()].map(([k, v]) => `${k} → ${v.join(', ')}`);
+  const snap = (line, note, i) => F.push({
+    line, arr:[...words], ptrs: i === undefined ? {} : {i}, vars:{},
+    extra:{label:'buckets', items:chips()}, note
+  });
+  snap(1, 'Every word has to land in a bucket with the words it is an anagram of. The whole problem is: <b>what do two anagrams have in common that you can use as a key?</b>');
+  words.forEach((w, i) => {
+    const key = w.split('').sort().join('');
+    const isNew = !buckets.has(key);
+    if (isNew) buckets.set(key, []);
+    buckets.get(key).push(w);
+    snap(6, `<code>sorted("${w}")</code> → <code>"${key}"</code>. ${isNew
+      ? `No bucket for <code>"${key}"</code> yet, so make one, then drop <code>"${w}"</code> in.`
+      : `<code>"${key}"</code> already exists — <code>"${w}"</code> joins <code>"${buckets.get(key)[0]}"</code>. That is the whole trick working.`}`, i);
+  });
+  snap(7, `<b>${buckets.size}</b> buckets. The key idea — <b>canonical form</b> — is the thing to remember: when you need "these are the same in some way", find a form both of them collapse to, and use it as the dict key. Sorting the letters is just this problem\'s version of it.`, words.length - 1);
+  return {code, frames:F, title:'Canonical form as the key', prob:'#5 group anagrams',
+    when:'Reach for this whenever "equivalent" means something other than equal. Build the key that makes equivalent things identical, then a plain dict does the grouping for free.'};
+}
+
+/* ---------- #6 fizzbuzz ---------- */
+function traceFizzBuzz(){
+  const code = [
+    'def fizzbuzz(n):',
+    '    out = []',
+    '    for i in range(1, n + 1):',
+    '        if i % 15 == 0:',
+    '            out.append("FizzBuzz")',
+    '        elif i % 3 == 0:',
+    '            out.append("Fizz")',
+    '        elif i % 5 == 0:',
+    '            out.append("Buzz")',
+    '        else:',
+    '            out.append(str(i))',
+    '    return out'
+  ];
+  const N = 15, F = [];
+  const cells = Array(N).fill('·');
+  const snap = (line, note, i) => F.push({
+    line, arr:[...cells], ptrs: i === undefined ? {} : {i}, hit: i === undefined ? [] : [i],
+    vars:{}, note
+  });
+  snap(2, `Fifteen slots to fill. The <i>only</i> thing being tested here is whether you check <b>15 first</b> — everything else is typing.`);
+  for (let i = 1; i <= N; i++){
+    let line, word, why;
+    if (i % 15 === 0){ line = 4; word = 'FizzBuzz'; why = `<b>${i}</b> divides by 15, so this branch wins. It is checked <i>first</i> — if it were last, 15 would already have been caught by the <code>% 3</code> branch and printed "Fizz".`; }
+    else if (i % 3 === 0){ line = 6; word = 'Fizz'; why = `<b>${i}</b> divides by 3 but not 5.`; }
+    else if (i % 5 === 0){ line = 8; word = 'Buzz'; why = `<b>${i}</b> divides by 5 but not 3.`; }
+    else { line = 10; word = String(i); why = `<b>${i}</b> divides by neither, so the number itself goes in — as a <b>string</b>, because the list must hold one type.`; }
+    cells[i - 1] = word;
+    snap(line, why, i - 1);
+  }
+  snap(11, `Done. Notice <b>15</b> in the last slot — that single cell is the entire problem. Only one branch ever runs per number, because <code>elif</code> means "otherwise, try this".`, N - 1);
+  return {code, frames:F, title:'The order of the conditions', prob:'#6 FizzBuzz',
+    when:'Whenever conditions overlap, the most specific one goes first. <code>elif</code> stops at the first match, so a general rule placed above a specific one silently eats it.'};
+}
+
+/* ---------- #7 sieve of eratosthenes ---------- */
+function traceSieve(){
+  const code = [
+    'def primes(n):',
+    '    is_prime = [True] * (n + 1)',
+    '    is_prime[0] = is_prime[1] = False',
+    '    p = 2',
+    '    while p * p <= n:',
+    '        if is_prime[p]:',
+    '            for m in range(p * p, n + 1, p):',
+    '                is_prime[m] = False',
+    '        p += 1',
+    '    return [i for i, v in enumerate(is_prime) if v]'
+  ];
+  const n = 20, F = [];
+  const isP = Array(n + 1).fill(true);
+  const cells = () => isP.map((v, i) => v ? String(i) : '×');
+  const snap = (line, note, p, hit) => F.push({
+    line, arr:cells(), ptrs: p === undefined ? {} : {p}, hit: hit || [], vars:{}, note
+  });
+  isP[0] = isP[1] = false;
+  snap(2, `Assume everything up to ${n} is prime, then cross out what cannot be. <b>0 and 1 are struck immediately</b> — they are not prime by definition, and forgetting them is the classic off-by-one here.`);
+  let p = 2;
+  while (p * p <= n){
+    snap(4, `<code>p * p &lt;= n</code> → <code>${p} × ${p} = ${p*p} &lt;= ${n}</code> is <b>true</b>. ${p === 2 ? 'Why stop at √n? Because any composite has a factor at or below its square root — past that you would only be re-crossing things.' : 'Keep sieving.'}`, p);
+    if (isP[p]){
+      const crossed = [];
+      for (let m = p * p; m <= n; m += p){ if (isP[m]) crossed.push(m); isP[m] = false; }
+      snap(7, `<code>${p}</code> is still standing, so it is prime. Cross out its multiples starting at <code>${p*p}</code> — <b>${crossed.length ? crossed.join(', ') : 'nothing new'}</b>. ${p === 2 ? 'Start at p² and not 2p, because every smaller multiple was already crossed by a smaller prime.' : 'Anything below ' + (p*p) + ' with a factor of ' + p + ' was already taken out earlier.'}`, p, crossed);
+    } else {
+      snap(5, `<code>${p}</code> was already crossed out, so it is not prime — skip it. Its multiples are all gone too.`, p);
+    }
+    p++;
+  }
+  snap(4, `<code>${p} × ${p} = ${p*p} &gt; ${n}</code>, so the loop stops. Everything still standing is prime.`, Math.min(p, n));
+  const out = [];
+  for (let i = 0; i <= n; i++) if (isP[i]) out.push(i);
+  snap(9, `Result: <b>${out.join(', ')}</b>. The sieve is <b>O(n log log n)</b> — far better than testing each number separately, which is what the interviewer wants you to notice.`);
+  return {code, frames:F, title:'Cross out, do not test', prob:'#7 primes up to N',
+    when:'Two lessons in one: the <code>√n</code> bound on trial division, and the sieve\'s inversion — instead of asking "is this prime?" n times, mark the ones that cannot be.'};
+}
+
+/* ---------- #8 reverse an integer ---------- */
+function traceReverseInt(){
+  const code = [
+    'def reverse_int(n):',
+    '    sign = -1 if n < 0 else 1',
+    '    n = abs(n)',
+    '    out = 0',
+    '    while n > 0:',
+    '        digit = n % 10',
+    '        out = out * 10 + digit',
+    '        n = n // 10',
+    '    out = out * sign',
+    '    if out < -2**31 or out > 2**31 - 1:',
+    '        return 0',
+    '    return out'
+  ];
+  const START = 1234, F = [];
+  const digits = String(START).split('');
+  let n = START, out = 0, taken = 0;
+  const snap = (line, note) => F.push({
+    line, arr:[...digits],
+    ptrs: taken > 0 ? {i: digits.length - taken} : {},
+    hit: digits.map((_, k) => k).slice(digits.length - taken),
+    vars:{n, out}, note
+  });
+  snap(3, `Reversing <b>${START}</b> without turning it into a string. Two operations do everything: <code>% 10</code> reads the last digit, <code>// 10</code> throws it away.`);
+  while (n > 0){
+    const d = n % 10;
+    snap(5, `<code>${n} % 10</code> → <b>${d}</b>. Modulo always hands you the <i>last</i> digit.`);
+    out = out * 10 + d;
+    snap(6, `<code>out = ${(out - d) / 10} * 10 + ${d}</code> → <b>${out}</b>. Multiplying by 10 shifts what you already have one place left, making room for the new digit.`);
+    n = Math.floor(n / 10);
+    taken++;
+    snap(7, `<code>// 10</code> drops that digit → <code>n = ${n}</code>. <b>This is the line that ends the loop.</b> Leave it out and <code>n</code> never changes, so <code>while n &gt; 0</code> runs forever.`);
+  }
+  snap(8, `<code>n</code> hit 0, so the loop stops. <code>out = ${out}</code>, sign re-applied. For <code>-123</code> the same code gives <code>-321</code>, because you stripped the sign at the start instead of fighting it.`);
+  snap(9, `The check everyone forgets: a 32-bit signed integer stops at <b>2147483647</b>. <code>reverse_int(1534236469)</code> would be 9646324351, which is over — so it returns <b>0</b>. Python itself has no limit, which is exactly why the question asks.`);
+  snap(11, `<b>${out}</b>. Peel, shift, drop — that trio shows up again in digit sums, palindromic numbers and base conversion.`);
+  return {code, frames:F, title:'Peel, shift, drop', prob:'#8 reverse an integer',
+    when:'Any "work through the digits" problem. <code>% 10</code> to read, <code>// 10</code> to advance — and the advance is what stops the loop.'};
+}
+
+/* ---------- #9 fibonacci, rolling ---------- */
+function traceFib(){
+  const code = [
+    'def fib(n):',
+    '    a, b = 0, 1',
+    '    for i in range(n):',
+    '        a, b = b, a + b',
+    '    return a'
+  ];
+  const N = 10, F = [];
+  const cells = Array(N).fill('·');
+  let a = 0, b = 1;
+  const snap = (line, note, i) => F.push({
+    line, arr:[...cells], ptrs: i === undefined ? {} : {i}, hit: i === undefined ? [] : [i],
+    vars:{a, b}, note
+  });
+  snap(1, `The naive recursion <code>fib(n-1) + fib(n-2)</code> recomputes the same values over and over — <code>fib(40)</code> makes about <b>300 million</b> calls. Memoising it fixes that. But look at what the memo table actually holds: you only ever read the last two. So keep two variables and throw the table away.`);
+  for (let i = 0; i < N; i++){
+    cells[i] = String(a);
+    snap(3, `Slot <b>${i}</b> takes <code>a = ${a}</code>. Then <code>a, b = b, a + b</code> → <code>a = ${b}</code>, <code>b = ${a + b}</code>. The right-hand side is built <i>before</i> anything is assigned, which is why this works as one line — write it as two and you clobber <code>a</code> before you have used it.`, i);
+    const t = a + b; a = b; b = t;
+  }
+  snap(4, `<code>fib(${N})</code> → <b>${a}</b>. Two variables, one pass, <b>O(1) space</b>. Say the progression out loud in an interview — "naive recursion is exponential, memo makes it O(n) time and O(n) space, rolling two variables makes it O(n) time and O(1) space" — because that sentence <i>is</i> dynamic programming.`, N - 1);
+  return {code, frames:F, title:'Keep only what you still need', prob:'#9 Fibonacci, three ways',
+    when:'The gateway to DP. Whenever a recurrence looks back a fixed number of steps, the table collapses into that many variables.'};
+}
+
+/* ---------- #10 count set bits ---------- */
+function traceBits(){
+  const code = [
+    'def count_bits(n):',
+    '    count = 0',
+    '    while n:',
+    '        n = n & (n - 1)',
+    '        count += 1',
+    '    return count'
+  ];
+  const START = 13, W = 8, F = [];
+  const bin = v => v.toString(2).padStart(W, '0').split('');
+  let n = START, count = 0;
+  const lowestIdx = v => { const b = bin(v); for (let k = W - 1; k >= 0; k--) if (b[k] === '1') return k; return -1; };
+  const snap = (line, note, hit) => F.push({
+    line, arr:bin(n), ptrs:{}, hit: hit === undefined || hit < 0 ? [] : [hit],
+    vars:{n, count}, note
+  });
+  snap(1, `<b>${START}</b> in binary is <code>${bin(START).join('')}</code> — three 1s. The obvious way is to test each of the 32 bits. This way runs once per <b>set</b> bit instead, so it is three passes, not thirty-two.`);
+  while (n !== 0){
+    const idx = lowestIdx(n);
+    const before = n;
+    n = n & (n - 1);
+    count++;
+    snap(3, `<code>${before} &amp; ${before - 1}</code> → <code>${bin(before).join('')} &amp; ${bin(before - 1).join('')}</code> = <code>${bin(n).join('')}</code>. Subtracting 1 flips the lowest 1 to 0 and turns everything below it to 1s; <code>&amp;</code>-ing them back together wipes exactly that one bit. <b>count = ${count}</b>.`, idx);
+  }
+  snap(5, `<code>n</code> is 0, so every set bit has been cleared — and the count of passes <b>is</b> the answer: <b>${count}</b>. <code>n &amp;= n - 1</code> is worth memorising outright; it is also how you test for a power of two (<code>n &amp; (n - 1) == 0</code>).`);
+  return {code, frames:F, title:'Clear the lowest set bit', prob:'#10 count set bits',
+    when:'Bit problems where you want to visit only the 1s. The loop runs once per set bit, not once per bit width.'};
+}
+
+/* ---------- #15 missing number by XOR ---------- */
+function traceMissing(){
+  const code = [
+    'def missing(nums):',
+    '    x = 0',
+    '    for i in range(len(nums) + 1):',
+    '        x ^= i',
+    '    for n in nums:',
+    '        x ^= n',
+    '    return x'
+  ];
+  const nums = [3, 0, 1], F = [];
+  let x = 0;
+  const seen = [];
+  const snap = (line, note, ptr) => F.push({
+    line, arr:nums.map(String), ptrs: ptr === undefined ? {} : {n:ptr}, vars:{x},
+    extra:{label:'xor-ed so far', items:[...seen]}, note
+  });
+  snap(1, `The list is <code>[${nums.join(', ')}]</code> — the numbers 0 to 3 with exactly one missing. XOR has two properties that solve this outright: <code>a ^ a = 0</code>, and order does not matter.`);
+  for (let i = 0; i <= nums.length; i++){
+    x ^= i; seen.push(`i=${i}`);
+    snap(3, `XOR in every index <code>0..${nums.length}</code>. After <code>${i}</code>: <code>x = ${x}</code>. This half puts in <i>all</i> the numbers that should be there.`);
+  }
+  for (const nv of nums){
+    x ^= nv; seen.push(`n=${nv}`);
+    snap(5, `XOR in <code>${nv}</code> from the list → <code>x = ${x}</code>. Every value that appears in <b>both</b> halves cancels itself to 0.`, nums.indexOf(nv));
+  }
+  snap(6, `Everything paired off except the one number that was never in the list, so <code>x = <b>${x}</b></code>. <b>O(n) time, O(1) space</b>, and unlike the sum formula it cannot overflow. If they ask for another way: <code>n*(n+1)//2 - sum(nums)</code> gives the same ${x}.`);
+  return {code, frames:F, title:'Pairs cancel, the odd one survives', prob:'#15 missing number',
+    when:'XOR is the tool for "everything appears twice except one". It is also the trick behind finding a single non-duplicate in a list.'};
+}
+
 /* =====================================================================
    TRACE RENDERER
    ===================================================================== */
 const PTR_COLORS = {
   left:'var(--p1)', right:'var(--p2)', read:'var(--p1)', write:'var(--p3)',
-  i:'var(--p1)', n:'var(--p1)', p1:'var(--p1)', p2:'var(--p2)'
+  i:'var(--p1)', n:'var(--p1)', p:'var(--p4)', p1:'var(--p1)', p2:'var(--p2)'
 };
 
 function mountTracer(host, T){
@@ -684,7 +1041,13 @@ const host = document.getElementById('tracers');
 host.style.display = 'flex';
 host.style.flexDirection = 'column';
 host.style.gap = '20px';
-[traceReverse(), traceMoveZeroes(), traceWindow(), traceTwoSum(), traceKadane(), traceMerge()]
+[
+  traceReverse(),     /*  1 */ tracePalindrome(),  /*  2 */ traceWindow(),      /*  3 */
+  traceAnagram(),     /*  4 */ traceGroup(),       /*  5 */ traceFizzBuzz(),    /*  6 */
+  traceSieve(),       /*  7 */ traceReverseInt(),  /*  8 */ traceFib(),         /*  9 */
+  traceBits(),        /* 10 */ traceTwoSum(),      /* 11 */ traceKadane(),      /* 12 */
+  traceMerge(),       /* 13 */ traceMoveZeroes(),  /* 14 */ traceMissing()      /* 15 */
+]
   .forEach(T => mountTracer(host, T));
 
 /* =====================================================================
