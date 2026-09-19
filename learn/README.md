@@ -49,13 +49,19 @@ as a result (`UnboundLocalError` not `NameError` for a missing accumulator;
 not understanding the code structure."* Writing was being taught on top of a
 reading skill that was never taught. Two halves:
 
-**Why / when / how for all ten rungs of the OOP ladder.** Each keyword shows
-the code **without it** first — broken, stale, repetitive — then the same code
-**with it**, on a toggle. A keyword only sticks once you have felt the problem
-it removes. Highlights: `@property` shown as an area that goes stale when the
-radius changes (`12.56636` when it should be `314.159`); inheritance shown as
-an `ElectricCar` that inherits `refuel()`; `ABC` shown as a forgotten `area()`
-silently returning `None`.
+**Ten watch-it-break players — one per rung of the OOP ladder.** Not a toggle
+between two code blocks: a stepper that runs the code, with value cells that
+change underneath it, so the bug *happens* instead of being described. You
+step the broken version until the wrong value appears in red, then the same
+steps with the keyword, going green. A keyword only sticks once you have felt
+the problem it removes, so the prose was cut to one line each and folded away
+under the player. The two strongest: **rung 6** steps the radius from 2 to 10 and the area sits
+frozen at `12.56636` when it should be `314.159` — you watch a number refuse
+to move. **Rung 4** finds a bug in a copy-pasted `deposit`, fixes the parent,
+and shows the child still broken: parent `100`, child `50`. Both numbers came
+from running it. Also: `ElectricCar` inheriting `refuel()`, a forgotten
+`area()` returning `None` and blowing up 200 lines away, and a flipped `5/9`
+giving `122.4` instead of `37.8`.
 
 **How to read a block of code.** The one rule — every line belongs to the
 nearest line above it that is less indented — as a tap-a-line explorer that
@@ -70,8 +76,9 @@ recurring bug — `return` indented under the `for` — and tapping through it
 makes the function stop on the first item in front of them, output `3` not `10`.
 
 Verification: every before/after output was produced by running the code. The
-finished page was then driven in headless Chromium — all 10 toggles swap the
-code, the explorer resolves ownership correctly (tapping `return total` marks
+finished page was then driven in headless Chromium — all 10 players step through
+their 55 frames with exactly one pane visible, exactly one highlighted code
+line and values actually changing on every step, the explorer resolves ownership correctly (tapping `return total` marks
 the `for` as its owner), the three-pass reader reveals 3 → 6 → 12 → 16 lines,
 all three game rounds were played to completion, a wrong tap was confirmed to
 explain itself, and there is no horizontal scroll at 420px.

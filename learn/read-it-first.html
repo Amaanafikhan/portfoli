@@ -137,6 +137,39 @@ hr{border:none;border-top:1px solid var(--rule);margin:0}
 footer{color:var(--ink-faint);font-size:13px;line-height:1.6;border-top:1px solid var(--rule);padding-top:18px}
 .tog{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:9;font-size:11px;font-weight:800;border:1px solid var(--rule);background:var(--panel);color:var(--ink-soft);border-radius:8px;padding:7px 10px;cursor:pointer}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+/* ---------- §01 rung players ---------- */
+.rhead{align-items:center}
+.badge{margin-left:auto;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;border-radius:99px;padding:4px 10px;white-space:nowrap;flex:none}
+.badge.bad{background:color-mix(in srgb,var(--bad) 15%,var(--panel));color:var(--bad);border:1px solid color-mix(in srgb,var(--bad) 40%,var(--rule))}
+.badge.good{background:color-mix(in srgb,var(--good) 15%,var(--panel));color:var(--good);border:1px solid color-mix(in srgb,var(--good) 40%,var(--rule))}
+.ppane{display:flex;flex-direction:column;gap:11px}
+/* display:flex would otherwise beat the UA [hidden] rule and show both panes */
+.ppane[hidden]{display:none}
+.code.plr .ln{border-left:3px solid transparent;transition:background .22s,color .22s,border-color .22s}
+.code.plr .ln.on{background:color-mix(in srgb,var(--act) 32%,transparent);color:#fff;border-left-color:var(--act)}
+.cellrow{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.cell{
+  background:var(--panel-2);border:1.5px solid var(--rule);border-radius:10px;padding:9px 11px;
+  display:flex;flex-direction:column;gap:3px;min-width:0;transition:border-color .3s,background .3s;
+}
+.cell .k{font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.cell .v{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;word-break:break-word;line-height:1.4}
+.cell.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--panel))}
+.cell.ok .v{color:var(--good)}
+.cell.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--panel))}
+.cell.bad .v{color:var(--bad)}
+.cell.warn{border-color:var(--act);background:color-mix(in srgb,var(--act) 12%,var(--panel))}
+.cell.warn .v{color:var(--act)}
+.cell.flash{animation:pulse .6s ease-out}
+@keyframes pulse{0%{transform:scale(1)}35%{transform:scale(1.045)}100%{transform:scale(1)}}
+.pnote{font-size:14.5px;line-height:1.55;color:var(--ink-soft);min-height:62px;border-top:1px solid var(--rule);padding-top:11px}
+.pnote b{color:var(--ink)}
+.pnote .win{color:var(--good);font-weight:800}
+.pnote .lose{color:var(--bad);font-weight:800}
+.wwhd summary{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--ink-faint);cursor:pointer;padding:4px 0}
+.wwhd summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wwhd[open] summary{margin-bottom:9px}
 </style>
 
 <button class="tog" id="tog">theme</button>
@@ -155,7 +188,7 @@ footer{color:var(--ink-faint);font-size:13px;line-height:1.6;border-top:1px soli
 <section>
   <span class="eyebrow"><b>01</b> the ladder, explained</span>
   <h2>Why it exists · when to reach for it · how to type it</h2>
-  <p class="lede">A keyword only makes sense once you have felt the problem it solves. So each rung shows the code <b>without</b> it first — which is broken, ugly or repetitive — then the same code <b>with</b> it. Press the toggle and watch what changes. Every output shown here came from really running it.</p>
+  <p class="lede">A keyword only makes sense once you have <b>felt</b> the problem it removes. So each rung is a player, not a paragraph: press <b>Step</b> and the code runs in front of you, with the values changing in the boxes below it. You watch the broken version <b>go wrong</b> — the number that will not update, the bug that survives being fixed — and then the same steps with the keyword, going right.</p><p class="lede">Every value shown was produced by running the code on real Python. The words are still there if you want them, folded under each player.</p>
   <div style="display:flex;flex-direction:column;gap:14px" id="rungs"></div>
 </section>
 
@@ -276,311 +309,274 @@ function renderCode(lines, cls){
   }).join('');
 }
 
-/* ================= 01 THE LADDER ================= */
+/* ================= 01 THE LADDER — watch-it-break players =================
+   Every value below was produced by running the code on real Python.
+   ========================================================================= */
 var RUNGS = [
-  {n:1, t:'class · __init__ · self',
-   why:'Without a class, the data and the functions that work on it drift apart. You pass the same thing into every function by hand, and nothing stops you passing the wrong one.',
-   when:'You notice the same two or three variables being handed to every function.',
-   how:'<code>class Name:</code> then <code>def __init__(self, ...)</code> then <code>self.x = x</code>',
-   badOut:'you must pass the account into every single call',
-   goodOut:'the account is already inside — that is what self is',
-   bad:['# no class: the data is loose and every function must be handed it',
-        'account = {"owner": "amaan", "balance": 100}',
-        '',
-        'def deposit(acc, amount):',
-        '    acc["balance"] += amount',
-        '',
-        'def withdraw(acc, amount):',
-        '    acc["balance"] -= amount',
-        '',
-        'deposit(account, 50)',
-        'withdraw(account, 30)'],
-   good:['class BankAccount:',
-         '    def __init__(self, owner, balance=0):',
-         '        self.owner = owner',
-         '        self.balance = balance',
-         '',
-         '    def deposit(self, amount):',
-         '        self.balance += amount',
-         '',
-         '    def withdraw(self, amount):',
-         '        self.balance -= amount',
-         '',
-         'acc = BankAccount("amaan", 100)',
-         'acc.deposit(50)',
-         'acc.withdraw(30)']},
+{n:1, t:'class · __init__ · self',
+ why:'Without a class the data sits in one place and the functions that change it sit in another. You keep them matched up by hand, forever.',
+ when:'The same two or three variables get handed to every function.',
+ how:'<code>class Name:</code> → <code>def __init__(self, ...)</code> → <code>self.x = x</code>',
+ bad:{code:['account = {"owner": "amaan", "balance": 100}','',
+            'def deposit(acc, amount):','    acc["balance"] += amount','',
+            'deposit(account, 50)','deposit(account, 20)'],
+      keys:['balance','what you must type']},
+ good:{code:['class BankAccount:','    def __init__(self, owner, balance=0):',
+             '        self.owner = owner','        self.balance = balance','',
+             '    def deposit(self, amount):','        self.balance += amount','',
+             'acc = BankAccount("amaan", 100)','acc.deposit(50)','acc.deposit(20)'],
+       keys:['acc.balance','what you must type']},
+ frames:[
+  {p:'bad',line:0,v:['100','—'],f:['',''],note:'The data is a loose dict on its own. The function that changes it lives somewhere else entirely. <b>Nothing connects them</b> — Python has no idea they belong together.'},
+  {p:'bad',line:5,v:['100','deposit(account, 50)'],f:['','warn'],note:'To deposit, <b>you</b> must hand the account over. Look at the line: the account is named on the left and passed on the right.'},
+  {p:'bad',line:3,v:['150','deposit(account, 50)'],f:['','warn'],note:'It works — the balance moves to 150. Nothing is broken yet, and that is the point: the cost of this shape is not a crash, it is that it never stops asking you to be careful.'},
+  {p:'bad',line:6,v:['150','deposit(account, 20)'],f:['','warn'],note:'And again. Every single call. <b>Pass the wrong dict and nothing stops you</b>, because <code>deposit</code> is just a loose function that happens to expect one.'},
+  {p:'bad',line:3,v:['170','deposit(account, 20)'],f:['','bad'],note:'170 — correct, but you are maintaining two separate piles and keeping them in step by memory.'},
+  {p:'good',line:8,v:['100','—'],f:['',''],note:'Same starting point. But the balance now lives <b>inside</b> the object, right next to the code that changes it.'},
+  {p:'good',line:9,v:['100','acc.deposit(50)'],f:['','ok'],note:'Look hard at what you typed: <b>no account was passed.</b> The thing on the left of the dot is handed over automatically.'},
+  {p:'good',line:6,v:['150','acc.deposit(50)'],f:['','ok'],note:'And inside, <code>self</code> <i>is</i> that account. <code>self.balance</code> means <i>this particular</i> account’s balance. That is all <code>self</code> has ever meant.'},
+  {p:'good',line:10,v:['170','acc.deposit(20)'],f:['','ok'],note:'<span class="win">Same answer, half the typing, and impossible to hand it the wrong thing.</span> That is why classes exist.'}]},
 
-  {n:2, t:'instance vs class attributes',
-   why:'A list written at class level is created ONCE and shared by every object. Change it through one object and every other object changes too — silently, with no error.',
-   when:'The value is a list, dict or set. Then it goes in <code>__init__</code>. Always.',
-   how:'<code>self.items = []</code> inside <code>__init__</code>, never <code>items = []</code> at class level',
-   badOut:"b.items is ['apple'] — and b was never touched",
-   goodOut:'b.items is [] — each cart got its own list',
-   bad:['class Cart:',
-        '    items = []          # ONE list, shared by every Cart',
-        '    def add(self, x):',
-        '        self.items.append(x)',
-        '',
-        'a, b = Cart(), Cart()',
-        'a.add("apple")',
-        'print(b.items)          # [\'apple\']'],
-   good:['class Cart:',
-         '    def __init__(self):',
-         '        self.items = []     # a fresh list per Cart',
-         '    def add(self, x):',
-         '        self.items.append(x)',
-         '',
-         'a, b = Cart(), Cart()',
-         'a.add("apple")',
-         'print(b.items)              # []']},
+{n:2, t:'instance vs class attributes',
+ why:'A list written at class level is created ONCE and shared by every object. Change it through one and every other one changes too — silently.',
+ when:'The value is a list, dict or set. Then it goes in <code>__init__</code>. Always.',
+ how:'<code>self.items = []</code> inside <code>__init__</code> — never <code>items = []</code> at class level',
+ bad:{code:['class Cart:','    items = []','    def add(self, x):','        self.items.append(x)','',
+            'a, b = Cart(), Cart()','a.add("apple")','print(b.items)'],
+      keys:['the ONE list','a.items','b.items']},
+ good:{code:['class Cart:','    def __init__(self):','        self.items = []',
+             '    def add(self, x):','        self.items.append(x)','',
+             'a, b = Cart(), Cart()','a.add("apple")','print(b.items)'],
+       keys:['a.items','b.items']},
+ frames:[
+  {p:'bad',line:1,v:['[]','—','—'],f:['warn','',''],note:'<code>items = []</code> sits at <b>class level</b>. This list is built <b>once</b>, when Python first reads the class — before a single cart exists.'},
+  {p:'bad',line:5,v:['[]','[]','[]'],f:['warn','warn','warn'],note:'Two carts made. But <b>a.items and b.items are not two lists.</b> They are two names pointing at that one list above.'},
+  {p:'bad',line:6,v:["['apple']","['apple']","['apple']"],f:['bad','','bad'],note:'<code>a.add("apple")</code>. The apple goes into the one shared list — <b>so it shows up in b at the same instant</b>.'},
+  {p:'bad',line:7,v:["['apple']","['apple']","['apple']"],f:['bad','','bad'],note:'<span class="lose">b.items is [’apple’] and nobody ever touched b.</span> No error, no warning. Just a wrong answer that will cost you an hour.'},
+  {p:'good',line:6,v:['[]','[]'],f:['',''],note:'Now the list is made inside <code>__init__</code>, which runs <b>once per cart</b>. So <code>[]</code> is evaluated twice — two genuinely separate lists.'},
+  {p:'good',line:7,v:["['apple']",'[]'],f:['ok',''],note:'The apple goes into a’s own list, and only a’s.'},
+  {p:'good',line:8,v:["['apple']",'[]'],f:['','ok'],note:'<span class="win">b.items is empty. Correct.</span> The rule to carry: <b>a mutable value at class level is created once and shared — put it in __init__.</b>'}]},
 
-  {n:3, t:'__str__ vs __repr__',
-   why:'Without them, printing your own object tells you nothing at all — just a class name and a memory address. You cannot debug what you cannot see.',
-   when:'Every class you will ever have to debug. Which is every class.',
-   how:'<code>def __repr__(self): return f"Cart({self.items})"</code> — write <code>__repr__</code> first; <code>str()</code> falls back to it',
-   badOut:'a memory address. Useless.',
-   goodOut:'you can finally see what is inside',
-   bad:['class Cart:',
-        '    def __init__(self):',
-        '        self.items = ["apple"]',
-        '',
-        'print(Cart())',
-        '# <__main__.Cart object at 0x7f2a1c3d5e90>'],
-   good:['class Cart:',
-         '    def __init__(self):',
-         '        self.items = ["apple"]',
-         '    def __repr__(self):',
-         '        return f"Cart({self.items})"',
-         '',
-         'print(Cart())',
-         "# Cart(['apple'])"]},
+{n:3, t:'__str__ vs __repr__',
+ why:'Without them, printing your own object tells you nothing — a class name and a memory address. You cannot debug what you cannot see.',
+ when:'Every class you will ever have to debug. So: every class.',
+ how:'<code>def __repr__(self): return f"Cart({self.items})"</code> — write <code>__repr__</code> first, <code>str()</code> falls back to it',
+ bad:{code:['class Cart:','    def __init__(self):','        self.items = ["apple"]','',
+            'print(Cart())'],
+      keys:['what print shows you']},
+ good:{code:['class Cart:','    def __init__(self):','        self.items = ["apple"]',
+             '    def __repr__(self):','        return f"Cart({self.items})"','',
+             'print(Cart())'],
+       keys:['what print shows you']},
+ frames:[
+  {p:'bad',line:4,v:['—'],f:[''],note:'A perfectly good cart with an apple in it. Now print it.'},
+  {p:'bad',line:4,v:['<__main__.Cart object at 0x7f2a1c3d5e90>'],f:['bad'],note:'<span class="lose">A class name and a memory address.</span> It does not tell you one single thing about what is inside. <b>This is what debugging without __repr__ feels like</b> — and it is why people fall back to scattering print statements everywhere.'},
+  {p:'good',line:6,v:['—'],f:[''],note:'Add three lines: a method called <code>__repr__</code> that returns a string describing the object.'},
+  {p:'good',line:6,v:["Cart(['apple'])"],f:['ok'],note:'<span class="win">Now you can see it.</span> One method, and every print, every debugger, and every object inside a list becomes readable — forever, for free.'}]},
 
-  {n:4, t:'inheritance · super()',
-   why:'Without it you copy and paste the parent class, and from then on every bug has to be fixed in two places. One of them you will forget.',
-   when:'The new thing IS-A kind of the old thing and shares most of its behaviour.',
-   how:'<code>class Savings(Account):</code> and call <code>super().__init__(...)</code> on the first line of the child\'s <code>__init__</code>',
-   badOut:'deposit and withdraw written twice — fix a bug here, forget it there',
-   goodOut:'written once. The child adds only what is new.',
-   bad:['class BankAccount:',
-        '    def __init__(self, owner, balance=0):',
-        '        self.owner = owner',
-        '        self.balance = balance',
-        '    def deposit(self, amount):',
-        '        self.balance += amount',
-        '',
-        'class SavingsAccount:            # copy-paste starts here',
-        '    def __init__(self, owner, balance=0, rate=0.05):',
-        '        self.owner = owner       # again',
-        '        self.balance = balance   # again',
-        '        self.rate = rate',
-        '    def deposit(self, amount):   # again',
-        '        self.balance += amount'],
-   good:['class SavingsAccount(BankAccount):',
-         '    def __init__(self, owner, balance=0, rate=0.05):',
-         '        super().__init__(owner, balance)   # run the parent setup',
-         '        self.rate = rate                   # then add your own',
-         '',
-         '    def add_interest(self):',
-         '        self.balance += self.balance * self.rate',
-         '        return self.balance',
-         '',
-         's = SavingsAccount("amaan", 1000)',
-         'print(s.add_interest())   # 1050.0',
-         'print(s.owner)            # amaan  — free from the parent']},
+{n:4, t:'inheritance · super()',
+ why:'Without it you copy and paste the parent. From then on every bug must be fixed twice — and one of those times you will forget.',
+ when:'The new thing IS-A kind of the old thing and shares most of its behaviour.',
+ how:'<code>class Savings(Account):</code> and <code>super().__init__(...)</code> as the first line of the child’s <code>__init__</code>',
+ bad:{code:['class BankAccount:','    def __init__(self, balance=0):','        self.balance = balance',
+            '    def deposit(self, amount):','        self.balance += amount','',
+            'class SavingsAccount:            # copy-pasted','    def __init__(self, balance=0):',
+            '        self.balance = balance','    def deposit(self, amount):','        self.balance += amount'],
+      keys:['BankAccount.deposit','SavingsAccount.deposit','deposit(-50) on each']},
+ good:{code:['class BankAccount:','    def __init__(self, balance=0):','        self.balance = balance',
+             '    def deposit(self, amount):','        if amount > 0:','            self.balance += amount','',
+             'class SavingsAccount(BankAccount):','    def __init__(self, balance=0, rate=0.05):',
+             '        super().__init__(balance)','        self.rate = rate'],
+       keys:['deposit is written','SavingsAccount.deposit','deposit(-50) on each']},
+ frames:[
+  {p:'bad',line:4,v:['self.balance += amount','self.balance += amount','—'],f:['warn','warn',''],note:'The same method, typed twice, because <code>SavingsAccount</code> was copy-pasted. Right now this looks harmless.'},
+  {p:'bad',line:-1,v:['self.balance += amount','self.balance += amount','100 → 50  ·  100 → 50'],f:['bad','bad','bad'],note:'<span class="lose">Bug found.</span> A negative deposit <i>takes money out</i>. Both classes have it, because both have the same line.'},
+  {p:'bad',line:4,v:['if amount > 0: self.balance += amount','self.balance += amount','—'],f:['ok','bad',''],note:'So you fix it. You add the guard, you run it, it passes. <b>You believe you are done</b> — that is exactly how this bug survives.'},
+  {p:'bad',line:10,v:['if amount > 0: self.balance += amount','self.balance += amount','100 stays 100  ·  100 → 50'],f:['ok','bad','bad'],note:'<span class="lose">The child still has it.</span> Parent 100, child 50. Nothing warned you, nothing will, until a user finds it.'},
+  {p:'good',line:7,v:['once, in BankAccount','inherited — not rewritten','—'],f:['ok','ok',''],note:'Now <code>deposit</code> exists in <b>exactly one place</b>. The child never typed it, so it <i>cannot</i> have a different version of it.'},
+  {p:'good',line:4,v:['once, in BankAccount','inherited — not rewritten','100 stays 100  ·  100 stays 100'],f:['ok','ok','ok'],note:'<span class="win">Fix once, fixed everywhere.</span> That is the real reason for inheritance — not "reuse", but <b>having one place where each behaviour lives</b>. And <code>super().__init__()</code> is how the child still gets the parent’s setup.'}]},
 
-  {n:5, t:'polymorphism · duck typing',
-   why:'Without it you write an if/elif chain on the type, and every new kind of thing means going back and editing that same function. Forever.',
-   when:'You catch yourself writing <code>if type == ...</code> anywhere.',
-   how:'Give every class a method with the <b>same name</b>, then just call it. No base class needed.',
-   badOut:'adding a Robot means editing this function again',
-   goodOut:'adding a Robot means adding a class. Nothing else changes.',
-   bad:['def speak(animal):',
-        '    if animal["type"] == "dog":',
-        '        return "Woof"',
-        '    elif animal["type"] == "cat":',
-        '        return "Meow"',
-        '    # a robot? come back and edit this. and again. and again.'],
-   good:['class Dog:',
-         '    def speak(self): return "Woof"',
-         'class Cat:',
-         '    def speak(self): return "Meow"',
-         'class Robot:',
-         '    def speak(self): return "Beep"   # nothing else changes',
-         '',
-         'for t in (Dog(), Cat(), Robot()):',
-         '    print(t.speak())',
-         "# ['Woof', 'Meow', 'Beep']"]},
+{n:5, t:'polymorphism · duck typing',
+ why:'Without it you write an if/elif chain on the type, and every new kind of thing means going back and editing code that already worked.',
+ when:'You catch yourself writing <code>if type == ...</code> anywhere.',
+ how:'Give every class a method with the <b>same name</b>, then just call it. No shared parent needed.',
+ bad:{code:['def speak(animal):','    if animal["type"] == "dog":','        return "Woof"',
+            '    elif animal["type"] == "cat":','        return "Meow"',
+            '    elif animal["type"] == "robot":','        return "Beep"'],
+      keys:['lines in speak()','to add a new one you...']},
+ good:{code:['class Dog:','    def speak(self): return "Woof"','class Cat:','    def speak(self): return "Meow"',
+             'class Robot:','    def speak(self): return "Beep"','',
+             'for t in (Dog(), Cat(), Robot()):','    print(t.speak())'],
+       keys:['lines in the loop','to add a new one you...']},
+ frames:[
+  {p:'bad',line:2,v:['3','—'],f:['',''],note:'One animal. Three lines. Perfectly reasonable.'},
+  {p:'bad',line:4,v:['5','edit speak()'],f:['warn','warn'],note:'A cat arrives. You come back and <b>edit this function</b>.'},
+  {p:'bad',line:6,v:['7','edit speak() again'],f:['bad','bad'],note:'<span class="lose">A robot arrives. Edit it again.</span> Every new thing means touching code that already worked — which is exactly how working code gets broken.'},
+  {p:'good',line:8,v:['2','—'],f:['',''],note:'Same three types. The loop that uses them is <b>two lines</b>, and it never mentions any of them by name.'},
+  {p:'good',line:5,v:['2','add a class. nothing else.'],f:['ok','ok'],note:'<span class="win">Adding Robot changed nothing that already worked.</span> No if-chain, no shared parent — <b>the method name is the only agreement</b>. That is duck typing.'}]},
 
-  {n:6, t:'@property',
-   why:'A value worked out once in <code>__init__</code> is frozen. Change what it depends on and it silently keeps the old, wrong answer.',
-   when:'A value depends on another value, or needs validating, or must be read-only.',
-   how:'Put <code>@property</code> on the line above a method, and read it with <b>no brackets</b>',
-   badOut:'radius changed to 10, area still says 12.56636 — WRONG',
-   goodOut:'radius changed to 10, area says 314.159 — recomputed on every read',
-   bad:['class Circle:',
-        '    def __init__(self, radius):',
-        '        self.radius = radius',
-        '        self.area = 3.14159 * radius ** 2   # frozen at birth',
-        '',
-        'c = Circle(2)',
-        'c.radius = 10',
-        'print(c.area)     # 12.56636   <- stale'],
-   good:['class Circle:',
-         '    def __init__(self, radius):',
-         '        self.radius = radius',
-         '',
-         '    @property',
-         '    def area(self):',
-         '        return 3.14159 * self.radius ** 2   # fresh every read',
-         '',
-         'c = Circle(2)',
-         'c.radius = 10',
-         'print(c.area)     # 314.159   <- correct']},
+{n:6, t:'@property',
+ why:'A value worked out once in <code>__init__</code> is frozen. Change what it depends on and it silently keeps the old, wrong answer.',
+ when:'A value depends on another value, or needs validating, or must be read-only.',
+ how:'<code>@property</code> on the line above a method — then read it with <b>no brackets</b>',
+ bad:{code:['class Circle:','    def __init__(self, radius):','        self.radius = radius',
+            '        self.area = 3.14159 * radius ** 2','',
+            'c = Circle(2)','c.radius = 10','print(c.area)'],
+      keys:['c.radius','c.area']},
+ good:{code:['class Circle:','    def __init__(self, radius):','        self.radius = radius','',
+             '    @property','    def area(self):','        return 3.14159 * self.radius ** 2','',
+             'c = Circle(2)','c.radius = 10','print(c.area)'],
+       keys:['c.radius','c.area']},
+ frames:[
+  {p:'bad',line:5,v:['2','12.56636'],f:['',''],note:'A circle of radius 2. The area was worked out <b>once</b>, at birth, and stored as a plain number.'},
+  {p:'bad',line:6,v:['10','12.56636'],f:['','bad'],note:'<span class="lose">The radius changed to 10. Watch the area.</span> It did not move. That line ran once and will never run again.'},
+  {p:'bad',line:7,v:['10','12.56636'],f:['','bad'],note:'You ask for the area of a circle of radius 10 and get <b>the area of a circle of radius 2</b>. No error, no crash — just a confident wrong number. This is the worst kind of bug there is.'},
+  {p:'good',line:8,v:['2','12.56636'],f:['',''],note:'Same start — but <code>area</code> is now a method wearing an attribute’s clothes.'},
+  {p:'good',line:9,v:['10','314.159'],f:['','ok'],note:'<span class="win">Radius changes, area follows.</span> It is recomputed the instant you read it, every time.'},
+  {p:'good',line:10,v:['10','314.159'],f:['','ok'],note:'And the calling code never changed: still <code>c.area</code>, still no brackets. <b>That is the whole point</b> — you fixed the inside without touching anyone who uses it.'}]},
 
-  {n:7, t:'@staticmethod vs @classmethod',
-   why:'Some things belong to the class but do not need a particular object — most often, a second way of building one. Without them, every caller does the conversion by hand and someone gets it wrong.',
-   when:'<b>classmethod</b> → an alternative constructor. <b>staticmethod</b> → a helper that needs no <code>self</code>.',
-   how:'<code>@classmethod</code> takes <code>cls</code> and can <code>return cls(...)</code>. <code>@staticmethod</code> takes nothing.',
-   badOut:'the conversion is repeated at every call site',
-   goodOut:'one obvious way in: Temp.from_fahrenheit(212)',
-   bad:['class Temp:',
-        '    def __init__(self, celsius):',
-        '        self.celsius = celsius',
-        '',
-        '# every caller repeats the maths, and can get it wrong',
-        't1 = Temp((212 - 32) * 5 / 9)',
-        't2 = Temp((98.6 - 32) * 5 / 9)',
-        't3 = Temp((32 - 32) * 9 / 5)   # wrong formula. nobody notices.'],
-   good:['class Temp:',
-         '    def __init__(self, celsius):',
-         '        self.celsius = celsius',
-         '',
-         '    @classmethod',
-         '    def from_fahrenheit(cls, f):     # gets the CLASS -> can build',
-         '        return cls((f - 32) * 5 / 9)',
-         '',
-         '    @staticmethod',
-         '    def is_freezing(c):              # gets NOTHING',
-         '        return c <= 0',
-         '',
-         'print(Temp.from_fahrenheit(212).celsius)   # 100.0',
-         'print(Temp.is_freezing(-5))                # True']},
+{n:7, t:'@classmethod vs @staticmethod',
+ why:'When the way to build an object lives at the call site, every caller repeats it — and one of them gets it wrong.',
+ when:'<b>classmethod</b> → a second way to build the object. <b>staticmethod</b> → a helper that needs no <code>self</code>.',
+ how:'<code>@classmethod</code> takes <code>cls</code> and does <code>return cls(...)</code>. <code>@staticmethod</code> takes nothing.',
+ bad:{code:['class Temp:','    def __init__(self, celsius):','        self.celsius = celsius','',
+            't1 = Temp((212 - 32) * 5 / 9)','t2 = Temp((98.6 - 32) * 5 / 9)','t3 = Temp((100 - 32) * 9 / 5)'],
+      keys:['t1.celsius','t2.celsius','t3.celsius']},
+ good:{code:['class Temp:','    def __init__(self, celsius):','        self.celsius = celsius','',
+             '    @classmethod','    def from_fahrenheit(cls, f):','        return cls((f - 32) * 5 / 9)','',
+             '    @staticmethod','    def is_freezing(c):','        return c <= 0','',
+             't1 = Temp.from_fahrenheit(212)','t2 = Temp.from_fahrenheit(98.6)','t3 = Temp.from_fahrenheit(100)'],
+       keys:['t1.celsius','t2.celsius','t3.celsius']},
+ frames:[
+  {p:'bad',line:4,v:['100.0','—','—'],f:['','',''],note:'Every caller does the conversion itself. Boiling point → 100.0. Fine.'},
+  {p:'bad',line:5,v:['100.0','37.0','—'],f:['','',''],note:'Again. The same formula, retyped by hand.'},
+  {p:'bad',line:6,v:['100.0','37.0','122.4'],f:['','','bad'],note:'<span class="lose">122.4.</span> Someone flipped <code>5 / 9</code> to <code>9 / 5</code>. It should be 37.8. <b>Nothing checks it</b>, because the knowledge lives at the call site instead of in the class.'},
+  {p:'good',line:12,v:['100.0','—','—'],f:['ok','',''],note:'The formula now lives in <b>one</b> place. <code>cls</code> is the class itself, so <code>cls(...)</code> builds a new Temp — that is what makes it a <i>constructor</i>.'},
+  {p:'good',line:14,v:['100.0','37.0','37.8'],f:['ok','ok','ok'],note:'<span class="win">All three correct, because there is only one formula left to get wrong.</span> And <code>is_freezing</code> is a <code>@staticmethod</code>: it needs no object at all, it just belongs here.'}]},
 
-  {n:8, t:'composition vs inheritance',
-   why:'Inheritance drags in <b>everything</b> the parent has, including the parts that make no sense for the child. Deep family trees get rigid and you cannot get out.',
-   when:'IS-A → inheritance. HAS-A → composition. When unsure, composition.',
-   how:'Store the other object as an attribute: <code>self.engine = engine</code>',
-   badOut:'an electric car that can refuel with petrol',
-   goodOut:'the car HAS an engine — swap in any engine you like',
-   bad:['class Car:',
-        '    def start(self): return "vroom"',
-        '    def refuel(self): return "pumping petrol"',
-        '',
-        'class ElectricCar(Car):     # inherits refuel() too',
-        '    pass',
-        '',
-        'print(ElectricCar().refuel())   # "pumping petrol"  <- nonsense'],
-   good:['class Engine:',
-         '    def start(self): return "running"',
-         '',
-         'class Car:',
-         '    def __init__(self, engine):',
-         '        self.engine = engine        # HAS-A: pick the part',
-         '    def start(self):',
-         '        return self.engine.start()',
-         '',
-         'print(Car(Engine()).start())    # "running"']},
+{n:8, t:'composition vs inheritance',
+ why:'Inheritance hands down <b>everything</b> the parent has, including the parts that make no sense for the child. You do not get to choose.',
+ when:'IS-A → inheritance. HAS-A → composition. When unsure, composition.',
+ how:'Store the other object as an attribute: <code>self.engine = engine</code>',
+ bad:{code:['class Car:','    def start(self): return "vroom"','    def refuel(self): return "pumping petrol"','',
+            'class ElectricCar(Car):','    pass'],
+      keys:['ElectricCar().start()','ElectricCar().refuel()']},
+ good:{code:['class Engine:','    def start(self): return "running"','',
+             'class Car:','    def __init__(self, engine):','        self.engine = engine',
+             '    def start(self):','        return self.engine.start()','',
+             'print(Car(Engine()).start())'],
+       keys:['what the Car HAS','Car(Engine()).start()']},
+ frames:[
+  {p:'bad',line:4,v:['—','—'],f:['',''],note:'<code>ElectricCar</code> inherits from <code>Car</code>. It gets <b>everything</b> — and there is no syntax for "all of it except that one".'},
+  {p:'bad',line:1,v:['"vroom"','—'],f:['ok',''],note:'<code>start()</code> — fine. That is the part you actually wanted.'},
+  {p:'bad',line:2,v:['"vroom"','"pumping petrol"'],f:['ok','bad'],note:'<span class="lose">An electric car that pumps petrol.</span> Inheritance handed it down and the child has no way to refuse it.'},
+  {p:'good',line:9,v:['an Engine, handed in','—'],f:['ok',''],note:'Now the car <b>has</b> an engine instead of <b>being</b> a kind of petrol car. You passed in exactly the part you wanted.'},
+  {p:'good',line:7,v:['an Engine, handed in','"running"'],f:['ok','ok'],note:'<span class="win">Nothing unwanted came along.</span> <b>IS-A → inheritance. HAS-A → composition.</b> And you can swap the engine later without touching Car at all.'}]},
 
-  {n:9, t:'@dataclass',
-   why:'For a class that is mostly data you write <code>__init__</code>, <code>__repr__</code> and <code>__eq__</code> by hand every time. Twelve lines of noise that hide the two lines that matter.',
-   when:'The class is mostly data and has little behaviour.',
-   how:'<code>@dataclass</code> above <code>class</code>, attributes with type hints. Mutable defaults need <code>field(default_factory=list)</code>',
-   badOut:'twelve lines to say "a task has a title and a done flag"',
-   goodOut:'the same three methods, generated. Two lines say it.',
-   bad:['class Task:',
-        '    def __init__(self, title, done=False):',
-        '        self.title = title',
-        '        self.done = done',
-        '    def __repr__(self):',
-        '        return f"Task({self.title!r}, {self.done})"',
-        '    def __eq__(self, other):',
-        '        return (self.title, self.done) == (other.title, other.done)'],
-   good:['from dataclasses import dataclass',
-         '',
-         '@dataclass',
-         'class Task:',
-         '    title: str',
-         '    done: bool = False',
-         '',
-         'print(Task("learn"))          # Task(title=\'learn\', done=False)',
-         'print(Task("a") == Task("a")) # True']},
+{n:9, t:'@dataclass',
+ why:'For a class that is mostly data you hand-write <code>__init__</code>, <code>__repr__</code> and <code>__eq__</code> every single time — boilerplate that hides the two lines that matter.',
+ when:'The class is mostly data and has little behaviour.',
+ how:'<code>@dataclass</code> above <code>class</code>, attributes with type hints',
+ bad:{code:['class Task:','    def __init__(self, title, done=False):','        self.title = title','        self.done = done',
+            '    def __repr__(self):','        return f"Task({self.title!r}, {self.done})"',
+            '    def __eq__(self, other):','        return (self.title, self.done) == (other.title, other.done)'],
+      keys:['lines you have typed','what you get for them']},
+ good:{code:['from dataclasses import dataclass','','@dataclass','class Task:','    title: str','    done: bool = False','',
+             'print(Task("learn"))','print(Task("a") == Task("a"))'],
+       keys:['lines you have typed','what you get for them']},
+ frames:[
+  {p:'bad',line:1,v:['2','__init__'],f:['',''],note:'Two lines in, and you have a constructor. So far so good \u2014 this is the part that actually says something about a Task.'},
+  {p:'bad',line:4,v:['5','__init__, __repr__'],f:['warn',''],note:'But without <code>__repr__</code> you cannot see the object (rung 3), so you write that too. Five lines now, and none of them are about tasks.'},
+  {p:'bad',line:6,v:['8','__init__, __repr__, __eq__'],f:['bad',''],note:'<span class="lose">Eight lines to express two facts:</span> a task has a title and a done flag. And hand-written <code>__eq__</code> is easy to get subtly wrong, with nothing to catch it.'},
+  {p:'good',line:3,v:['3','__init__, __repr__, __eq__ \u2014 generated'],f:['ok','ok'],note:'<span class="win">Three lines. The same three methods, written for you.</span> And now the class says exactly what a Task <i>is</i>, with nothing in the way.'},
+  {p:'good',line:7,v:['3','Task(title=\u2019learn\u2019, done=False) \u00b7 True'],f:['ok','ok'],note:'Both really run: a readable repr, and <code>==</code> that compares the values instead of the memory address. <b>One catch, and it is rung 2 again</b> \u2014 a mutable default needs <code>field(default_factory=list)</code>, never <code>tags: list = []</code>. Same bug, fourth costume.'}]},
 
-  {n:10, t:'ABC · @abstractmethod',
-   why:'A subclass forgets to implement a required method, the base class quietly returns <code>None</code>, and you find out much later when something downstream breaks.',
-   when:'You are writing a base class that others must fill in — a contract.',
-   how:'<code>class Shape(ABC):</code> with <code>@abstractmethod</code> on the methods they must write',
-   badOut:'area() returns None. Silent. You find out much later.',
-   goodOut:'refuses to build the object at all, immediately, with the reason',
-   bad:['class Shape:',
-        '    def area(self):',
-        '        pass              # subclasses are "supposed to" override',
-        '',
-        'class Square(Shape):',
-        '    def __init__(self, s): self.s = s',
-        '    # forgot area()',
-        '',
-        'print(Square(4).area())   # None  <- silently wrong'],
-   good:['from abc import ABC, abstractmethod',
-         '',
-         'class Shape(ABC):',
-         '    @abstractmethod',
-         '    def area(self): ...',
-         '',
-         'class Square(Shape):',
-         '    def __init__(self, s): self.s = s',
-         '    # forgot area()',
-         '',
-         'Square(4)',
-         "# TypeError: Can't instantiate abstract class Square",
-         '#            with abstract method area']}
+{n:10, t:'ABC · @abstractmethod',
+ why:'A subclass forgets a required method, the base quietly returns <code>None</code>, and that <code>None</code> travels until it breaks something far away from the real mistake.',
+ when:'You are writing a base class that others must fill in — a contract.',
+ how:'<code>class Shape(ABC):</code> with <code>@abstractmethod</code> on what they must write',
+ bad:{code:['class Shape:','    def area(self):','        pass          # subclasses are "supposed to" override','',
+            'class Square(Shape):','    def __init__(self, s): self.s = s','    # forgot area()','',
+            'total = sum(s.area() for s in shapes)'],
+      keys:['Square(4).area()','where it blows up']},
+ good:{code:['from abc import ABC, abstractmethod','','class Shape(ABC):','    @abstractmethod','    def area(self): ...','',
+             'class Square(Shape):','    def __init__(self, s): self.s = s','    # forgot area()','','Square(4)'],
+       keys:['Square(4)','where it blows up']},
+ frames:[
+  {p:'bad',line:4,v:['—','—'],f:['',''],note:'<code>Square</code> is supposed to implement <code>area()</code>. It does not. <b>Python is perfectly happy</b> — it builds the object without a word.'},
+  {p:'bad',line:2,v:['None','—'],f:['bad',''],note:'<span class="lose">area() returns None</span>, quietly, because the base class body was just <code>pass</code>. Still no error.'},
+  {p:'bad',line:8,v:['None','200 lines away'],f:['bad','bad'],note:'<code>TypeError: unsupported operand type(s) for +: ’float’ and ’NoneType’</code> — in completely different code, long after the real mistake. <b>You will spend an hour looking in the wrong file.</b>'},
+  {p:'good',line:10,v:['TypeError','right here, at birth'],f:['ok','ok'],note:'<span class="win">Refused immediately:</span> <code>Can’t instantiate abstract class Square with abstract method area</code>. It names the class <b>and</b> the missing method. <b>An error in the right place is worth far more than no error at all.</b>'}]}
 ];
 
 document.getElementById('rungs').innerHTML = RUNGS.map(function(r){
-  return '<div class="rung">' +
-    '<div class="rhead"><span class="n">' + r.n + '</span><span class="t">' + r.t + '</span></div>' +
+  function pane(sfx, o){
+    return '<div class="ppane" id="pp' + r.n + sfx + '">' +
+             '<div class="code plr">' + renderCode(o.code) + '</div>' +
+             '<div class="cellrow">' + o.keys.map(function(k, i){
+                return '<div class="cell" data-c="' + i + '"><span class="k">' + k + '</span><span class="v">—</span></div>';
+             }).join('') + '</div>' +
+           '</div>';
+  }
+  return '<div class="rung" id="rg' + r.n + '">' +
+    '<div class="rhead"><span class="n">' + r.n + '</span><span class="t">' + r.t + '</span>' +
+      '<span class="badge" id="pb' + r.n + '"></span></div>' +
     '<div class="rbody">' +
-      '<div class="wwh">' +
-        '<div class="r why"><span class="k">Why</span><span class="v">' + r.why + '</span></div>' +
-        '<div class="r when"><span class="k">When</span><span class="v">' + r.when + '</span></div>' +
-        '<div class="r how"><span class="k">How</span><span class="v">' + r.how + '</span></div>' +
+      pane('b', r.bad) + pane('g', r.good) +
+      '<p class="pnote" id="pn' + r.n + '"></p>' +
+      '<div class="row">' +
+        '<button class="btn" data-a="next">Step →</button>' +
+        '<button class="btn q" data-a="back">← Back</button>' +
+        '<button class="btn q" data-a="reset">Reset</button>' +
+        '<span class="cnt"></span>' +
       '</div>' +
-      '<div class="tabs" data-r="' + r.n + '">' +
-        '<button type="button" data-v="bad" class="on">without it</button>' +
-        '<button type="button" data-v="good">with it</button>' +
-      '</div>' +
-      '<div class="panebox">' +
-        '<div class="code" id="rc' + r.n + '"></div>' +
-        '<div class="outline" id="ro' + r.n + '"></div>' +
-      '</div>' +
+      '<details class="wwhd"><summary>why · when · how, in words</summary>' +
+        '<div class="wwh">' +
+          '<div class="r why"><span class="k">Why</span><span class="v">' + r.why + '</span></div>' +
+          '<div class="r when"><span class="k">When</span><span class="v">' + r.when + '</span></div>' +
+          '<div class="r how"><span class="k">How</span><span class="v">' + r.how + '</span></div>' +
+        '</div></details>' +
     '</div></div>';
 }).join('');
 
 RUNGS.forEach(function(r){
-  function paint(v){
-    document.getElementById('rc' + r.n).innerHTML = renderCode(r[v]);
-    var o = document.getElementById('ro' + r.n);
-    o.className = 'outline ' + (v === 'bad' ? 'no' : 'ok');
-    o.textContent = (v === 'bad' ? '✗  ' : '✓  ') + (v === 'bad' ? r.badOut : r.goodOut);
+  var root = document.getElementById('rg' + r.n);
+  var panes = {bad:document.getElementById('pp' + r.n + 'b'), good:document.getElementById('pp' + r.n + 'g')};
+  var note = document.getElementById('pn' + r.n);
+  var badge = document.getElementById('pb' + r.n);
+  var cnt = root.querySelector('.cnt');
+  var next = root.querySelector('[data-a="next"]');
+  var back = root.querySelector('[data-a="back"]');
+  var at = 0;
+
+  function paint(prev){
+    var F = r.frames[at];
+    panes.bad.hidden  = F.p !== 'bad';
+    panes.good.hidden = F.p !== 'good';
+    var pane = panes[F.p];
+    pane.querySelectorAll('.plr .ln').forEach(function(l){
+      l.classList.toggle('on', +l.dataset.i === F.line);
+    });
+    pane.querySelectorAll('.cell').forEach(function(c, i){
+      var val = c.querySelector('.v');
+      var nv = F.v[i] === undefined ? '—' : F.v[i];
+      var changed = prev !== undefined && val.textContent !== nv;
+      val.textContent = nv;
+      c.className = 'cell' + (F.f[i] ? ' ' + F.f[i] : '');
+      if (changed){ c.classList.add('flash'); setTimeout(function(){ c.classList.remove('flash'); }, 600); }
+    });
+    badge.textContent = F.p === 'bad' ? 'without it' : 'with it';
+    badge.className = 'badge ' + F.p;
+    note.innerHTML = F.note;
+    cnt.textContent = (at + 1) + ' / ' + r.frames.length;
+    next.disabled = at >= r.frames.length - 1;
+    back.disabled = at === 0;
+    next.textContent = at >= r.frames.length - 1 ? 'Done' : 'Step →';
   }
-  var tabs = document.querySelector('.tabs[data-r="' + r.n + '"]');
-  tabs.querySelectorAll('button').forEach(function(b){
-    b.onclick = function(){
-      tabs.querySelectorAll('button').forEach(function(x){ x.classList.remove('on'); });
-      b.classList.add('on');
-      paint(b.dataset.v);
-    };
-  });
-  paint('bad');
+  next.onclick  = function(){ if (at < r.frames.length - 1){ at++; paint(true); } };
+  back.onclick  = function(){ if (at > 0){ at--; paint(true); } };
+  root.querySelector('[data-a="reset"]').onclick = function(){ at = 0; paint(true); };
+  paint();
 });
 
 /* ================= 02 INDENT EXPLORER ================= */
