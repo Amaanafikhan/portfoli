@@ -105,8 +105,12 @@ real interpreter.
 
 ## Scope
 
-- Day 1 only (environment, data structures, functions, errors & files).
-- Day 2 material (type hints, OOP, decorators, modules) is **not** included.
+- Day 1 (environment, data structures, functions, errors & files) across the
+  original nine pages.
+- **OOP was added later**, on request, once Day 1 was solid — it lives in
+  `oop-picture-book.html` only. The Day 1 pages stay Day 1.
+- Still not included: type hints, decorators beyond `@property` /
+  `@classmethod` / `@staticmethod` / `@dataclass`, modules and packaging.
 - No FastAPI / Pydantic / SQLAlchemy content anywhere, by request.
 
 ## Where this left off
