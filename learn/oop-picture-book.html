@@ -1,0 +1,1166 @@
+<title>The OOP Picture Book</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+
+<style>
+:root{
+  --ground:#E4EAF0; --panel:#FFFFFF; --panel-2:#EFF3F8;
+  --ink:#0F1923; --ink-soft:#4C5C6C; --ink-faint:#8496A7; --rule:#C9D5E1;
+  --accent:#0B6FA8;
+  --pil1:#0E7C7B; --pil2:#6D4AC4; --pil3:#B4530A; --pil4:#BE1E5C;
+  --good:#0E8060; --bad:#C0392B; --warn:#B4530A;
+  --console:#0E1821; --console-ink:#DCE7F0;
+  --grid:rgba(11,111,168,.07);
+  --shadow:0 2px 0 rgba(15,25,35,.09), 0 14px 32px -18px rgba(15,25,35,.5);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0B121A; --panel:#131E29; --panel-2:#1A2733;
+    --ink:#E8F0F7; --ink-soft:#A3B5C6; --ink-faint:#6C8095; --rule:#243441;
+    --accent:#5AB4EA;
+    --pil1:#3FD0CE; --pil2:#A88CFF; --pil3:#F0A93C; --pil4:#FF6FA3;
+    --good:#34D399; --bad:#FF6B60; --warn:#F0A93C;
+    --console:#060B10; --console-ink:#DCE7F0;
+    --grid:rgba(90,180,234,.09);
+    --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0B121A; --panel:#131E29; --panel-2:#1A2733;
+  --ink:#E8F0F7; --ink-soft:#A3B5C6; --ink-faint:#6C8095; --rule:#243441;
+  --accent:#5AB4EA;
+  --pil1:#3FD0CE; --pil2:#A88CFF; --pil3:#F0A93C; --pil4:#FF6FA3;
+  --good:#34D399; --bad:#FF6B60; --warn:#F0A93C;
+  --console:#060B10; --console-ink:#DCE7F0;
+  --grid:rgba(90,180,234,.09);
+  --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+body{background:var(--ground);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6;margin:0;display:flex;justify-content:center;padding-block:26px 64px;padding-left:16px;padding-right:16px}
+.wrap{width:100%;max-width:730px;display:flex;flex-direction:column;gap:46px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1{font-size:clamp(33px,7.2vw,50px);font-weight:800;line-height:.98}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-size:clamp(21px,4.2vw,27px);font-weight:800;line-height:1.12}
+h3{font-size:16.5px;font-weight:800}
+p{margin:0}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.86em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px;word-break:break-word}
+b{font-weight:800}
+section{display:flex;flex-direction:column;gap:15px}
+.eyebrow{display:flex;align-items:baseline;gap:10px;font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.eyebrow b{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--panel);background:var(--ink-faint);border-radius:4px;padding:2px 6px;letter-spacing:.05em}
+.lede{font-size:16px;line-height:1.55;color:var(--ink-soft);max-width:62ch}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:15px}
+hr{border:none;border-top:1px solid var(--rule);margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---------- the "say this" line ---------- */
+.say{display:flex;flex-direction:column;gap:5px;border-left:4px solid var(--accent);padding:3px 0 3px 14px}
+.say .h{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--accent)}
+.say p{font-size:15.5px;line-height:1.5;font-style:italic}
+.say p b{font-style:normal}
+
+/* ---------- interview Q&A ---------- */
+.ask{background:var(--panel-2);border-radius:11px;padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+.ask .h{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.qa{display:flex;flex-direction:column;gap:3px}
+.qa .q{font-size:14.5px;font-weight:800;line-height:1.4}
+.qa .a{font-size:14px;line-height:1.55;color:var(--ink-soft)}
+.qa .a b{color:var(--ink)}
+
+/* ---------- code ---------- */
+.code{background:var(--console);border-radius:10px;padding:13px 0;overflow-x:auto}
+.code .cl{display:block;font-family:"JetBrains Mono",monospace;font-size:12.8px;line-height:1.72;color:#C3D2E0;white-space:pre;padding:0 16px}
+.code .cl.cm{color:#6E8195}
+.code .cl.hi{background:color-mix(in srgb,var(--accent) 26%,transparent);color:#fff}
+.code .cl.ok{color:#7FE0BE}
+.code .cl.no{color:#FF9C92}
+
+/* ---------- animation stage ---------- */
+.anim{display:flex;flex-direction:column;gap:12px}
+.stage{
+  position:relative;border:1px solid var(--rule);border-radius:12px;
+  background:var(--panel-2);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+  padding:18px;overflow:hidden;
+}
+.cap{font-size:14.5px;line-height:1.55;color:var(--ink-soft);min-height:46px;border-top:1px solid var(--rule);padding-top:11px}
+.cap b{color:var(--ink)}
+.cap .win{color:var(--good);font-weight:800}
+.cap .lose{color:var(--bad);font-weight:800}
+.ctl{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.btn{font-family:"Public Sans",sans-serif;font-weight:800;font-size:13.5px;color:#fff;background:var(--accent);border:none;border-radius:9px;padding:10px 16px;cursor:pointer;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.q{background:none;color:var(--ink);border:1.5px solid var(--rule);box-shadow:none}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.cnt{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint);margin-left:auto;font-variant-numeric:tabular-nums}
+
+/* generic animated primitives */
+.node{
+  background:var(--panel);border:1.5px solid var(--rule);border-radius:9px;
+  padding:8px 11px;font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:700;
+  display:flex;flex-direction:column;gap:2px;transition:all .42s cubic-bezier(.4,0,.2,1);
+}
+.node small{font-family:"Public Sans",sans-serif;font-weight:400;font-size:10.5px;color:var(--ink-faint)}
+.node.lit{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.node.good{border-color:var(--good);background:color-mix(in srgb,var(--good) 13%,var(--panel))}
+.node.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 13%,var(--panel))}
+.fade{opacity:0;transition:opacity .42s,transform .42s}
+.show{opacity:1}
+
+/* ===== A1 the stamp ===== */
+#s1{min-height:250px;display:flex;flex-direction:column;align-items:center;gap:8px}
+#s1 .stamp{
+  background:var(--ink);color:var(--panel);border-radius:9px;padding:11px 16px;
+  font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13.5px;
+  transition:transform .3s cubic-bezier(.34,1.3,.64,1);
+}
+#s1 .handle{width:34px;height:16px;background:var(--ink);border-radius:5px 5px 0 0}
+#s1 .prints{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;min-height:74px}
+#s1 .pr{opacity:0;transform:translateY(-16px) scale(.9);transition:all .4s}
+#s1[data-f="1"] .press,#s1[data-f="2"] .press,#s1[data-f="3"] .press{transform:translateY(8px)}
+#s1[data-f="1"] .p1,#s1[data-f="2"] .p1,#s1[data-f="3"] .p1{opacity:1;transform:none}
+#s1[data-f="2"] .p2,#s1[data-f="3"] .p2{opacity:1;transform:none}
+#s1[data-f="3"] .p3{opacity:1;transform:none}
+#s1[data-f="3"] .p2{border-color:var(--pil4);background:color-mix(in srgb,var(--pil4) 12%,var(--panel))}
+
+/* ===== A2 the hidden seat ===== */
+#s2{min-height:230px;display:flex;flex-direction:column;align-items:center;gap:14px;justify-content:center}
+#s2 .call{font-family:"JetBrains Mono",monospace;font-size:16px;font-weight:700;letter-spacing:-.02em}
+#s2 .seats{display:flex;gap:8px;align-items:center}
+#s2 .seat{
+  min-width:86px;height:50px;border:2px dashed var(--rule);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink-faint);
+  transition:all .4s;position:relative;
+}
+#s2 .seat .tag{position:absolute;top:-9px;font-size:9px;background:var(--panel-2);padding:0 5px;color:var(--ink-faint);letter-spacing:.06em}
+#s2 .tok{
+  position:absolute;left:50%;top:0;background:var(--accent);color:#fff;border-radius:7px;padding:6px 10px;
+  font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:700;
+  transform:translate(-50%,0);
+  transition:transform .55s cubic-bezier(.4,0,.2,1),opacity .35s;opacity:0;
+}
+#s2 .reveal{opacity:0;transition:opacity .45s;font-family:"JetBrains Mono",monospace;font-size:13.5px;font-weight:700;color:var(--accent);text-align:center}
+#s2[data-f="1"] .tokA,#s2[data-f="2"] .tokA,#s2[data-f="3"] .tokA{opacity:1}
+#s2[data-f="2"] .tokA,#s2[data-f="3"] .tokA{transform:translate(calc(-50% - 49px),56px)}
+#s2[data-f="2"] .seat1,#s2[data-f="3"] .seat1{border-style:solid;border-color:var(--accent);color:transparent}
+#s2[data-f="2"] .seat2,#s2[data-f="3"] .seat2{border-style:solid;border-color:var(--ink-faint);color:var(--ink)}
+#s2[data-f="3"] .reveal{opacity:1}
+
+/* ===== A3 whiteboard vs notebooks ===== */
+#s3{min-height:290px;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center}
+#s3 .board{
+  width:100%;max-width:340px;min-height:66px;border:3px solid var(--ink-faint);border-radius:8px;
+  background:var(--panel);display:flex;align-items:center;justify-content:center;gap:7px;
+  font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px;transition:all .4s;
+}
+#s3 .lbl{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-family:"Public Sans",sans-serif;font-weight:800}
+#s3 .people{display:flex;gap:40px}
+#s3 .pers{display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .4s}
+#s3 .who{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px}
+#s3 .nb{
+  width:78px;min-height:44px;border:2px solid var(--rule);border-radius:7px;background:var(--panel);
+  display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:11.5px;
+  opacity:0;transform:scale(.85);transition:all .4s;
+}
+#s3 .item{opacity:0;transition:opacity .4s}
+#s3 .verdict{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;opacity:0;transition:opacity .4s}
+#s3[data-f="1"] .item,#s3[data-f="2"] .item{opacity:1}
+#s3[data-f="1"] .board,#s3[data-f="2"] .board{border-color:var(--bad)}
+#s3[data-f="2"] .verdictBad{opacity:1;color:var(--bad)}
+#s3[data-f="2"] .personB{transform:translateY(-4px)}
+#s3[data-f="3"] .board,#s3[data-f="4"] .board{opacity:.18;filter:grayscale(1)}
+#s3[data-f="3"] .nb,#s3[data-f="4"] .nb{opacity:1;transform:none}
+#s3[data-f="4"] .nbA{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--panel))}
+#s3[data-f="4"] .nbAItem{opacity:1}
+#s3[data-f="4"] .verdictGood{opacity:1;color:var(--good)}
+#s3 .nbAItem{opacity:0;transition:opacity .4s}
+
+/* ===== A4 the staircase ===== */
+#s4{min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;position:relative}
+#s4 .stepbox{
+  width:100%;max-width:300px;border:1.5px solid var(--rule);border-radius:10px;background:var(--panel);
+  padding:11px 14px;transition:all .42s;position:relative;
+}
+#s4 .stepbox + .stepbox{margin-top:34px}
+#s4 .stepbox .nm{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px}
+#s4 .stepbox .at{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink-faint);margin-top:3px;transition:color .4s}
+#s4 .riser{position:absolute;left:50%;width:2px;background:var(--rule);height:34px;transform:translateX(-50%)}
+#s4 .tok{
+  position:absolute;left:50%;top:0;background:var(--accent);color:#fff;border-radius:999px;
+  padding:5px 12px;font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:700;
+  transform:translate(-50%,168px);transition:transform .6s cubic-bezier(.4,0,.2,1);z-index:3;white-space:nowrap;
+}
+#s4[data-f="1"] .tok{transform:translate(-50%,10px)}
+#s4[data-f="2"] .tok{transform:translate(-50%,10px)}
+#s4[data-f="2"] .parent{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+#s4[data-f="2"] .pAttrs,#s4[data-f="3"] .pAttrs,#s4[data-f="4"] .pAttrs{color:var(--good)}
+#s4[data-f="3"] .tok,#s4[data-f="4"] .tok{transform:translate(-50%,168px)}
+#s4[data-f="3"] .child,#s4[data-f="4"] .child{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+#s4[data-f="3"] .cAttrs,#s4[data-f="4"] .cAttrs{color:var(--good)}
+#s4[data-f="4"] .done{opacity:1}
+#s4 .done{opacity:0;transition:opacity .4s;font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;color:var(--good);margin-top:14px;text-align:center}
+
+/* ===== A5 five family shapes ===== */
+#s5{min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+#s5 .tree{display:flex;flex-direction:column;align-items:center;gap:0;position:absolute;opacity:0;transition:opacity .38s}
+#s5 .tree.on{opacity:1;position:relative}
+#s5 .lvl{display:flex;gap:14px;justify-content:center}
+#s5 .bx{
+  width:52px;height:38px;border:1.5px solid var(--accent);border-radius:8px;background:var(--panel);
+  display:flex;align-items:center;justify-content:center;
+  font-family:"JetBrains Mono",monospace;font-weight:700;font-size:14px;color:var(--accent);
+}
+#s5 .bx.kid{border-color:var(--pil3);color:var(--pil3)}
+#s5 .link{width:2px;height:20px;background:var(--rule)}
+#s5 .fork{width:120px;height:20px;border-left:2px solid var(--rule);border-right:2px solid var(--rule);border-top:2px solid var(--rule);border-radius:4px 4px 0 0;margin-bottom:-1px}
+#s5 .merge{width:120px;height:20px;border-left:2px solid var(--rule);border-right:2px solid var(--rule);border-bottom:2px solid var(--rule);border-radius:0 0 4px 4px}
+#s5 .tname{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:15px;margin-bottom:4px}
+
+/* ===== A6 universal remote ===== */
+#s6{min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#s6 .remote{
+  background:var(--ink);color:var(--panel);border-radius:11px;padding:11px 18px;
+  font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13.5px;transition:transform .2s;
+}
+#s6 .devices{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#s6 .dev{
+  width:96px;border:1.5px solid var(--rule);border-radius:10px;background:var(--panel);padding:10px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .4s;
+}
+#s6 .dev .nm{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:12.5px}
+#s6 .dev .out{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint);opacity:0;transition:opacity .35s}
+#s6 .note6{opacity:0;transition:opacity .4s;font-size:13px;font-weight:800;color:var(--accent);text-align:center}
+#s6[data-f="1"] .remote,#s6[data-f="2"] .remote,#s6[data-f="3"] .remote,#s6[data-f="4"] .remote{transform:scale(.95)}
+#s6[data-f="1"] .d1,#s6[data-f="2"] .d1,#s6[data-f="3"] .d1,#s6[data-f="4"] .d1{border-color:var(--pil4)}
+#s6[data-f="1"] .o1,#s6[data-f="2"] .o1,#s6[data-f="3"] .o1,#s6[data-f="4"] .o1{opacity:1}
+#s6[data-f="2"] .d2,#s6[data-f="3"] .d2,#s6[data-f="4"] .d2{border-color:var(--pil4)}
+#s6[data-f="2"] .o2,#s6[data-f="3"] .o2,#s6[data-f="4"] .o2{opacity:1}
+#s6[data-f="3"] .d3,#s6[data-f="4"] .d3{border-color:var(--pil4)}
+#s6[data-f="3"] .o3,#s6[data-f="4"] .o3{opacity:1}
+#s6[data-f="4"] .note6{opacity:1}
+
+/* ===== A7 overloading overwrite ===== */
+#s7{min-height:230px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative}
+#s7 .deck{position:relative;width:100%;max-width:330px;height:64px}
+#s7 .mcard{
+  position:absolute;inset:0;border:1.5px solid var(--rule);border-radius:10px;background:var(--panel);
+  padding:11px 13px;font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:700;
+  transition:all .5s cubic-bezier(.4,0,.2,1);
+}
+#s7 .m2{transform:translateY(-70px);opacity:0}
+#s7 .res{font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:700;opacity:0;transition:opacity .4s;text-align:center;padding:0 6px}
+#s7[data-f="1"] .m2,#s7[data-f="2"] .m2,#s7[data-f="3"] .m2{transform:none;opacity:1}
+#s7[data-f="1"] .m1,#s7[data-f="2"] .m1,#s7[data-f="3"] .m1{transform:translateY(9px) scale(.97);opacity:.28}
+#s7[data-f="2"] .rBad{opacity:1;color:var(--bad)}
+#s7[data-f="3"] .m1,#s7[data-f="3"] .m2{opacity:0;transform:scale(.9)}
+#s7[data-f="3"] .m3{opacity:1;transform:none}
+#s7 .m3{opacity:0;transform:translateY(-70px);border-color:var(--good)}
+#s7[data-f="3"] .rGood{opacity:1;color:var(--good)}
+
+/* ===== A8 vending machine ===== */
+#s8{min-height:250px;display:flex;align-items:center;justify-content:center}
+#s8 .vm{display:flex;gap:10px;align-items:stretch}
+#s8 .glass{
+  width:150px;border:3px solid var(--rule);border-radius:10px;background:color-mix(in srgb,var(--accent) 7%,var(--panel));
+  padding:10px;display:flex;flex-direction:column;gap:6px;transition:all .42s;position:relative;
+}
+#s8 .gear{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-faint);background:var(--panel);border:1px solid var(--rule);border-radius:5px;padding:4px 6px;transition:all .4s}
+#s8 .pad{display:flex;flex-direction:column;gap:6px;justify-content:center}
+#s8 .bt{
+  border:1.5px solid var(--rule);border-radius:8px;background:var(--panel);padding:8px 12px;
+  font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;transition:all .4s;
+}
+#s8 .tagline{position:absolute;bottom:-26px;left:0;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;opacity:0;transition:opacity .4s;font-family:"Public Sans",sans-serif;white-space:nowrap}
+#s8[data-f="1"] .glass,#s8[data-f="3"] .glass{border-color:var(--pil1);box-shadow:0 0 0 3px color-mix(in srgb,var(--pil1) 20%,transparent)}
+#s8[data-f="1"] .gear,#s8[data-f="3"] .gear{border-color:var(--pil1);color:var(--pil1)}
+#s8[data-f="1"] .t1,#s8[data-f="3"] .t1{opacity:1;color:var(--pil1)}
+#s8[data-f="2"] .bt,#s8[data-f="3"] .bt{border-color:var(--pil2);color:var(--pil2);box-shadow:0 0 0 3px color-mix(in srgb,var(--pil2) 16%,transparent)}
+#s8[data-f="2"] .t2,#s8[data-f="3"] .t2{opacity:1;color:var(--pil2)}
+#s8 .padwrap{position:relative;display:flex}
+
+/* ===== A9 the fake wall ===== */
+#s9{min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+#s9 .slot{
+  width:190px;height:58px;border:2px solid var(--rule);border-radius:10px;background:var(--panel);
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+  font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px;transition:all .42s;
+}
+#s9 .face{position:absolute;inset:0;background:var(--panel);display:flex;align-items:center;justify-content:center;transition:transform .55s cubic-bezier(.4,0,.2,1);z-index:2}
+#s9 .machine{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--accent);text-align:center;padding:0 6px;line-height:1.35}
+#s9 .outv{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;color:var(--good);opacity:0;transition:opacity .4s}
+#s9[data-f="1"] .slot{border-color:var(--accent)}
+#s9[data-f="2"] .face,#s9[data-f="3"] .face{transform:translateY(-100%)}
+#s9[data-f="2"] .slot,#s9[data-f="3"] .slot{border-color:var(--accent)}
+#s9[data-f="3"] .outv{opacity:1}
+
+/* ---------- pillar cards ---------- */
+.pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (max-width:560px){.pillars{grid-template-columns:1fr}}
+.pil{background:var(--panel);border:1px solid var(--rule);border-left:5px solid var(--rule);border-radius:11px;padding:14px 15px;display:flex;flex-direction:column;gap:5px}
+.pil .n{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:16px;letter-spacing:-.02em}
+.pil .pic{font-size:12.5px;font-weight:800;letter-spacing:.04em}
+.pil .d{font-size:13.5px;line-height:1.45;color:var(--ink-soft)}
+.pil:nth-child(1){border-left-color:var(--pil1)} .pil:nth-child(1) .pic{color:var(--pil1)}
+.pil:nth-child(2){border-left-color:var(--pil2)} .pil:nth-child(2) .pic{color:var(--pil2)}
+.pil:nth-child(3){border-left-color:var(--pil3)} .pil:nth-child(3) .pic{color:var(--pil3)}
+.pil:nth-child(4){border-left-color:var(--pil4)} .pil:nth-child(4) .pic{color:var(--pil4)}
+
+/* ---------- keyword table ---------- */
+.kw{display:flex;flex-direction:column;border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+.krow{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:12px 15px;border-bottom:1px solid var(--rule);align-items:baseline}
+@media (max-width:540px){.krow{grid-template-columns:1fr;gap:4px}}
+.krow:last-child{border-bottom:none}
+.krow:nth-child(odd){background:var(--panel-2)}
+.krow .k{font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:700;color:var(--accent);word-break:break-word}
+.krow .v{font-size:14px;line-height:1.5}
+.krow .v small{display:block;color:var(--ink-soft);font-size:13px;margin-top:2px}
+
+/* ---------- skeleton builder ---------- */
+.mv{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--rule);border-radius:11px;padding:12px 14px}
+.mv .n{width:25px;height:25px;border-radius:7px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12.5px;background:var(--accent);margin-top:1px}
+.mv .b{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.mv .t{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:15.5px}
+.mv .q{font-size:13px;color:var(--ink-soft)}
+.mv .l{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint);white-space:pre-wrap;word-break:break-word}
+
+/* ---------- recall drill ---------- */
+.drill .pic{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(20px,4.5vw,26px);letter-spacing:-.02em;color:var(--accent)}
+.drill .ans{font-size:15px;line-height:1.55;display:none}
+.drill .ans.on{display:block}
+.drill .ans b{color:var(--ink)}
+
+footer{color:var(--ink-faint);font-size:13px;line-height:1.6;border-top:1px solid var(--rule);padding-top:18px}
+.tog{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:9;font-size:11px;font-weight:800;border:1px solid var(--rule);background:var(--panel);color:var(--ink-soft);border-radius:8px;padding:7px 10px;cursor:pointer}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<button class="tog" id="tog">theme</button>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:14px">
+  <span class="eyebrow"><b>OOP</b> nine pictures, one day</span>
+  <h1>You can't recall<br>what you can't<br><em>picture.</em></h1>
+  <p class="lede">Every idea here gets <b>one image</b> and <b>one sentence</b>. Step through the image until it moves on its own behind your eyes. Then in the interview you don't hunt for a definition — you look at the picture and read it out. Nine images cover the whole of OOP, including the two lists they always ask for: the <b>four pillars</b> and the <b>five types of inheritance</b>.</p>
+</header>
+
+<hr>
+
+<!-- ============ 1 THE STAMP ============ -->
+<section>
+  <span class="eyebrow"><b>01</b> class vs object</span>
+  <h2>The stamp and the prints</h2>
+  <div class="card">
+    <div class="anim" id="a1"></div>
+  </div>
+  <div class="say">
+    <span class="h">Say this</span>
+    <p>"A class is the <b>stamp</b>. An object is a <b>print</b> it makes. One stamp, many prints — and changing one print never touches the others."</p>
+  </div>
+  <div class="code">
+<span class="cl cm"># the stamp — no dog exists yet</span>
+<span class="cl">class Dog:</span>
+<span class="cl">    def __init__(self, name):</span>
+<span class="cl">        self.name = name</span>
+<span class="cl"> </span>
+<span class="cl cm"># the prints — now dogs exist</span>
+<span class="cl">rex   = Dog("Rex")</span>
+<span class="cl">bella = Dog("Bella")</span>
+<span class="cl">print(rex.name, bella.name)   <span class="cl ok"># Rex Bella</span></span>
+  </div>
+  <div class="ask">
+    <span class="h">Q · the interviewer asks</span>
+    <div class="qa"><p class="q">"What's the difference between a class and an object?"</p>
+      <p class="a">"A class is the <b>blueprint or template</b>; an object is an <b>instance</b> built from it. The class is written once and costs no memory for data; each object gets its own memory for its own attribute values."</p></div>
+    <div class="qa"><p class="q">"How many objects can one class make?"</p>
+      <p class="a">Any number. That is the entire point of the stamp.</p></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 2 THE HIDDEN SEAT ============ -->
+<section>
+  <span class="eyebrow"><b>02</b> self · __init__</span>
+  <h2>The hidden first seat</h2>
+  <p class="lede">This is the one that makes people freeze. <code>self</code> is not a keyword and it is not magic — it is just the <b>first parameter</b>, and Python fills it in for you.</p>
+  <div class="card">
+    <div class="anim" id="a2"></div>
+  </div>
+  <div class="say">
+    <span class="h">Say this</span>
+    <p>"Every method has a <b>hidden first seat</b>. When I write <code>acc.deposit(50)</code>, Python quietly runs <code>BankAccount.deposit(acc, 50)</code> — the object sits in seat one. That seat is called <code>self</code>."</p>
+  </div>
+  <div class="code">
+<span class="cl">class BankAccount:</span>
+<span class="cl">    def __init__(self, owner, balance=0):   <span class="cl cm"># runs at birth</span></span>
+<span class="cl">        self.owner = owner</span>
+<span class="cl">        self.balance = balance</span>
+<span class="cl"> </span>
+<span class="cl">    def deposit(self, amount):</span>
+<span class="cl">        if amount &lt;= 0:</span>
+<span class="cl">            raise ValueError("deposit must be positive")</span>
+<span class="cl">        self.balance += amount</span>
+<span class="cl">        return self.balance</span>
+<span class="cl"> </span>
+<span class="cl">acc = BankAccount("amaan", 100)</span>
+<span class="cl">acc.deposit(50)</span>
+<span class="cl">print(acc.balance)     <span class="cl ok"># 150</span></span>
+  </div>
+  <div class="ask">
+    <span class="h">Q · the interviewer asks</span>
+    <div class="qa"><p class="q">"What is <code>self</code>?"</p>
+      <p class="a">"The <b>instance the method was called on</b>. Python passes it automatically as the first argument, so <code>acc.deposit(50)</code> is really <code>BankAccount.deposit(acc, 50)</code>."</p></div>
+    <div class="qa"><p class="q">"Is <code>self</code> a keyword?"</p>
+      <p class="a"><b>No</b> — it's a naming convention. You could call it anything and the code would run. Don't, though: every Python programmer alive reads <code>self</code>.</p></div>
+    <div class="qa"><p class="q">"What is <code>__init__</code>? Is it a constructor?"</p>
+      <p class="a">It's the <b>initialiser</b> — it runs on an object that already exists and fills in its starting attributes. Strictly, <code>__new__</code> creates the object and <code>__init__</code> sets it up. Saying "constructor" is accepted, but knowing the distinction is a bonus mark.</p></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 3 WHITEBOARD ============ -->
+<section>
+  <span class="eyebrow"><b>03</b> class vs instance attributes · the trap</span>
+  <h2>One whiteboard, or a notebook each</h2>
+  <p class="lede">You have met this bug before, wearing a different hat — it is the <b>mutable default argument</b> problem. Third time you've seen this shape. It will be the last.</p>
+  <div class="card">
+    <div class="anim" id="a3"></div>
+  </div>
+  <div class="say">
+    <span class="h">Say this</span>
+    <p>"A <b>class attribute</b> is one whiteboard on the wall — everybody writes on the same one. An <b>instance attribute</b> is a notebook each. Mutable things belong in <code>__init__</code>, or every object shares them."</p>
+  </div>
+  <div class="code">
+<span class="cl no"># BROKEN — one list, shared by every Cart</span>
+<span class="cl">class CartBad:</span>
+<span class="cl">    items = []                    <span class="cl cm"># class attribute — the whiteboard</span></span>
+<span class="cl">    def add(self, x):</span>
+<span class="cl">        self.items.append(x)</span>
+<span class="cl"> </span>
+<span class="cl">a, b = CartBad(), CartBad()</span>
+<span class="cl">a.add("apple")</span>
+<span class="cl">print(b.items)                    <span class="cl no"># ['apple']  ← b was never touched</span></span>
+<span class="cl"> </span>
+<span class="cl ok"># FIXED — a fresh list per instance</span>
+<span class="cl">class Cart:</span>
+<span class="cl">    def __init__(self):</span>
+<span class="cl">        self.items = []           <span class="cl cm"># instance attribute — a notebook each</span></span>
+<span class="cl">    def add(self, x):</span>
+<span class="cl">        self.items.append(x)</span>
+<span class="cl"> </span>
+<span class="cl">c, d = Cart(), Cart()</span>
+<span class="cl">c.add("apple")</span>
+<span class="cl">print(d.items)                    <span class="cl ok"># []  ← correct</span></span>
+  </div>
+  <div class="ask">
+    <span class="h">Q · the interviewer asks</span>
+    <div class="qa"><p class="q">"Difference between a class attribute and an instance attribute?"</p>
+      <p class="a">"A class attribute is <b>shared by every instance</b>; an instance attribute belongs to one object and is set in <code>__init__</code>. <b>Mutable class attributes are a classic bug</b> — it's the same trap as a mutable default argument."</p></div>
+    <div class="qa"><p class="q">"So class attributes are always bad?"</p>
+      <p class="a">No — they're <b>right</b> for things genuinely shared: a constant like <code>species = "dog"</code>, or a counter of how many objects have been created. The danger is only with <b>mutable</b> ones (lists, dicts, sets).</p></div>
+    <div class="qa"><p class="q">"What does <code>a.items = ['x']</code> do — change the whiteboard?"</p>
+      <p class="a">No, and this catches people. <b>Assigning</b> creates a new instance attribute that shadows the class one, for <code>a</code> only. <b>Mutating</b> (<code>a.items.append</code>) reaches through to the shared list. Assignment writes a new notebook; mutation edits the whiteboard.</p></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 4 THE STAIRCASE ============ -->
+<section>
+  <span class="eyebrow"><b>04</b> inheritance · super()</span>
+  <h2>The staircase</h2>
+  <div class="card">
+    <div class="anim" id="a4"></div>
+  </div>
+  <div class="say">
+    <span class="h">Say this</span>
+    <p>"<code>super().__init__()</code> means <b>'first, go upstairs and run the parent's setup'</b>. Then come back down and add your own. Skip it and the parent's attributes never exist."</p>
+  </div>
+  <div class="code">
+<span class="cl">class SavingsAccount(BankAccount):</span>
+<span class="cl">    def __init__(self, owner, balance=0, rate=0.05):</span>
+<span class="cl">        super().__init__(owner, balance)   <span class="cl cm"># upstairs</span></span>
+<span class="cl">        self.rate = rate                   <span class="cl cm"># back down</span></span>
+<span class="cl"> </span>
+<span class="cl">    def add_interest(self):</span>
+<span class="cl">        self.balance += self.balance * self.rate</span>
+<span class="cl">        return self.balance</span>
+<span class="cl"> </span>
+<span class="cl">s = SavingsAccount("amaan", 1000)</span>
+<span class="cl">print(s.add_interest())   <span class="cl ok"># 1050.0</span></span>
+<span class="cl">print(s.owner)            <span class="cl ok"># amaan   ← free from the parent</span></span>
+  </div>
+  <div class="ask">
+    <span class="h">Q · the interviewer asks</span>
+    <div class="qa"><p class="q">"Why call <code>super().__init__()</code>?"</p>
+      <p class="a">"Because the child's <code>__init__</code> <b>replaces</b> the parent's, it doesn't add to it. Without the call, <code>owner</code> and <code>balance</code> are never set — you get an <code>AttributeError</code> much later, far from the real cause."</p></div>
+    <div class="qa"><p class="q">"Does <code>super()</code> mean 'the parent'?"</p>
+      <p class="a">Close, and the better answer is: <b>the next class in the MRO</b> (method resolution order). With single inheritance that <i>is</i> the parent. With multiple inheritance it may not be — which is exactly why <code>super()</code> beats hard-coding <code>Parent.__init__(self, ...)</code>.</p></div>
+    <div class="qa"><p class="q">"What is method overriding?"</p>
+      <p class="a">Defining a method in the child with the <b>same name</b> as one in the parent. The child's version wins. It's <b>runtime polymorphism</b>, and Python supports it fully.</p></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 5 FIVE FAMILY SHAPES ============ -->
+<section>
+  <span class="eyebrow"><b>05</b> the five types of inheritance</span>
+  <h2>Five family shapes</h2>
+  <p class="lede">When they say <i>"what are the types of inheritance?"</i> this is the list they want, and they want it fast. Don't memorise words — memorise the <b>five shapes</b>. Step through and draw each one in the air.</p>
+  <div class="card">
+    <div class="anim" id="a5"></div>
+  </div>
+  <div class="say">
+    <span class="h">Say this — the five, in order</span>
+    <p><b>"Single</b> — one parent, one child. <b>Multiple</b> — two parents, one child. <b>Multilevel</b> — grandparent, parent, child. <b>Hierarchical</b> — one parent, many children. <b>Hybrid</b> — a mix, usually the diamond, resolved by the MRO."</p>
+  </div>
+  <div class="code">
+<span class="cl cm"># hybrid / diamond — and the answer to "which who() runs?"</span>
+<span class="cl">class A:</span>
+<span class="cl">    def who(self): return "A"</span>
+<span class="cl">class B(A):</span>
+<span class="cl">    def who(self): return "B"</span>
+<span class="cl">class C(A):</span>
+<span class="cl">    def who(self): return "C"</span>
+<span class="cl">class D(B, C): pass</span>
+<span class="cl"> </span>
+<span class="cl">print(D().who())      <span class="cl ok"># B      ← left to right</span></span>
+<span class="cl">print([k.__name__ for k in D.__mro__])</span>
+<span class="cl ok"># ['D', 'B', 'C', 'A', 'object']</span>
+  </div>
+  <div class="ask">
+    <span class="h">Q · the interviewer asks</span>
+    <div class="qa"><p class="q">"What is the diamond problem, and how does Python solve it?"</p>
+      <p class="a">"<code>D</code> inherits from <code>B</code> and <code>C</code>, which both inherit from <code>A</code> — so which <code>who()</code> runs? Python resolves it with the <b>MRO</b>, computed by the <b>C3 linearisation</b> algorithm, left to right, and each class appears once. You can print it with <code>D.__mro__</code>."</p></div>
+    <div class="qa"><p class="q">"Does Python support multiple inheritance?"</p>
+      <p class="a"><b>Yes</b> — unlike Java, which allows it only for interfaces. Python allows it for real classes and handles the conflicts with the MRO.</p></div>
+    <div class="qa"><p class="q">"Is inheritance always the right tool?"</p>
+      <p class="a">No — <b>prefer composition</b>. Use inheritance for <code>is-a</code> (a SavingsAccount <i>is a</i> BankAccount) and composition for <code>has-a</code> (a Car <i>has an</i> Engine). Deep hierarchies get rigid fast.</p></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 6 UNIVERSAL REMOTE ============ -->
+<section>
+  <span class="eyebrow"><b>06</b> polymorphism · duck typing</span>
+  <h2>The universal remote</h2>
+  <div class="card">
+    <div class="anim" id="a6"></div>
+  </div>
+  <div class="say">
+    <span class="h">Say this</span>
+    <p>"<b>One button, different machines.</b> I call the same method name and each object does its own thing. In Python I don't even need a shared parent class — if it has the method, it works. That's <b>duck typing</b>."</p>
+  </div>
+  <div class="code">
+<span class="cl">class Dog:</span>
+<span class="cl">    def speak(self): return "Woof"</span>
+<span class="cl">class Robot:</span>
+<span class="cl">    def speak(self): return "Beep"</span>
+<span class="cl">class Cat:</span>
+<span class="cl">    def speak(self): return "Meow"</span>
+<span class="cl"> </span>
+<span class="cl">for thing in (Dog(), Robot(), Cat()):</span>
+<span class="cl">    print(thing.speak())</span>
+<span class="cl ok"># Woof / Beep / Meow  — no shared parent anywhere</span>
+  </div>
+  <div class="ask">
+    <span class="h">Q · the interviewer asks</span>
+    <div class="qa"><p class="q">"Do you need inheritance for polymorphism in Python?"</p>
+      <p class="a"><b>"No."</b> Say it flatly — most candidates say yes. "Python uses <b>duck typing</b>: if it walks like a duck and quacks like a duck, it's a duck. The method just has to exist."</p></div>
+    <div class="qa"><p class="q">"Types of polymorphism?"</p>
+      <p class="a"><b>Compile-time</b> (method overloading) and <b>run-time</b> (method overriding). Then the Python twist below — which is where you win the point.</p></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 7 OVERLOADING ============ -->
+<section>
+  <span class="eyebrow"><b>07</b> overloading vs overriding · the trick question</span>
+  <h2>The card that covers the card</h2>
+  <p class="lede">Asked constantly, and it's a <b>trap</b> if you learned OOP from Java or C++. Python's answer is different, and knowing that is the whole point of the question.</p>
+  <div class="card">
+    <div class="anim" id="a7"></div>
+  </div>
+  <div class="say">
+    <span class="h">Say this</span>
+    <p>"Python does <b>not</b> support true method overloading — a second definition with the same name simply <b>replaces</b> the first. I get the same effect with default arguments or <code>*args</code>. <b>Overriding</b> is different and does work: that's a child class redefining a parent's method."</p>
+  </div>
+  <div class="code">
+<span class="cl no"># overloading — does NOT work in Python</span>
+<span class="cl">class Calc:</span>
+<span class="cl">    def add(self, a, b):    return a + b</span>
+<span class="cl">    def add(self, a, b, c): return a + b + c   <span class="cl cm"># this one wins</span></span>
+<span class="cl"> </span>
+<span class="cl">Calc().add(1, 2)</span>
+<span class="cl no"># TypeError: Calc.add() missing 1 required positional argument: 'c'</span>
+<span class="cl"> </span>
+<span class="cl ok"># the Pythonic way to get the same effect</span>
+<span class="cl">class Calc2:</span>
+<span class="cl">    def add(self, *args): return sum(args)</span>
+<span class="cl"> </span>
+<span class="cl">print(Calc2().add(1, 2), Calc2().add(1, 2, 3))   <span class="cl ok"># 3 6</span></span>
+  </div>
+  <div class="ask">
+    <span class="h">Q · the interviewer asks</span>
+    <div class="qa"><p class="q">"Overloading vs overriding?"</p>
+      <p class="a">"<b>Overloading</b> — same method name, different parameters, resolved at compile time. <b>Overriding</b> — a child redefining a parent's method, resolved at run time. And in Python, <b>overloading isn't supported</b>: the later definition just replaces the earlier one. I'd use <code>*args</code>, default arguments, or <code>functools.singledispatch</code> instead."</p></div>
+    <div class="qa"><p class="q">"Why doesn't Python support it?"</p>
+      <p class="a">Because a class body is just a namespace — <code>def</code> binds a name, so the second <code>def add</code> overwrites the first exactly like <code>x = 1; x = 2</code>. Python is dynamically typed, so there are no parameter types to dispatch on.</p></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 8 VENDING MACHINE ============ -->
+<section>
+  <span class="eyebrow"><b>08</b> encapsulation · abstraction</span>
+  <h2>The vending machine</h2>
+  <p class="lede">These two get confused more than any other pair, because they're both about "hiding". One image separates them for good: <b>the glass</b> and <b>the buttons</b>.</p>
+  <div class="card">
+    <div class="anim" id="a8"></div>
+  </div>
+  <div class="say">
+    <span class="h">Say this</span>
+    <p>"<b>Encapsulation is the glass</b> — the data is locked inside and you can only reach it through methods. <b>Abstraction is the button panel</b> — a simple surface that hides how complicated the inside is. Encapsulation hides <i>data</i>; abstraction hides <i>complexity</i>."</p>
+  </div>
+  <div class="code">
+<span class="cl">class Acct:</span>
+<span class="cl">    def __init__(self):</span>
+<span class="cl">        self._soft = "convention only"    <span class="cl cm"># one _ : please don't touch</span></span>
+<span class="cl">        self.__hard = "name mangled"      <span class="cl cm"># two _ : renamed by Python</span></span>
+<span class="cl"> </span>
+<span class="cl">a = Acct()</span>
+<span class="cl">a._soft          <span class="cl ok"># works fine — nothing stops you</span></span>
+<span class="cl">a.__hard         <span class="cl no"># AttributeError: 'Acct' object has no attribute '__hard'</span></span>
+<span class="cl">a._Acct__hard    <span class="cl ok"># 'name mangled'  ← still reachable!</span></span>
+  </div>
+  <div class="ask">
+    <span class="h">Q · the interviewer asks</span>
+    <div class="qa"><p class="q">"Difference between encapsulation and abstraction?"</p>
+      <p class="a">"Encapsulation is <b>bundling data with the methods that guard it</b> — implementation-level. Abstraction is <b>exposing only what matters</b> and hiding the how — design-level. Encapsulation is how you achieve abstraction."</p></div>
+    <div class="qa"><p class="q">"Is anything in Python truly private?"</p>
+      <p class="a"><b>No — and say so confidently.</b> "A single underscore is a convention. A double underscore triggers <b>name mangling</b> to <code>_ClassName__attr</code>, which prevents accidental clashes in subclasses but doesn't stop anyone determined. Python's philosophy is <i>we're all consenting adults here</i>."</p></div>
+    <div class="qa"><p class="q">"How do you achieve abstraction in Python?"</p>
+      <p class="a">With the <code>abc</code> module: inherit <code>ABC</code> and mark methods <code>@abstractmethod</code>. Instantiating the abstract class then raises <code>TypeError: Can't instantiate abstract class Shape with abstract method area</code> — it forces subclasses to honour the contract.</p></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 9 FOUR PILLARS ============ -->
+<section>
+  <span class="eyebrow"><b>09</b> the four pillars</span>
+  <h2>The list they always ask for</h2>
+  <p class="lede">"What are the four pillars of OOP?" is the single most-asked OOP question there is. Here they are, each welded to a picture you've already stepped through.</p>
+  <div class="pillars">
+    <div class="pil"><span class="n">Encapsulation</span><span class="pic">🔒 the glass</span><p class="d">Bundle the data with the methods that guard it. <code>_balance</code> is inside; <code>deposit()</code> is the way in.</p></div>
+    <div class="pil"><span class="n">Abstraction</span><span class="pic">🎛 the buttons</span><p class="d">Show a simple surface, hide the machinery. You press <code>withdraw()</code> and never hear about the ledger.</p></div>
+    <div class="pil"><span class="n">Inheritance</span><span class="pic">🪜 the staircase</span><p class="d">A child reuses and specialises a parent. <code>SavingsAccount</code> gets everything <code>BankAccount</code> has, plus interest.</p></div>
+    <div class="pil"><span class="n">Polymorphism</span><span class="pic">📺 the remote</span><p class="d">One call, many behaviours. <code>.speak()</code> on Dog, Robot and Cat — no shared parent needed.</p></div>
+  </div>
+  <div class="say">
+    <span class="h">Say this — in one breath</span>
+    <p>"Encapsulation, abstraction, inheritance, polymorphism. <b>Glass, buttons, staircase, remote.</b>"</p>
+  </div>
+  <div class="ask">
+    <span class="h">Q · the follow-up that separates people</span>
+    <div class="qa"><p class="q">"Give me an example from your own code."</p>
+      <p class="a">Have one ready and reuse it every time. From a task tracker: <b>Encapsulation</b> — the <code>Task</code> class guards its own <code>status</code> through a method instead of letting anything set it. <b>Abstraction</b> — <code>task.complete()</code> hides the timestamping and saving. <b>Inheritance</b> — <code>RecurringTask(Task)</code> adds a schedule. <b>Polymorphism</b> — every task type implements <code>summary()</code> its own way and the list page calls one method for all of them.</p></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 10 FAKE WALL ============ -->
+<section>
+  <span class="eyebrow"><b>10</b> @property · @classmethod · @staticmethod</span>
+  <h2>The wall that's really a door</h2>
+  <div class="card">
+    <div class="anim" id="a9"></div>
+  </div>
+  <div class="say">
+    <span class="h">Say this</span>
+    <p>"<code>@property</code> makes a <b>method look like an attribute</b>. You read <code>c.area</code> with no brackets, but a function runs behind the wall. It's how you add validation or make something read-only <b>without changing the code that uses it</b>."</p>
+  </div>
+  <div class="code">
+<span class="cl">class Circle:</span>
+<span class="cl">    def __init__(self, radius):</span>
+<span class="cl">        self._radius = radius</span>
+<span class="cl">    @property</span>
+<span class="cl">    def area(self):</span>
+<span class="cl">        return 3.14159 * self._radius ** 2</span>
+<span class="cl"> </span>
+<span class="cl">c = Circle(2)</span>
+<span class="cl">print(c.area)   <span class="cl ok"># 12.56636  — no brackets</span></span>
+<span class="cl">c.area = 99     <span class="cl no"># AttributeError — read-only for free</span></span>
+  </div>
+  <p class="lede">And the decorator question they ask right after — the difference is <b>what arrives in the first seat</b>.</p>
+  <div class="kw">
+    <div class="krow"><span class="k">regular method</span><span class="v">First seat: <code>self</code><small>Needs the specific object. Most methods.</small></span></div>
+    <div class="krow"><span class="k">@classmethod</span><span class="v">First seat: <code>cls</code> (the class itself)<small>Can build new objects → <b>alternative constructors</b>. <code>Temp.from_fahrenheit(212)</code> returns a new Temp.</small></span></div>
+    <div class="krow"><span class="k">@staticmethod</span><span class="v">First seat: <b>nothing</b><small>Touches neither the object nor the class — it just lives here because it belongs here. A noticeboard on the factory wall.</small></span></div>
+  </div>
+  <div class="code">
+<span class="cl">class Temp:</span>
+<span class="cl">    def __init__(self, celsius):</span>
+<span class="cl">        self.celsius = celsius</span>
+<span class="cl"> </span>
+<span class="cl">    @classmethod</span>
+<span class="cl">    def from_fahrenheit(cls, f):      <span class="cl cm"># gets the CLASS → can build</span></span>
+<span class="cl">        return cls((f - 32) * 5 / 9)</span>
+<span class="cl"> </span>
+<span class="cl">    @staticmethod</span>
+<span class="cl">    def is_freezing(c):               <span class="cl cm"># gets NOTHING</span></span>
+<span class="cl">        return c &lt;= 0</span>
+<span class="cl"> </span>
+<span class="cl">print(Temp.from_fahrenheit(212).celsius)   <span class="cl ok"># 100.0</span></span>
+<span class="cl">print(Temp.is_freezing(-5))                <span class="cl ok"># True</span></span>
+  </div>
+  <div class="ask">
+    <span class="h">Q · the interviewer asks</span>
+    <div class="qa"><p class="q">"<code>@classmethod</code> vs <code>@staticmethod</code>?"</p>
+      <p class="a">"A classmethod receives the <b>class</b> as <code>cls</code>, so it can create instances — that's why it's used for alternative constructors. A staticmethod receives <b>nothing</b>; it's a plain function grouped inside the class for organisation."</p></div>
+    <div class="qa"><p class="q">"Why use <code>@property</code> instead of a plain attribute?"</p>
+      <p class="a">To add <b>validation, computation or read-only access later without breaking callers</b>. Code that already says <code>c.area</code> keeps working — you changed the inside, not the interface. That's encapsulation in one decorator.</p></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 11 BLANK PAGE ============ -->
+<section>
+  <span class="eyebrow"><b>11</b> the blank page</span>
+  <h2>What to type first, every time</h2>
+  <p class="lede">Same idea as the five moves for functions. A class is always these five, in this order — and the first four don't need a single clever thought, because the question already told you what the thing is and what it holds.</p>
+  <div style="display:flex;flex-direction:column;gap:9px" id="moves"></div>
+  <div class="card">
+    <div class="anim" id="a10"></div>
+  </div>
+  <div class="say">
+    <span class="h">Say this while you type</span>
+    <p>"<b>Name, Birth, State, Show, Do.</b> I'll set the shape up first — it takes an owner and a balance, so that's <code>__init__</code>; a <code>__repr__</code> so I can debug it; then the behaviour."</p>
+  </div>
+  <div class="ask">
+    <span class="h">Q · the interviewer asks</span>
+    <div class="qa"><p class="q">"<code>__str__</code> vs <code>__repr__</code>?"</p>
+      <p class="a">"<code>__str__</code> is for <b>users</b> — what <code>print()</code> shows. <code>__repr__</code> is for <b>developers</b> — what the shell and the debugger show, and <b>what appears when the object is inside a list</b>. If I only write one, I write <code>__repr__</code>, because <code>str()</code> falls back to it."</p></div>
+    <div class="qa"><p class="q">"You've gone quiet — what are you thinking?"</p>
+      <p class="a">Never go quiet. Narrate the skeleton: <i>"Setting up the shape first — it's a noun, so a class; it needs a name and a balance to exist, so those go in <code>__init__</code>."</i> You've said something true and bought ten seconds.</p></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 12 KEYWORDS ============ -->
+<section>
+  <span class="eyebrow"><b>12</b> the dictionary</span>
+  <h2>Every keyword, and what it actually does</h2>
+  <div class="kw">
+    <div class="krow"><span class="k">class</span><span class="v">Defines the stamp.<small>Name it as a <b>singular noun</b> in CapWords: <code>BankAccount</code>, not <code>bank_accounts</code>.</small></span></div>
+    <div class="krow"><span class="k">self</span><span class="v">The instance, in the hidden first seat.<small>Not a keyword — a convention. Required as the first parameter of every instance method.</small></span></div>
+    <div class="krow"><span class="k">__init__</span><span class="v">Runs at birth, sets the starting state.<small>Returns <code>None</code>, always. <code>return something</code> inside it is a <code>TypeError</code>.</small></span></div>
+    <div class="krow"><span class="k">__repr__</span><span class="v">The developer's label.<small>Used by the shell, debuggers, and <b>inside containers</b>. Write this one first.</small></span></div>
+    <div class="krow"><span class="k">__str__</span><span class="v">The user's label.<small>Used by <code>print()</code>. Falls back to <code>__repr__</code> if missing.</small></span></div>
+    <div class="krow"><span class="k">super()</span><span class="v">The next class in the MRO — usually the parent.<small>Call <code>super().__init__(...)</code> <b>first</b> in a child's <code>__init__</code>, before setting your own attributes.</small></span></div>
+    <div class="krow"><span class="k">@property</span><span class="v">Makes a method read like an attribute.<small>Add <code>@area.setter</code> below it if you also want assignment, with validation inside.</small></span></div>
+    <div class="krow"><span class="k">@classmethod<br>cls</span><span class="v">Receives the class, not the instance.<small>Used for <b>alternative constructors</b>: <code>return cls(...)</code>.</small></span></div>
+    <div class="krow"><span class="k">@staticmethod</span><span class="v">Receives nothing.<small>A plain function that lives in the class for tidiness.</small></span></div>
+    <div class="krow"><span class="k">_single</span><span class="v">"Internal — please don't touch."<small>Pure convention. Python does not stop you.</small></span></div>
+    <div class="krow"><span class="k">__double</span><span class="v">Name-mangled to <code>_Class__double</code>.<small>Prevents accidental clashes in subclasses. <b>Still not private.</b></small></span></div>
+    <div class="krow"><span class="k">@dataclass</span><span class="v">Writes <code>__init__</code>, <code>__repr__</code> and <code>__eq__</code> for you.<small>Use <code>field(default_factory=list)</code> for mutable defaults — <b>the whiteboard bug, one more time</b>.</small></span></div>
+    <div class="krow"><span class="k">ABC<br>@abstractmethod</span><span class="v">Forces subclasses to implement a method.<small>Instantiating the abstract class raises <code>TypeError</code>. This is how you state a contract.</small></span></div>
+    <div class="krow"><span class="k">isinstance()</span><span class="v">"Is it this type, or a subclass of it?"<small>Prefer it over <code>type(x) == Cls</code>, which <b>fails for subclasses</b> — <code>type(Dog()) == Animal</code> is <code>False</code>.</small></span></div>
+    <div class="krow"><span class="k">__mro__</span><span class="v">The lookup order for methods.<small><code>D.__mro__</code> → <code>['D','B','C','A','object']</code>. The answer to the diamond problem.</small></span></div>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ 13 RECALL ============ -->
+<section>
+  <span class="eyebrow"><b>13</b> close the page and try</span>
+  <h2>Picture → sentence</h2>
+  <p class="lede">The real test. You get the <b>image</b> only. Say the concept and the sentence <b>out loud</b> before you reveal — saying it is the skill being graded, not recognising it.</p>
+  <div class="card drill" id="drill"></div>
+</section>
+
+<footer>
+  Every code block on this page was run on real Python before it was written down, including the exact error messages. Nine images: stamp, seat, whiteboard, staircase, five shapes, remote, stacked cards, vending machine, fake wall.
+</footer>
+
+</div>
+
+<script>
+/* ---------------- theme ---------------- */
+document.getElementById('tog').onclick = function(){
+  var r = document.documentElement;
+  var cur = r.getAttribute('data-theme');
+  if (!cur) cur = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  r.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+};
+
+/* ---------------- animation engine ----------------
+   One attribute drives everything: .stage[data-f="N"].
+   All motion is CSS transitions keyed off that number, so the
+   elements persist across frames and actually animate.
+--------------------------------------------------- */
+function mountAnim(hostId, spec){
+  var host = document.getElementById(hostId);
+  var el = document.createElement('div');
+  el.className = 'anim';
+  el.innerHTML =
+    '<div class="stage" id="' + spec.id + '" data-f="0">' + spec.build + '</div>' +
+    '<p class="cap"></p>' +
+    '<div class="ctl">' +
+      '<button class="btn" data-a="next">Step →</button>' +
+      '<button class="btn q" data-a="back">← Back</button>' +
+      '<button class="btn q" data-a="reset">Reset</button>' +
+      '<span class="cnt"></span>' +
+    '</div>';
+  host.appendChild(el);
+
+  var stage = el.querySelector('.stage');
+  var cap = el.querySelector('.cap');
+  var cnt = el.querySelector('.cnt');
+  var next = el.querySelector('[data-a="next"]');
+  var back = el.querySelector('[data-a="back"]');
+  var at = 0;
+
+  function paint(){
+    stage.dataset.f = at;
+    cap.innerHTML = spec.frames[at];
+    cnt.textContent = (at + 1) + ' / ' + spec.frames.length;
+    next.disabled = at >= spec.frames.length - 1;
+    back.disabled = at === 0;
+    next.textContent = at >= spec.frames.length - 1 ? 'Done' : 'Step →';
+  }
+  next.onclick  = function(){ if (at < spec.frames.length - 1){ at++; paint(); } };
+  back.onclick  = function(){ if (at > 0){ at--; paint(); } };
+  el.querySelector('[data-a="reset"]').onclick = function(){ at = 0; paint(); };
+  paint();
+}
+
+/* ===== 01 the stamp ===== */
+mountAnim('a1', {
+  id: 's1',
+  build:
+    '<div style="display:flex;flex-direction:column;align-items:center;gap:0" class="press">' +
+      '<div class="handle"></div>' +
+      '<div class="stamp">class Dog:</div>' +
+    '</div>' +
+    '<div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:800;margin-top:6px">prints</div>' +
+    '<div class="prints">' +
+      '<div class="node pr p1">rex<small>name = "Rex"</small></div>' +
+      '<div class="node pr p2">bella<small>name = "Bella"</small></div>' +
+      '<div class="node pr p3">buddy<small>name = "Buddy"</small></div>' +
+    '</div>',
+  frames: [
+    'This is a <b>class</b>. Notice there is no dog here — nothing has a name, nothing can bark. It is the <b>stamp</b>, not the print. Writing a class creates <i>nothing</i> until you use it.',
+    'Press once: <code>rex = Dog("Rex")</code>. <b>Now</b> a dog exists. This is an <b>object</b>, also called an <b>instance</b>.',
+    'Press again: <code>bella = Dog("Bella")</code>. Same stamp, second print. The stamp is unchanged and can go on forever.',
+    'Three objects from one class. <b>Each print has its own ink</b> — change <code>bella.name</code> and <code>rex</code> never notices. <span class="win">One stamp, many separate prints.</span> That sentence is the whole answer to "class vs object".'
+  ]
+});
+
+/* ===== 02 the hidden seat ===== */
+mountAnim('a2', {
+  id: 's2',
+  build:
+    '<div class="call">acc.deposit(50)</div>' +
+    '<div style="position:relative;height:110px;width:100%;display:flex;align-items:center;justify-content:center">' +
+      '<div class="tok tokA">acc</div>' +
+      '<div class="seats" style="position:absolute;top:52px;left:50%;transform:translateX(-50%)">' +
+        '<div class="seat seat1"><span class="tag">seat 1 · self</span>?</div>' +
+        '<div class="seat seat2"><span class="tag">seat 2 · amount</span>50</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="reveal">BankAccount.deposit(acc, 50)</div>',
+  frames: [
+    'You write <code>acc.deposit(50)</code>. It <i>looks</i> like the method takes one argument. But the definition says <code>def deposit(self, amount)</code> — <b>two</b> seats. Where does the first one come from?',
+    'The object itself is about to be handed over. You never typed it, and you never will.',
+    'Python drops <code>acc</code> into <b>seat one</b>. That seat is what you call <code>self</code> inside the method — so <code>self.balance</code> means <i>this particular account\'s</i> balance.',
+    '<span class="win">Both calls are the same thing.</span> The dot is just shorthand: the thing on the left of the dot becomes the first argument. <b>That is all <code>self</code> has ever been.</b>'
+  ]
+});
+
+/* ===== 03 whiteboard vs notebooks ===== */
+mountAnim('a3', {
+  id: 's3',
+  build:
+    '<div style="display:flex;flex-direction:column;align-items:center;gap:5px;width:100%">' +
+      '<span class="lbl">CartBad.items &mdash; one shared list</span>' +
+      '<div class="board">[<span class="item">\'apple\'</span>]</div>' +
+    '</div>' +
+    '<div class="people">' +
+      '<div class="pers personA"><span class="who">a</span>' +
+        '<div class="nb nbA">[<span class="nbAItem">\'apple\'</span>]</div></div>' +
+      '<div class="pers personB"><span class="who">b</span>' +
+        '<div class="nb nbB">[]</div></div>' +
+    '</div>' +
+    '<div class="verdict verdictBad">b.items → [\'apple\']  ← bug</div>' +
+    '<div class="verdict verdictGood">b.items → []  ← correct</div>',
+  frames: [
+    'Two carts, <code>a</code> and <code>b</code>. The class was written with <code>items = []</code> <b>at class level</b> — so there is exactly one list, hanging on the wall like a whiteboard, and both carts point at it.',
+    '<code>a.add("apple")</code> runs. The apple is written on <b>the whiteboard</b>, because that is the only list that exists.',
+    'Now read <code>b.items</code>. <span class="lose">It says [\'apple\'] — and nobody ever touched b.</span> The bug is silent: no error, no warning, just a wrong answer that will confuse you for an hour.',
+    'The fix: move it into <code>__init__</code> as <code>self.items = []</code>. The whiteboard is gone. Now <b>each cart is handed its own notebook the moment it is born</b>.',
+    '<code>a.add("apple")</code> again — it goes in <b>a\'s own notebook</b>. <span class="win">b.items is still empty. Correct.</span> Same shape as the mutable default argument bug: <b>a mutable thing created once gets shared by everything.</b>'
+  ]
+});
+
+/* ===== 04 the staircase ===== */
+mountAnim('a4', {
+  id: 's4',
+  build:
+    '<div class="tok">SavingsAccount("amaan", 1000)</div>' +
+    '<div class="stepbox parent"><span class="nm">class BankAccount:</span>' +
+      '<span class="at pAttrs">owner = ? &nbsp; balance = ?</span></div>' +
+    '<div class="riser" style="top:calc(50% - 6px)"></div>' +
+    '<div class="stepbox child"><span class="nm">class SavingsAccount(BankAccount):</span>' +
+      '<span class="at cAttrs">rate = ?</span></div>' +
+    '<div class="done">owner=\'amaan\' &nbsp; balance=1000 &nbsp; rate=0.05</div>',
+  frames: [
+    'You create a <code>SavingsAccount</code>. Its own <code>__init__</code> runs first — it is standing on the bottom step. Note that <b>nothing is set yet</b>: the child\'s <code>__init__</code> <i>replaced</i> the parent\'s, it did not add to it.',
+    'First line of the child: <code>super().__init__(owner, balance)</code>. <b>Go upstairs.</b>',
+    'The parent\'s <code>__init__</code> runs and sets <code>owner</code> and <code>balance</code>. This is the work you would otherwise have to copy and paste.',
+    'Back <b>down</b> the stairs, into the rest of the child\'s <code>__init__</code>, which sets <code>rate</code>. Order matters: parent setup first, your own additions after.',
+    '<span class="win">One object, three attributes, two classes.</span> Leave out the <code>super()</code> call and <code>owner</code> and <code>balance</code> simply never exist — and you find out much later, with an <code>AttributeError</code> nowhere near the real bug.'
+  ]
+});
+
+/* ===== 05 five family shapes ===== */
+(function(){
+  function bx(t, kid){ return '<div class="bx' + (kid ? ' kid' : '') + '">' + t + '</div>'; }
+  var link = '<div class="link"></div>';
+  var fork = '<div class="fork"></div>';
+  var merge = '<div class="merge"></div>';
+  function tree(n, name, inner){ return '<div class="tree t' + n + '"><span class="tname">' + name + '</span>' + inner + '</div>'; }
+
+  var build =
+    tree(0, 'Single', '<div class="lvl">' + bx('A') + '</div>' + link + '<div class="lvl">' + bx('B', 1) + '</div>') +
+    tree(1, 'Multiple', '<div class="lvl">' + bx('A') + bx('B') + '</div>' + merge + '<div class="lvl">' + bx('C', 1) + '</div>') +
+    tree(2, 'Multilevel', '<div class="lvl">' + bx('A') + '</div>' + link + '<div class="lvl">' + bx('B', 1) + '</div>' + link + '<div class="lvl">' + bx('C', 1) + '</div>') +
+    tree(3, 'Hierarchical', '<div class="lvl">' + bx('A') + '</div>' + fork + '<div class="lvl">' + bx('B', 1) + bx('C', 1) + '</div>') +
+    tree(4, 'Hybrid (diamond)', '<div class="lvl">' + bx('A') + '</div>' + fork + '<div class="lvl">' + bx('B', 1) + bx('C', 1) + '</div>' + merge + '<div class="lvl">' + bx('D', 1) + '</div>');
+
+  mountAnim('a5', {
+    id: 's5',
+    build: build,
+    frames: [
+      '<b>1 · Single.</b> One parent, one child. <code>class Dog(Animal)</code>. Ninety percent of real code is this, and nothing else.',
+      '<b>2 · Multiple.</b> Two parents, one child. <code>class Child(Father, Mother)</code>. Python allows it; <b>Java does not</b> for real classes — worth saying.',
+      '<b>3 · Multilevel.</b> A chain: grandparent → parent → child. <code>Animal → Dog → Puppy</code>. <code>Puppy</code> gets everything from both ancestors.',
+      '<b>4 · Hierarchical.</b> One parent, many children. <code>Dog(Animal)</code> and <code>Cat(Animal)</code>. The shape of most real class libraries.',
+      '<b>5 · Hybrid.</b> A mix of the above — almost always drawn as the <b>diamond</b>. <span class="win">D().who() gives "B"</span>, because the MRO goes <code>D → B → C → A → object</code>: left to right, each class once.'
+    ]
+  });
+
+  // reveal one tree per frame
+  var s5 = document.getElementById('s5');
+  var obs = new MutationObserver(function(){
+    var f = +s5.dataset.f;
+    s5.querySelectorAll('.tree').forEach(function(t, i){ t.classList.toggle('on', i === f); });
+  });
+  obs.observe(s5, {attributes:true, attributeFilter:['data-f']});
+  s5.querySelector('.t0').classList.add('on');
+})();
+
+/* ===== 06 universal remote ===== */
+mountAnim('a6', {
+  id: 's6',
+  build:
+    '<div class="remote">press: .speak()</div>' +
+    '<div class="devices">' +
+      '<div class="dev d1"><span class="nm">Dog</span><span class="out o1">"Woof"</span></div>' +
+      '<div class="dev d2"><span class="nm">Robot</span><span class="out o2">"Beep"</span></div>' +
+      '<div class="dev d3"><span class="nm">Cat</span><span class="out o3">"Meow"</span></div>' +
+    '</div>' +
+    '<div class="note6">no shared parent class anywhere — duck typing</div>',
+  frames: [
+    'Three unrelated objects. <b>They do not inherit from anything</b> — no <code>Animal</code> base class, nothing in common except one thing: each has a method called <code>speak</code>.',
+    'Press the button on the Dog: <code>.speak()</code> → <b>"Woof"</b>.',
+    'Same button, Robot: <code>.speak()</code> → <b>"Beep"</b>. You did not change the call. You changed the object.',
+    'Same button, Cat → <b>"Meow"</b>. One line, <code>for thing in things: print(thing.speak())</code>, handles all three.',
+    '<span class="win">That is polymorphism.</span> And in Python you got it <b>with no inheritance at all</b> — if the method exists, it works. If it walks like a duck and quacks like a duck, Python treats it as a duck.'
+  ]
+});
+
+/* ===== 07 overloading ===== */
+mountAnim('a7', {
+  id: 's7',
+  build:
+    '<div class="deck">' +
+      '<div class="mcard m1">def add(self, a, b):<br><span style="color:var(--ink-faint)">&nbsp;&nbsp;&nbsp;&nbsp;return a + b</span></div>' +
+      '<div class="mcard m2">def add(self, a, b, c):<br><span style="color:var(--ink-faint)">&nbsp;&nbsp;&nbsp;&nbsp;return a + b + c</span></div>' +
+      '<div class="mcard m3">def add(self, *args):<br><span style="color:var(--ink-faint)">&nbsp;&nbsp;&nbsp;&nbsp;return sum(args)</span></div>' +
+    '</div>' +
+    '<div class="res rBad">Calc().add(1, 2) → TypeError: missing 1 required positional argument: \'c\'</div>' +
+    '<div class="res rGood">Calc2().add(1, 2) → 3 &nbsp;·&nbsp; Calc2().add(1, 2, 3) → 6</div>',
+  frames: [
+    'You write <code>add</code> taking two numbers. In Java or C++ you would now write a second <code>add</code> taking three, and the compiler would pick the right one. That is <b>overloading</b>.',
+    'You write the second one. In Python, <b>the class body is just a namespace</b> — <code>def</code> binds a name, so the second definition <b>covers the first completely</b>, exactly like <code>x = 1; x = 2</code>. The two-argument version is <i>gone</i>.',
+    '<span class="lose">Calling add(1, 2) now fails.</span> Not "picks the other one" — <b>fails</b>. This is the answer they are digging for: <b>Python does not support method overloading.</b>',
+    'The Pythonic fix: one method, <code>*args</code> (or default arguments). <span class="win">Both calls work.</span> For type-based dispatch there is also <code>functools.singledispatch</code> — name-drop it.'
+  ]
+});
+
+/* ===== 08 vending machine ===== */
+mountAnim('a8', {
+  id: 's8',
+  build:
+    '<div class="vm">' +
+      '<div class="glass">' +
+        '<div class="gear">_balance = 1200</div>' +
+        '<div class="gear">_ledger = [...]</div>' +
+        '<div class="gear">_fees = 0.02</div>' +
+        '<span class="tagline t1">↑ encapsulation · the glass</span>' +
+      '</div>' +
+      '<div class="padwrap"><div class="pad">' +
+        '<div class="bt">deposit()</div>' +
+        '<div class="bt">withdraw()</div>' +
+        '<div class="bt">balance</div>' +
+        '<span class="tagline t2" style="left:auto;right:0">↑ abstraction · the buttons</span>' +
+      '</div></div>' +
+    '</div>',
+  frames: [
+    'A vending machine. Inside the glass: the money, the ledger, the fee rates. Outside: three buttons. You have used one a hundred times without ever thinking about the inside.',
+    '<b>Encapsulation is the glass.</b> The data is sealed in. You cannot reach past it and set <code>_balance = 999999</code> — you go through a method that checks first. <i>Encapsulation hides <b>data</b>.</i>',
+    '<b>Abstraction is the button panel.</b> Three simple controls over a complicated machine. You press <code>withdraw()</code> and never learn about the ledger or the fees. <i>Abstraction hides <b>complexity</b>.</i>',
+    '<span class="win">Both at once, and now the difference is obvious.</span> The glass protects; the buttons simplify. And the line that wins the follow-up: <b>encapsulation is how you achieve abstraction.</b>'
+  ]
+});
+
+/* ===== 09 the fake wall ===== */
+mountAnim('a9', {
+  id: 's9',
+  build:
+    '<div style="font-family:\'JetBrains Mono\',monospace;font-size:14px;font-weight:700">c.area</div>' +
+    '<div class="slot">' +
+      '<div class="face">looks like an attribute</div>' +
+      '<div class="machine">def area(self):<br>return 3.14159 * self._radius ** 2</div>' +
+    '</div>' +
+    '<div class="outv">12.56636</div>',
+  frames: [
+    'You read <code>c.area</code>. No brackets. Every instinct says this is a plain stored value sitting in memory.',
+    'It is not. There is a <b>door</b> in that wall, and the <code>@property</code> decorator put it there.',
+    'Behind it, a <b>method runs</b> every time you read the name. The radius is squared, multiplied, fresh on each access.',
+    '<span class="win">The value comes out, and the caller never knew.</span> That is the power: you can turn a plain attribute into a computed, validated or read-only one <b>without changing a single line of the code that uses it</b>.'
+  ]
+});
+
+/* ===== 11 the class skeleton ===== */
+var MOVES = [
+  {n:1, t:'Name',  q:'What thing is this?',              l:'class BankAccount:'},
+  {n:2, t:'Birth', q:'What does it need to exist?',      l:'    def __init__(self, owner, balance=0):'},
+  {n:3, t:'State', q:'What does it remember?',           l:'        self.owner = owner'},
+  {n:4, t:'Show',  q:'How do I see it when debugging?',  l:'    def __repr__(self):'},
+  {n:5, t:'Do',    q:'What can it do?',                  l:'    def deposit(self, amount):'}
+];
+document.getElementById('moves').innerHTML = MOVES.map(function(m){
+  return '<div class="mv"><span class="n">' + m.n + '</span><div class="b">' +
+    '<span class="t">' + m.t + '</span><span class="q">' + m.q + '</span>' +
+    '<span class="l">' + m.l.replace(/</g,'&lt;') + '</span></div></div>';
+}).join('');
+
+var SKEL = [
+  'class BankAccount:',
+  '    def __init__(self, owner, balance=0):',
+  '        self.owner = owner',
+  '        self.balance = balance',
+  '    def __repr__(self):',
+  '        return f"BankAccount({self.owner!r}, {self.balance})"',
+  '    def deposit(self, amount):',
+  '        if amount <= 0:',
+  '            raise ValueError("deposit must be positive")',
+  '        self.balance += amount',
+  '        return self.balance'
+];
+(function(){
+  var reveal = [1, 2, 4, 6, 11];   // lines visible after each move
+  var build = '<div class="code" style="width:100%">' + SKEL.map(function(l, i){
+    return '<span class="cl k' + i + '" style="opacity:0;transition:opacity .35s">' + l.replace(/</g,'&lt;').replace(/ /g,'&nbsp;') + '</span>';
+  }).join('') + '</div>';
+  var css = document.createElement('style');
+  var rules = '';
+  for (var f = 0; f < reveal.length; f++){
+    for (var i = 0; i < reveal[f]; i++) rules += '#s10[data-f="' + f + '"] .k' + i + '{opacity:1}';
+  }
+  rules += '#s10{min-height:230px;display:flex;align-items:center;padding:14px}';
+  css.textContent = rules;
+  document.head.appendChild(css);
+
+  mountAnim('a10', {
+    id: 's10',
+    build: build,
+    frames: [
+      '<b>Move 1 · Name.</b> A singular noun in CapWords. You have solved nothing yet — you have just written down what the thing <i>is</i>. That is allowed, and it beats staring.',
+      '<b>Move 2 · Birth.</b> <code>__init__</code>, and its parameters are simply <i>what the question said the thing needs</i>. An account needs an owner; a balance is optional, so it gets a default.',
+      '<b>Move 3 · State.</b> <code>self.x = x</code>, one line per thing it remembers. Boring on purpose. <b>Mutable ones must be created here</b>, never at class level.',
+      '<b>Move 4 · Show.</b> <code>__repr__</code> before any real logic. It costs one line and it is the difference between debugging by reading and debugging by guessing.',
+      '<b>Move 5 · Do.</b> The verbs, and the <i>only</i> part that needed thinking. <span class="win">Four of the five moves were free.</span> That is why you never face a blank page again.'
+    ]
+  });
+})();
+
+/* ===== 13 recall drill ===== */
+var DRILL = [
+  {pic:'🖃 The stamp and the prints', c:'class vs object',
+   say:'A class is the stamp, an object is a print it makes. One stamp, many separate prints.'},
+  {pic:'💺 The hidden first seat', c:'self',
+   say:'Every method has a hidden first seat. <code>acc.deposit(50)</code> is really <code>BankAccount.deposit(acc, 50)</code>. That seat is <code>self</code>.'},
+  {pic:'📋 One whiteboard, or a notebook each', c:'class vs instance attributes',
+   say:'A class attribute is one shared whiteboard; an instance attribute is a notebook each. Mutable things belong in <code>__init__</code>.'},
+  {pic:'🪜 The staircase', c:'super()',
+   say:'<code>super().__init__()</code> means go upstairs, run the parent\'s setup, come back down and add your own.'},
+  {pic:'🌳 Five family shapes', c:'the types of inheritance',
+   say:'Single, multiple, multilevel, hierarchical, hybrid. The hybrid is the diamond, resolved by the MRO left to right.'},
+  {pic:'📺 The universal remote', c:'polymorphism / duck typing',
+   say:'One button, different machines. Same method name, different behaviour — and in Python no shared parent is needed.'},
+  {pic:'🃏 The card that covers the card', c:'overloading vs overriding',
+   say:'Python does not support overloading — the second definition replaces the first. Use <code>*args</code>. Overriding, a child redefining a parent method, does work.'},
+  {pic:'🥤 The glass and the buttons', c:'encapsulation vs abstraction',
+   say:'Encapsulation is the glass — it hides data. Abstraction is the button panel — it hides complexity. Encapsulation is how you achieve abstraction.'},
+  {pic:'🚪 The wall that\'s really a door', c:'@property',
+   say:'It looks like an attribute but a method runs behind it — so you can add validation or make it read-only without changing any calling code.'},
+  {pic:'📐 Name, Birth, State, Show, Do', c:'the class skeleton',
+   say:'class → __init__ → self.x = x → __repr__ → the methods. The first four are free on every problem.'}
+];
+(function(){
+  var host = document.getElementById('drill');
+  var i = 0, shown = false;
+  host.innerHTML =
+    '<span class="pic" id="dpic"></span>' +
+    '<p class="lede" id="dprompt">Name the concept, then say the sentence out loud. Only then reveal.</p>' +
+    '<div class="ans" id="dans"></div>' +
+    '<div class="row">' +
+      '<button class="btn" id="dshow">Reveal</button>' +
+      '<button class="btn q" id="dnext">Next picture</button>' +
+      '<span class="cnt" id="dcnt"></span>' +
+    '</div>';
+  var pic = document.getElementById('dpic'), ans = document.getElementById('dans');
+  var cnt = document.getElementById('dcnt'), prompt = document.getElementById('dprompt');
+  function paint(){
+    pic.textContent = DRILL[i].pic;
+    ans.innerHTML = '<b>' + DRILL[i].c + '</b><br>' + DRILL[i].say;
+    ans.classList.toggle('on', shown);
+    prompt.textContent = shown
+      ? 'Did you say it out loud, or just think it? Only one of those is the skill.'
+      : 'Name the concept, then say the sentence out loud. Only then reveal.';
+    cnt.textContent = (i + 1) + ' / ' + DRILL.length;
+  }
+  document.getElementById('dshow').onclick = function(){ shown = true; paint(); };
+  document.getElementById('dnext').onclick = function(){ i = (i + 1) % DRILL.length; shown = false; paint(); };
+  paint();
+})();
+</script>

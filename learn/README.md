@@ -1,11 +1,12 @@
 # Python revision pages
 
-Eleven interactive pages built as a learn-then-drill shelf. Source is here; the
+Twelve interactive pages built as a learn-then-drill shelf. Source is here; the
 published, shareable versions are linked below.
 
 | Page | What it's for | Live |
 |---|---|---|
 | `five-moves.html` | **where to start on a blank page** — the five moves every function is made of | https://claude.ai/artifact/W9m1jNiqszJaPeKqvap3bh |
+| `oop-picture-book.html` | **OOP as nine animated images** — 4 pillars, 5 types of inheritance, every keyword | https://claude.ai/artifact/KohX1ZeUiBSaMnB2zB7kMN |
 | `four-boxes.html` | list / tuple / dict / set, explained | https://claude.ai/code/artifact/b42031ed-1c95-44b1-823b-09ae36cd72c2 |
 | `set-or-regret.html` | those four, drilled under a timer | https://claude.ai/code/artifact/6f976c55-1230-45fb-bc09-e445b78fcb75 |
 | `day-one-explained.html` | the rest of Day 1, explained | https://claude.ai/code/artifact/64f95123-a9ed-4a95-9c5e-3a84b1b73646 |
@@ -42,6 +43,30 @@ explanation was produced by running that wrong code; four claims were corrected
 as a result (`UnboundLocalError` not `NameError` for a missing accumulator;
 `'int' object is not iterable` for `list += int`; `[0, 2]` not `[1, 3]` for the
 `range(len(...))` mistake; and Python's actual `=` vs `==` hint text).
+
+`oop-picture-book.html` exists because reading OOP never stuck — it gives every
+concept **one image and one sentence** so it can be recalled under pressure, not
+just recognised. Nine stepped animations: the stamp and the prints (class vs
+object), the hidden first seat (`self`), one whiteboard vs a notebook each (the
+shared-mutable-class-attribute bug), the staircase (`super()`), five family
+shapes (the five types of inheritance), the universal remote (polymorphism /
+duck typing), the card that covers the card (Python has **no** method
+overloading), the glass and the buttons (encapsulation vs abstraction), and the
+wall that's really a door (`@property`). Plus the class skeleton — Name, Birth,
+State, Show, Do — an 18-row keyword dictionary, and a picture-to-sentence recall
+drill.
+
+Scope was set by searching what is actually asked rather than guessing: "types
+of OOPs" in these interviews means **two** lists — the four pillars *and* the
+five types of inheritance — and overloading-vs-overriding is a trap for anyone
+who learned OOP from Java. Both are given dedicated sections.
+
+Verification: every code block and every quoted error message was produced by
+running the code on real CPython first — including `TypeError: Calc.add()
+missing 1 required positional argument: 'c'`, the `_Acct__hard` name-mangling
+result, `D.__mro__`, and the abstract-class `TypeError`. The rendered page was
+then stepped through in jsdom: 10/10 animations mount, every frame has a
+caption, and all five inheritance diagrams toggle correctly.
 
 `fizzbuzz-order.html` is a focused companion to Type It Out's FizzBuzz
 exercise: drag Fizz/Buzz/FizzBuzz into any order and watch a live 1-15 belt
