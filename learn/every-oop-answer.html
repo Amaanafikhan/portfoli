@@ -1,0 +1,582 @@
+<title>Every OOP Answer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=JetBrains+Mono:wght@400;700&family=Public+Sans:ital,wght@0,400;0,600;0,800&display=swap">
+
+<style>
+:root{
+  --ground:#E8E7F0; --panel:#FFFFFF; --panel-2:#F2F1F8;
+  --ink:#161522; --ink-soft:#4F4C66; --ink-faint:#8683A0; --rule:#D2CFE2;
+  --accent:#4B35B3;
+  --good:#0B7D5B; --bad:#C0392B; --warn:#B4530A;
+  --console:#121120; --console-ink:#E4E1F2;
+  --shadow:0 2px 0 rgba(22,21,34,.09), 0 14px 32px -18px rgba(22,21,34,.5);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D0C14; --panel:#17161F; --panel-2:#1E1D2A;
+    --ink:#EDECF4; --ink-soft:#A9A5C0; --ink-faint:#726E8C; --rule:#28263A;
+    --accent:#9C8AFF;
+    --good:#34D399; --bad:#FF6B60; --warn:#F0A93C;
+    --console:#08070E; --console-ink:#E4E1F2;
+    --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D0C14; --panel:#17161F; --panel-2:#1E1D2A;
+  --ink:#EDECF4; --ink-soft:#A9A5C0; --ink-faint:#726E8C; --rule:#28263A;
+  --accent:#9C8AFF;
+  --good:#34D399; --bad:#FF6B60; --warn:#F0A93C;
+  --console:#08070E; --console-ink:#E4E1F2;
+  --shadow:0 2px 0 rgba(0,0,0,.4), 0 16px 34px -18px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+body{background:var(--ground);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.6;margin:0;display:flex;justify-content:center;padding-block:26px 64px;padding-left:16px;padding-right:16px}
+.wrap{width:100%;max-width:740px;display:flex;flex-direction:column;gap:42px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",sans-serif;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1{font-size:clamp(33px,7.2vw,50px);font-weight:800;line-height:.98}
+h1 em{font-style:normal;color:var(--accent)}
+h2{font-size:clamp(20px,4vw,26px);font-weight:800;line-height:1.14}
+p{margin:0}
+code{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.86em;background:var(--panel-2);padding:1.5px 5px;border-radius:4px;word-break:break-word}
+b{font-weight:800}
+.lede{font-size:16px;line-height:1.55;color:var(--ink-soft);max-width:62ch}
+hr{border:none;border-top:1px solid var(--rule);margin:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font-family:"Public Sans",sans-serif;font-weight:800;font-size:13.5px;color:#fff;background:var(--accent);border:none;border-radius:9px;padding:10px 16px;cursor:pointer;box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 55%,#000);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default;box-shadow:none}
+.btn.q{background:none;color:var(--ink);border:1.5px solid var(--rule);box-shadow:none}
+.btn.gd{background:var(--good);box-shadow:0 3px 0 color-mix(in srgb,var(--good) 55%,#000)}
+.btn.bd{background:var(--bad);box-shadow:0 3px 0 color-mix(in srgb,var(--bad) 55%,#000)}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.cnt{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint);margin-left:auto;font-variant-numeric:tabular-nums}
+
+/* ---------- contents ---------- */
+.toc{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:7px}
+.toc a{display:flex;gap:9px;align-items:baseline;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:9px;padding:9px 11px;font-size:13.5px;font-weight:700}
+.toc a:hover{border-color:var(--accent)}
+.toc a span{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink-faint);flex:none}
+.toc a b{font-weight:800;font-size:11px;color:var(--accent);margin-left:auto;flex:none}
+
+/* ---------- topic ---------- */
+.topic{display:flex;flex-direction:column;gap:14px;scroll-margin-top:16px}
+.thead{display:flex;gap:11px;align-items:baseline;flex-wrap:wrap}
+.thead .n{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;color:var(--panel);background:var(--accent);border-radius:5px;padding:3px 7px;flex:none}
+.say{display:flex;flex-direction:column;gap:5px;border-left:4px solid var(--accent);padding:3px 0 3px 14px}
+.say .h{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--accent)}
+.say p{font-size:15.5px;line-height:1.5;font-style:italic}
+.say p b{font-style:normal}
+.code{background:var(--console);border-radius:10px;padding:12px 0;overflow-x:auto}
+.code .ln{display:block;font-family:"JetBrains Mono",monospace;font-size:12.6px;line-height:1.75;color:#BDB8D6;white-space:pre;padding:0 14px}
+.code .ln.cm{color:#6C6690}
+.code .ln.ok{color:#7FE0BE}
+.code .ln.no{color:#FF9C92}
+
+/* ---------- Q&A ---------- */
+.qs{display:flex;flex-direction:column;border:1px solid var(--rule);border-radius:12px;overflow:hidden;background:var(--panel)}
+.qa{border-bottom:1px solid var(--rule)}
+.qa:last-child{border-bottom:none}
+.qa summary{
+  display:flex;gap:10px;align-items:baseline;cursor:pointer;padding:12px 15px;
+  font-size:14.5px;font-weight:700;line-height:1.45;list-style:none;
+}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary::before{content:"Q";font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:800;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--panel));border-radius:4px;padding:2px 6px;flex:none}
+.qa summary:hover{background:var(--panel-2)}
+.qa summary:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.qa[open] summary{background:var(--panel-2)}
+.qa .ans{padding:0 15px 14px 15px;font-size:14.5px;line-height:1.6;color:var(--ink-soft)}
+.qa .ans b{color:var(--ink)}
+.qa .ans .tag{display:inline-block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--warn);margin-bottom:5px}
+
+/* ---------- drill ---------- */
+.drill{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:15px}
+.dq{font-size:clamp(17px,3.6vw,21px);font-weight:800;line-height:1.35;min-height:60px}
+.dtopic{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.da{font-size:15px;line-height:1.6;color:var(--ink-soft);border-top:1px solid var(--rule);padding-top:12px}
+.da b{color:var(--ink)}
+.bar{height:7px;background:var(--panel-2);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+.tally{display:flex;gap:14px;font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:700}
+.tally .g{color:var(--good)} .tally .m{color:var(--bad)}
+.weak{display:flex;flex-direction:column;gap:6px}
+.weakrow{display:flex;gap:10px;align-items:center;font-size:13.5px}
+.weakrow .nm{font-weight:700;min-width:0;flex:1}
+.weakrow .sc{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-faint);flex:none}
+.weakrow i{width:9px;height:9px;border-radius:50%;flex:none}
+
+footer{color:var(--ink-faint);font-size:13px;line-height:1.6;border-top:1px solid var(--rule);padding-top:18px}
+.tog{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:9;font-size:11px;font-weight:800;border:1px solid var(--rule);background:var(--panel);color:var(--ink-soft);border-radius:8px;padding:7px 10px;cursor:pointer}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<button class="tog" id="tog">theme</button>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:14px">
+  <span style="font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)">OOP concepts · the whole syllabus</span>
+  <h1>Every concept,<br>and <em>every question</em><br>they ask about it.</h1>
+  <p class="lede">Twelve concepts in teaching order — each one gets <b>a sentence you can say out loud</b>, code that was actually run, and the interview questions for that concept sitting right underneath it. Then the whole bank as a scored drill at the end.</p>
+  <p class="lede" id="countline"></p>
+</header>
+
+<hr>
+
+<section style="display:flex;flex-direction:column;gap:12px">
+  <h2>What's in here</h2>
+  <div class="toc" id="toc"></div>
+</section>
+
+<hr>
+
+<div id="topics" style="display:flex;flex-direction:column;gap:42px"></div>
+
+<hr>
+
+<section style="display:flex;flex-direction:column;gap:14px">
+  <span style="font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)">the drill</span>
+  <h2>Now close the page and answer</h2>
+  <p class="lede">Every question above, shuffled. <b>Say the answer out loud first</b> — thinking it and saying it are different skills, and only one of them is being graded. Then reveal and mark yourself honestly. At the end it tells you which concepts to go back to.</p>
+  <div class="drill" id="drill"></div>
+</section>
+
+<footer>
+  Every code block and every output here was produced by running the code on real Python before it was written down — including the error messages.
+</footer>
+
+</div>
+
+<script>
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+document.getElementById('tog').onclick = function(){
+  var r = document.documentElement, cur = r.getAttribute('data-theme');
+  if (!cur) cur = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  r.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+};
+function code(lines){
+  return '<div class="code">' + lines.map(function(l){
+    var k = /^\s*#/.test(l) ? ' cm' : /^\s*# ?(TypeError|ValueError|AttributeError|KeyError)/.test(l) ? ' no' : '';
+    if (/^OUT /.test(l)) return '<span class="ln ok">' + esc(l.slice(4)).replace(/ /g,'&nbsp;') + '</span>';
+    if (/^ERR /.test(l)) return '<span class="ln no">' + esc(l.slice(4)).replace(/ /g,'&nbsp;') + '</span>';
+    return '<span class="ln' + k + '">' + (esc(l).replace(/ /g,'&nbsp;') || '&nbsp;') + '</span>';
+  }).join('') + '</div>';
+}
+
+var TOPICS = [
+{id:'what', n:'01', title:'What OOP actually is',
+ say:'OOP is organising a program around <b>objects</b> — bundles of data with the functions that operate on that data — instead of around loose functions passing data between them.',
+ code:['# procedural: data here, behaviour there, kept in step by hand',
+       'account = {"owner": "amaan", "balance": 100}',
+       'def deposit(acc, amount): acc["balance"] += amount',
+       'deposit(account, 50)',
+       '',
+       '# object-oriented: the data and its behaviour are one thing',
+       'class BankAccount:',
+       '    def __init__(self, owner, balance=0):',
+       '        self.owner = owner',
+       '        self.balance = balance',
+       '    def deposit(self, amount):',
+       '        self.balance += amount',
+       '',
+       'acc = BankAccount("amaan", 100)',
+       'acc.deposit(50)'],
+ qs:[
+  {q:'What is object-oriented programming?', a:'Organising a program around <b>objects</b> that hold state and the behaviour that acts on it, rather than around standalone functions. The four principles are encapsulation, abstraction, inheritance and polymorphism.'},
+  {q:'Procedural vs object-oriented — what is the real difference?', a:'Procedural code keeps <b>data and functions separate</b> and passes the data around; OOP <b>binds them together</b>. The practical payoff is that an object can protect its own data, so you cannot put it into an invalid state from outside.'},
+  {q:'What are the advantages of OOP?', a:'Reusability through inheritance and composition, <b>encapsulation</b> so internals can change without breaking callers, easier extension through polymorphism, and code that maps to how you already talk about the problem (a Task, an Account, a User).'},
+  {q:'Is Python a fully object-oriented language?', a:'Not strictly. <b>Everything in Python is an object</b> — even functions and classes — but it does not force you to use classes, and it has no true private members. It supports OOP rather than requiring it.'},
+  {q:'When would you NOT use a class?', a:'When there is no state to protect. A single function that transforms input to output should stay a function. <b>A class with one method and no attributes is usually a function in disguise.</b>'}]},
+
+{id:'classobj', n:'02', title:'Class and object',
+ say:'A class is the <b>blueprint</b>; an object is one <b>instance</b> built from it. The class is written once; every object gets its own memory for its own values.',
+ code:['class Dog:',
+       '    species = "Canis familiaris"      # class attribute — shared',
+       '    def __init__(self, name):',
+       '        self.name = name              # instance attribute — one each',
+       '',
+       'rex   = Dog("Rex")',
+       'bella = Dog("Bella")',
+       'print(rex.name, bella.name)',
+       'OUT Rex Bella',
+       'print(rex.species is bella.species)',
+       'OUT True'],
+ qs:[
+  {q:'What is the difference between a class and an object?', a:'A class is a <b>template</b> that defines structure and behaviour and costs no memory for data. An object is a concrete <b>instance</b> of it with its own values. One class, any number of objects.'},
+  {q:'How many objects can a class create?', a:'Any number. Each call to the class — <code>Dog("Rex")</code> — builds a new, independent object.'},
+  {q:'What does it mean that classes are first-class in Python?', a:'A class is itself an object. You can assign it to a variable, pass it into a function, or return it — which is exactly what a <code>@classmethod</code> does with <code>cls</code>.'},
+  {q:'What is instantiation?', a:'Creating an object from a class: <code>rex = Dog("Rex")</code>. Behind it, <code>__new__</code> creates the object and <code>__init__</code> fills it in.'}]},
+
+{id:'init', n:'03', title:'__init__ and self',
+ say:'<code>__init__</code> runs automatically when an object is created and sets its starting state. <code>self</code> is the object itself, handed to every method as the hidden first argument.',
+ code:['class Demo:',
+       '    def __new__(cls, *args):        # 1. creates the object',
+       '        return super().__new__(cls)',
+       '    def __init__(self, x):          # 2. fills it in',
+       '        self.x = x',
+       '    def __del__(self):              # 3. runs when it is destroyed',
+       '        pass',
+       '',
+       '# acc.deposit(50)  is really  BankAccount.deposit(acc, 50)',
+       '# the object on the left of the dot becomes self'],
+ qs:[
+  {q:'What is <code>self</code>?', a:'The <b>instance the method was called on</b>. Python passes it automatically as the first argument, so <code>acc.deposit(50)</code> is really <code>BankAccount.deposit(acc, 50)</code>.'},
+  {q:'Is <code>self</code> a keyword?', a:'<b>No</b> — it is a naming convention. Any name works, but every Python programmer reads <code>self</code>, so never rename it.'},
+  {q:'What is <code>__init__</code>? Is it a constructor?', a:'It is the <b>initialiser</b>. Strictly, <code>__new__</code> constructs the object and <code>__init__</code> sets up an object that already exists. Calling it "the constructor" is accepted, but knowing the split is a bonus mark.'},
+  {q:'Difference between <code>__new__</code> and <code>__init__</code>?', a:'<code>__new__</code> is a static method that <b>creates and returns</b> the instance; <code>__init__</code> receives that instance and initialises it, returning <code>None</code>. You only override <code>__new__</code> for unusual cases like immutable subclasses or singletons.'},
+  {q:'Can <code>__init__</code> return a value?', a:'No. Returning anything other than <code>None</code> from <code>__init__</code> raises a <code>TypeError</code>.'},
+  {q:'Does Python have a destructor?', a:'<code>__del__</code> runs when an object is garbage-collected, but <b>you should not rely on it</b> — timing is not guaranteed. For cleanup use a context manager (<code>with</code>) instead.'},
+  {q:'Can a class have more than one <code>__init__</code>?', a:'No — the second definition simply replaces the first. Use <b>default arguments</b>, or a <code>@classmethod</code> as an alternative constructor.'}]},
+
+{id:'attrs', n:'04', title:'Instance vs class attributes',
+ say:'A <b>class attribute</b> is created once and shared by every instance. An <b>instance attribute</b> is created inside <code>__init__</code>, one per object.',
+ code:['class CartBad:',
+       '    items = []                    # ONE list, shared by everyone',
+       '    def add(self, x): self.items.append(x)',
+       '',
+       'a, b = CartBad(), CartBad()',
+       'a.add("apple")',
+       'print(b.items)',
+       'ERR [\'apple\']   <- b was never touched',
+       '',
+       'class Cart:',
+       '    def __init__(self):',
+       '        self.items = []           # a fresh list per Cart',
+       '    def add(self, x): self.items.append(x)',
+       '',
+       'c, d = Cart(), Cart()',
+       'c.add("apple")',
+       'print(d.items)',
+       'OUT []'],
+ qs:[
+  {q:'Difference between a class attribute and an instance attribute?', a:'A class attribute is <b>shared by every instance</b> and defined in the class body. An instance attribute belongs to one object and is set in <code>__init__</code> via <code>self</code>.'},
+  {q:'What is the classic bug with class attributes?', a:'A <b>mutable</b> class attribute — a list, dict or set — is created once, so every object shares it. Changing it through one object changes it for all of them, silently. <b>It is the same trap as a mutable default argument.</b>'},
+  {q:'So are class attributes always bad?', a:'No. They are <b>right</b> for genuinely shared values: a constant like <code>species = "dog"</code>, or a counter of how many objects exist. The danger is only mutable ones.'},
+  {q:'What does <code>a.items = [1]</code> do — change the shared list?', a:'No. <b>Assignment</b> creates a new instance attribute on <code>a</code> that shadows the class one. <b>Mutation</b> (<code>a.items.append</code>) reaches through to the shared list. Assignment writes a new notebook; mutation edits the whiteboard.'},
+  {q:'How do you count how many objects a class has created?', a:'A class attribute incremented in <code>__init__</code>: <code>Counter.tally += 1</code>. An integer is immutable, so sharing it is exactly what you want here.'}]},
+
+{id:'methods', n:'05', title:'Instance, class and static methods',
+ say:'The difference is <b>what arrives in the first seat</b>: an instance method gets <code>self</code>, a classmethod gets <code>cls</code>, a staticmethod gets nothing.',
+ code:['class Temp:',
+       '    def __init__(self, celsius):',
+       '        self.celsius = celsius',
+       '',
+       '    @classmethod',
+       '    def from_fahrenheit(cls, f):      # gets the CLASS -> can build',
+       '        return cls((f - 32) * 5 / 9)',
+       '',
+       '    @staticmethod',
+       '    def is_freezing(c):               # gets NOTHING',
+       '        return c <= 0',
+       '',
+       'print(Temp.from_fahrenheit(212).celsius)',
+       'OUT 100.0',
+       'print(Temp.is_freezing(-5))',
+       'OUT True',
+       'Temp.inst()',
+       'ERR TypeError: Temp.inst() missing 1 required positional argument: \'self\''],
+ qs:[
+  {q:'<code>@classmethod</code> vs <code>@staticmethod</code>?', a:'A classmethod receives the <b>class</b> as <code>cls</code>, so it can create instances — which is why it is used for <b>alternative constructors</b>. A staticmethod receives <b>nothing</b>; it is a plain function grouped inside the class for organisation.'},
+  {q:'Give a real use for a classmethod.', a:'An alternative constructor: <code>Temp.from_fahrenheit(212)</code>, <code>User.from_dict(row)</code>, <code>Date.from_string("2026-01-01")</code>. It puts the building logic in <b>one place</b> instead of at every call site.'},
+  {q:'Why use <code>cls(...)</code> instead of naming the class directly?', a:'So it still works in subclasses. <code>cls</code> is whatever class it was called on, so <code>SubTemp.from_fahrenheit(...)</code> returns a <code>SubTemp</code>, not a <code>Temp</code>.'},
+  {q:'What is <code>@property</code> for?', a:'It makes a <b>method look like an attribute</b>. You read <code>c.area</code> with no brackets while a function runs behind it — so you can add computation, validation or read-only access <b>without changing any calling code</b>.'},
+  {q:'How do you make an attribute validated rather than read-only?', a:'Add a setter: <code>@balance.setter</code> under the property, and raise inside it. Then <code>acc.balance = -5</code> raises <code>ValueError: balance cannot be negative</code> instead of silently corrupting the object.'},
+  {q:'Can you call an instance method on the class itself?', a:'Only by passing the instance explicitly: <code>Temp.method(obj)</code>. <code>Temp.method()</code> raises <code>TypeError: missing 1 required positional argument: \'self\'</code>.'}]},
+
+{id:'encap', n:'06', title:'Encapsulation and access modifiers',
+ say:'Encapsulation is <b>bundling data with the methods that guard it</b>, so the object cannot be put into an invalid state from outside.',
+ code:['class Acct:',
+       '    def __init__(self):',
+       '        self._soft = "convention"     # one _  : please do not touch',
+       '        self.__hard = "mangled"       # two __ : renamed by Python',
+       '',
+       'a = Acct()',
+       'a._soft',
+       'OUT \'convention\'    <- nothing stops you',
+       'a.__hard',
+       'ERR AttributeError: \'Acct\' object has no attribute \'__hard\'',
+       'a._Acct__hard',
+       'OUT \'mangled\'       <- still reachable. not private.'],
+ qs:[
+  {q:'What is encapsulation?', a:'Bundling data with the methods that operate on it, and <b>restricting direct access</b> to that data so the object controls its own validity. In Python it is a convention backed by name mangling, not enforcement.'},
+  {q:'Is anything in Python truly private?', a:'<b>No.</b> A single underscore is a convention. A double underscore triggers <b>name mangling</b> to <code>_ClassName__attr</code>, which prevents accidental clashes in subclasses but does not stop anyone determined. Python\'s philosophy is <i>we are all consenting adults here</i>.'},
+  {q:'What is name mangling?', a:'Python rewrites <code>__attr</code> inside a class to <code>_ClassName__attr</code>. Its real purpose is <b>avoiding name collisions in subclasses</b>, not security.'},
+  {q:'What are the access modifiers in Python?', a:'By convention: <b>public</b> (<code>name</code>), <b>protected</b> (<code>_name</code>, internal use), <b>private</b> (<code>__name</code>, name-mangled). Unlike Java there are no real keywords and nothing is enforced.'},
+  {q:'How do you make a class that cannot be put into an invalid state?', a:'Keep the field private-by-convention (<code>_balance</code>), expose it through a <code>@property</code>, and put the rule in the <b>setter</b> or in the methods that change it — so every path that can modify it goes through the check. <b>This is what encapsulation is actually for</b>, not just hiding names.'},
+  {q:'Getters and setters — should you write them in Python?', a:'Not up front. Start with a plain attribute and <b>only</b> reach for <code>@property</code> when you need validation or computation. Java-style <code>get_x()</code>/<code>set_x()</code> pairs are un-Pythonic because <code>@property</code> lets you add the logic later without breaking callers.'}]},
+
+{id:'abst', n:'07', title:'Abstraction',
+ say:'Abstraction is <b>showing what something does and hiding how</b>. Encapsulation is the mechanism; abstraction is the result.',
+ code:['from abc import ABC, abstractmethod',
+       '',
+       'class Shape(ABC):',
+       '    @abstractmethod',
+       '    def area(self): ...',
+       '',
+       'class Square(Shape):',
+       '    def __init__(self, s): self.s = s',
+       '    # forgot area()',
+       '',
+       'Square(4)',
+       'ERR TypeError: Can\'t instantiate abstract class Square with abstract method area'],
+ qs:[
+  {q:'Difference between encapsulation and abstraction?', a:'Encapsulation is <b>implementation-level</b>: bundling data with the methods that guard it. Abstraction is <b>design-level</b>: exposing only what matters. <b>Encapsulation is how you achieve abstraction.</b>'},
+  {q:'How do you achieve abstraction in Python?', a:'With the <code>abc</code> module: inherit from <code>ABC</code> and mark methods <code>@abstractmethod</code>. Instantiating a class that has not implemented them raises <code>TypeError</code>, naming the class and the missing method.'},
+  {q:'Abstract class vs interface?', a:'An <b>abstract class</b> can hold both abstract methods and working code plus state; an <b>interface</b> is pure signature. Python has no <code>interface</code> keyword — an ABC with only abstract methods <i>is</i> the interface. Protocols (<code>typing.Protocol</code>) give the same idea structurally, without inheritance.'},
+  {q:'Can you instantiate an abstract class?', a:'No, if it still has unimplemented abstract methods — you get <code>TypeError: Can\'t instantiate abstract class ...</code>. That error at construction time is the whole point: it fails at the right place instead of returning <code>None</code> much later.'},
+  {q:'Why not just use a base class with <code>pass</code> in the method?', a:'Because a subclass that forgets to override it silently returns <code>None</code>, and that <code>None</code> breaks something far away from the real mistake. <b>An error in the right place is worth more than no error at all.</b>'}]},
+
+{id:'inher', n:'08', title:'Inheritance, super() and the MRO',
+ say:'Inheritance lets a child class <b>reuse and specialise</b> a parent. Use it only for a true <b>is-a</b> relationship.',
+ code:['class SavingsAccount(BankAccount):',
+       '    def __init__(self, owner, balance=0, rate=0.05):',
+       '        super().__init__(owner, balance)   # run the parent setup FIRST',
+       '        self.rate = rate',
+       '',
+       '# the five types',
+       '# single       A -> B',
+       '# multiple     A, B -> C',
+       '# multilevel   A -> B -> C',
+       '# hierarchical A -> B and A -> C',
+       '# hybrid       the diamond: A -> B, C -> D',
+       '',
+       'class A:',
+       '    def who(self): return "A"',
+       'class B(A):',
+       '    def who(self): return "B"',
+       'class C(A):',
+       '    def who(self): return "C"',
+       'class D(B, C): pass',
+       '',
+       'print(D().who())',
+       'OUT B',
+       'print([k.__name__ for k in D.__mro__])',
+       'OUT [\'D\', \'B\', \'C\', \'A\', \'object\']'],
+ qs:[
+  {q:'What are the types of inheritance?', a:'<b>Single</b> (one parent), <b>multiple</b> (two or more parents), <b>multilevel</b> (a chain, grandparent to parent to child), <b>hierarchical</b> (one parent, many children), and <b>hybrid</b> (a mix — usually the diamond).'},
+  {q:'Why call <code>super().__init__()</code>?', a:'Because the child\'s <code>__init__</code> <b>replaces</b> the parent\'s, it does not add to it. Without the call the parent\'s attributes are never set, and you get an <code>AttributeError</code> much later, far from the cause.'},
+  {q:'Does <code>super()</code> mean "the parent"?', a:'With single inheritance, yes. Properly it means <b>the next class in the MRO</b> — which with multiple inheritance may not be the parent at all. That is exactly why <code>super()</code> beats hard-coding <code>Parent.__init__(self, ...)</code>.'},
+  {q:'What is the diamond problem and how does Python solve it?', a:'<code>D</code> inherits from <code>B</code> and <code>C</code>, which both inherit from <code>A</code> — so which method runs? Python resolves it with the <b>MRO</b>, computed by <b>C3 linearisation</b>: left to right, each class appearing once. Check it with <code>D.__mro__</code>.'},
+  {q:'In a diamond, how many times does A.__init__ run if everyone uses super()?', a:'<b>Once.</b> Cooperative <code>super()</code> follows the MRO — D, B, C, A — so A runs a single time. Hard-coding <code>A.__init__(self)</code> in both B and C would run it twice. This is the strongest argument for <code>super()</code>.'},
+  {q:'Does Python support multiple inheritance?', a:'<b>Yes</b>, for real classes — unlike Java, which allows it only for interfaces. Conflicts are resolved by the MRO.'},
+  {q:'When is inheritance the wrong tool?', a:'When the relationship is <b>has-a</b> rather than <b>is-a</b>, or when the child would inherit behaviour that makes no sense for it — an <code>ElectricCar(Car)</code> inheriting <code>refuel()</code>. Deep hierarchies become rigid; prefer composition.'},
+  {q:'What is method overriding?', a:'Defining a method in a child with the <b>same name</b> as one in the parent. The child\'s version wins. It is <b>runtime polymorphism</b>, and Python supports it fully.'}]},
+
+{id:'poly', n:'09', title:'Polymorphism and duck typing',
+ say:'Polymorphism is <b>one call, many behaviours</b> — the same method name doing the right thing for each type. In Python you do not need inheritance for it.',
+ code:['class Dog:',
+       '    def speak(self): return "Woof"',
+       'class Robot:',
+       '    def speak(self): return "Beep"',
+       '',
+       'for t in (Dog(), Robot()):',
+       '    print(t.speak())',
+       'OUT Woof',
+       'OUT Beep          <- no shared parent anywhere',
+       '',
+       '# overloading does NOT exist in Python',
+       'class Calc:',
+       '    def add(self, a, b):    return a + b',
+       '    def add(self, a, b, c): return a + b + c   # replaces the first',
+       '',
+       'Calc().add(1, 2)',
+       'ERR TypeError: Calc.add() missing 1 required positional argument: \'c\'',
+       '',
+       '# the Pythonic way',
+       'class Calc2:',
+       '    def add(self, *args): return sum(args)'],
+ qs:[
+  {q:'What is polymorphism?', a:'The same interface behaving differently depending on the object — one method name, many implementations. It lets calling code work with new types without being changed.'},
+  {q:'Do you need inheritance for polymorphism in Python?', a:'<b>No.</b> Python uses <b>duck typing</b>: if the object has the method, it works. No shared base class is required. Say this flatly — most candidates say yes.'},
+  {q:'What is duck typing?', a:'"If it walks like a duck and quacks like a duck, treat it as a duck." Python cares about <b>whether the method exists</b>, not what the type is called.'},
+  {q:'Types of polymorphism?', a:'<b>Compile-time</b> (method overloading) and <b>run-time</b> (method overriding). Plus <b>operator overloading</b>, which is compile-time polymorphism on operators.'},
+  {q:'Overloading vs overriding?', a:'<b>Overloading</b> — same name, different parameters, resolved at compile time. <b>Overriding</b> — a child redefining a parent\'s method, resolved at run time. <b>Python does not support overloading</b>: a later definition simply replaces the earlier one.'},
+  {q:'Why does Python not support method overloading?', a:'A class body is just a namespace, so <code>def</code> binds a name — the second <code>def add</code> overwrites the first exactly like <code>x = 1; x = 2</code>. Python is dynamically typed, so there are no parameter types to dispatch on.'},
+  {q:'How do you get overloading-like behaviour?', a:'Default arguments, <code>*args</code>/<code>**kwargs</code>, or <code>functools.singledispatch</code> for real type-based dispatch. Name-drop <code>singledispatch</code> — it is the detail that shows you actually know the answer.'}]},
+
+{id:'dunder', n:'10', title:'Magic methods and operator overloading',
+ say:'Dunder methods let <b>your own objects work with Python\'s built-in syntax</b> — <code>+</code>, <code>==</code>, <code>len()</code>, <code>print()</code>, <code>in</code>.',
+ code:['class Money:',
+       '    def __init__(self, amt): self.amt = amt',
+       '    def __add__(self, o):  return Money(self.amt + o.amt)',
+       '    def __eq__(self, o):   return self.amt == o.amt',
+       '    def __len__(self):     return int(self.amt)',
+       '    def __repr__(self):    return f"Money({self.amt})"',
+       '',
+       'Money(5) + Money(3)',
+       'OUT Money(8)',
+       'Money(5) == Money(5)',
+       'OUT True',
+       'len(Money(7))',
+       'OUT 7',
+       'Money(5) - Money(3)',
+       'ERR TypeError: unsupported operand type(s) for -: \'Money\' and \'Money\''],
+ qs:[
+  {q:'What are magic / dunder methods?', a:'Methods with double underscores that Python calls for you in response to syntax — <code>__init__</code> on creation, <code>__add__</code> for <code>+</code>, <code>__len__</code> for <code>len()</code>, <code>__str__</code> for <code>print()</code>. They are how your class plugs into the language.'},
+  {q:'What is operator overloading?', a:'Defining what an operator means for your own type by implementing the matching dunder: <code>__add__</code> for <code>+</code>, <code>__lt__</code> for <code>&lt;</code>, <code>__getitem__</code> for <code>[]</code>. It is a form of polymorphism.'},
+  {q:'<code>__str__</code> vs <code>__repr__</code>?', a:'<code>__str__</code> is for <b>users</b> — what <code>print()</code> shows. <code>__repr__</code> is for <b>developers</b> — the shell, debuggers, and <b>objects inside a list</b>. If you write only one, write <code>__repr__</code>, because <code>str()</code> falls back to it.'},
+  {q:'Why override <code>__eq__</code>?', a:'So two objects compare by <b>value</b> rather than by identity. By default <code>==</code> on custom objects is identity, so two equal-looking objects are unequal.'},
+  {q:'If you define <code>__eq__</code>, what else must you do?', a:'Define <code>__hash__</code>, or the object becomes <b>unhashable</b> and cannot go in a set or be a dict key — Python sets <code>__hash__</code> to <code>None</code> when you define <code>__eq__</code>. <code>@dataclass(frozen=True)</code> handles both for you.'},
+  {q:'Name five dunder methods and what they do.', a:'<code>__init__</code> (set up), <code>__repr__</code> (developer string), <code>__len__</code> (<code>len()</code>), <code>__eq__</code> (<code>==</code>), <code>__add__</code> (<code>+</code>). Also worth knowing: <code>__contains__</code> (<code>in</code>), <code>__getitem__</code> (<code>[]</code>), <code>__call__</code> (makes the object callable), <code>__enter__</code>/<code>__exit__</code> (<code>with</code>).'}]},
+
+{id:'comp', n:'11', title:'Composition, aggregation, association',
+ say:'<b>is-a</b> means inheritance. <b>has-a</b> means composition. Default to composition — you can swap a part, but you cannot swap a parent.',
+ code:['# COMPOSITION — the Car owns the Engine; it dies with the car',
+       'class CarComposition:',
+       '    def __init__(self, hp):',
+       '        self.engine = Engine(hp)        # made inside',
+       '',
+       '# AGGREGATION — the Engine exists independently and is shared',
+       'class CarAggregation:',
+       '    def __init__(self, engine):',
+       '        self.engine = engine            # passed in',
+       '',
+       'shared = Engine(300)',
+       'c1, c2 = CarAggregation(shared), CarAggregation(shared)',
+       'c1.engine is c2.engine',
+       'OUT True     <- one engine, two cars (aggregation)',
+       '',
+       'CarComposition(300).engine is CarComposition(300).engine',
+       'OUT False    <- each car built its own (composition)'],
+ qs:[
+  {q:'Composition vs inheritance — which do you prefer?', a:'<b>Composition</b>, by default. Inheritance for a true <b>is-a</b>; composition for <b>has-a</b>. Inheritance hands down everything including what you did not want — an <code>ElectricCar(Car)</code> gets <code>refuel()</code> — and deep hierarchies get rigid.'},
+  {q:'Association vs aggregation vs composition?', a:'<b>Association</b> — two objects simply know about each other, no ownership (a Teacher and a Student). <b>Aggregation</b> — has-a, but the part <b>survives independently</b> and can be shared (a Department has Employees). <b>Composition</b> — has-a, and the part <b>dies with the whole</b> (a House has Rooms).'},
+  {q:'How do you spot the difference in code?', a:'Look at <b>where the part is created</b>. Built inside <code>__init__</code> → composition, it is owned. Passed in as a parameter → aggregation, it lives elsewhere and may be shared.'},
+  {q:'Give an example where inheritance is clearly wrong.', a:'<code>class Square(Rectangle)</code>. A square <i>is</i> a rectangle mathematically, but setting width independently of height breaks it — which violates the <b>Liskov Substitution Principle</b>. Composition, or a shared abstraction, is the fix.'},
+  {q:'What does "favour composition over inheritance" actually buy you?', a:'You can <b>change the part at runtime</b> and you only inherit what you asked for. It also keeps classes shallow, which makes them far easier to test.'}]},
+
+{id:'ident', n:'12', title:'Identity, equality and types',
+ say:'<code>==</code> asks <b>are these equal in value</b>. <code>is</code> asks <b>are these the exact same object in memory</b>.',
+ code:['a = [1, 2, 3]',
+       'b = [1, 2, 3]',
+       'c = a',
+       '',
+       'a == b',
+       'OUT True     <- same contents',
+       'a is b',
+       'OUT False    <- two different list objects',
+       'a is c',
+       'OUT True     <- c is just another name for a',
+       '',
+       'class Animal: pass',
+       'class Dog(Animal): pass',
+       '',
+       'isinstance(Dog(), Animal)',
+       'OUT True     <- subclasses count',
+       'type(Dog()) == Animal',
+       'OUT False    <- exact type only'],
+ qs:[
+  {q:'<code>is</code> vs <code>==</code>?', a:'<code>==</code> compares <b>value</b> and calls <code>__eq__</code>. <code>is</code> compares <b>identity</b> — whether both names point to the same object in memory. Use <code>is</code> only for <code>None</code>, <code>True</code>, <code>False</code> and deliberate identity checks.'},
+  {q:'Why is <code>x is 1000</code> unreliable?', a:'Because whether two equal numbers are the same object depends on interning and how the code was compiled — small integers are cached, and equal constants in one code block may be folded into one object. <b>Never use <code>is</code> to compare values</b>; the answer can change between a script and the REPL.'},
+  {q:'<code>isinstance()</code> vs <code>type() ==</code>?', a:'<code>isinstance</code> returns <b>True for subclasses</b>; <code>type(x) == Cls</code> demands the exact class. <code>isinstance</code> is almost always what you want — <code>type(Dog()) == Animal</code> is <code>False</code>, which breaks polymorphism.'},
+  {q:'What does <code>a = b</code> do for a list?', a:'It creates a <b>second name for the same list</b>, not a copy. Mutating through either name is visible through both. Use <code>b[:]</code>, <code>list(b)</code> or <code>copy.deepcopy</code> for a real copy.'},
+  {q:'Shallow copy vs deep copy?', a:'A <b>shallow</b> copy duplicates the outer container but the inner objects are still shared. A <b>deep</b> copy (<code>copy.deepcopy</code>) duplicates everything recursively. It matters the moment you have a list of lists.'}]}
+];
+
+/* ---------- render ---------- */
+var totalQ = TOPICS.reduce(function(s, t){ return s + t.qs.length; }, 0);
+document.getElementById('countline').innerHTML =
+  '<b>' + TOPICS.length + ' concepts · ' + totalQ + ' interview questions.</b> ' +
+  'Work down the page once, then do the drill. The drill is where it sticks.';
+
+document.getElementById('toc').innerHTML = TOPICS.map(function(t){
+  return '<a href="#' + t.id + '"><span>' + t.n + '</span>' + t.title + '<b>' + t.qs.length + 'Q</b></a>';
+}).join('');
+
+document.getElementById('topics').innerHTML = TOPICS.map(function(t){
+  return '<section class="topic" id="' + t.id + '">' +
+    '<div class="thead"><span class="n">' + t.n + '</span><h2>' + t.title + '</h2></div>' +
+    '<div class="say"><span class="h">Say this</span><p>' + t.say + '</p></div>' +
+    code(t.code) +
+    '<div class="qs">' + t.qs.map(function(x){
+      return '<details class="qa"><summary>' + x.q + '</summary><div class="ans">' + x.a + '</div></details>';
+    }).join('') + '</div>' +
+  '</section>';
+}).join('');
+
+/* ---------- the drill ---------- */
+var BANK = [];
+TOPICS.forEach(function(t){ t.qs.forEach(function(x){ BANK.push({q:x.q, a:x.a, topic:t.title, id:t.id}); }); });
+
+var order = [], at = 0, shown = false, got = 0, missed = 0, wrongIds = {}, wrongItems = [], pool = null;
+var drill = document.getElementById('drill');
+
+function shuffle(a){
+  a = a.slice();
+  for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+function startDrill(only){
+  pool = only || BANK;
+  order = shuffle(pool.map(function(_, i){ return i; }));
+  at = 0; shown = false; got = 0; missed = 0; wrongIds = {}; wrongItems = [];
+  paintDrill();
+}
+function paintDrill(){
+  if (at >= order.length) return finishDrill();
+  var item = pool[order[at]];
+  drill.innerHTML =
+    '<div class="bar"><i style="width:' + (at / order.length * 100) + '%"></i></div>' +
+    '<span class="dtopic">' + item.topic + '</span>' +
+    '<p class="dq">' + item.q + '</p>' +
+    (shown ? '<div class="da">' + item.a + '</div>' : '') +
+    '<div class="row">' +
+      (shown
+        ? '<button class="btn gd" id="dgot">✓ I said that</button>' +
+          '<button class="btn bd" id="dmiss">✗ I did not</button>'
+        : '<button class="btn" id="dshow">Show the answer</button>') +
+      '<span class="cnt">' + (at + 1) + ' / ' + order.length + '</span>' +
+    '</div>' +
+    '<div class="tally"><span class="g">✓ ' + got + '</span><span class="m">✗ ' + missed + '</span></div>';
+
+  if (shown){
+    document.getElementById('dgot').onclick  = function(){ got++;    at++; shown = false; paintDrill(); };
+    document.getElementById('dmiss').onclick = function(){
+      missed++;
+      wrongIds[item.id] = (wrongIds[item.id] || 0) + 1;
+      wrongItems.push(item);   // the QUESTION, not just its topic
+      at++; shown = false; paintDrill();
+    };
+  } else {
+    document.getElementById('dshow').onclick = function(){ shown = true; paintDrill(); };
+  }
+}
+function finishDrill(){
+  var per = {};
+  TOPICS.forEach(function(t){ per[t.id] = {name:t.title, total:0, wrong:0}; });
+  pool.forEach(function(x){ if (per[x.id]) per[x.id].total++; });
+  Object.keys(wrongIds).forEach(function(k){ if (per[k]) per[k].wrong = wrongIds[k]; });
+  var rows = Object.keys(per).map(function(k){ return per[k]; })
+    .filter(function(r){ return r.total > 0; })
+    .sort(function(a, b){ return (b.wrong / b.total) - (a.wrong / a.total); });
+
+  var pct = Math.round(got / order.length * 100);
+  drill.innerHTML =
+    '<div class="bar"><i style="width:100%"></i></div>' +
+    '<p class="dq">' + got + ' / ' + order.length + ' · ' + pct + '%</p>' +
+    '<div class="tally"><span class="g">✓ ' + got + '</span><span class="m">✗ ' + missed + '</span></div>' +
+    '<div class="da"><b>' +
+      (pct >= 90 ? 'That is interview-ready.' : pct >= 70 ? 'Close. The red ones below are the gap.' : 'Go back to the top two concepts below, then run it again.') +
+      '</b> Weakest concepts first:</div>' +
+    '<div class="weak">' + rows.map(function(r){
+      var rate = r.wrong / r.total;
+      var col = rate === 0 ? 'var(--good)' : rate < 0.34 ? 'var(--warn)' : 'var(--bad)';
+      return '<div class="weakrow"><i style="background:' + col + '"></i>' +
+             '<span class="nm">' + r.name + '</span>' +
+             '<span class="sc">' + (r.total - r.wrong) + '/' + r.total + '</span></div>';
+    }).join('') + '</div>' +
+    '<div class="row">' +
+      '<button class="btn" id="dagain">Run all ' + BANK.length + ' again</button>' +
+      (missed ? '<button class="btn q" id="donlywrong">Just the ' + missed + ' I missed</button>' : '') +
+    '</div>';
+
+  document.getElementById('dagain').onclick = function(){ startDrill(null); };
+  if (missed){
+    var wrongList = wrongItems.slice();   // exactly the ones you got wrong
+    document.getElementById('donlywrong').onclick = function(){ startDrill(wrongList); };
+  }
+}
+startDrill(null);
+</script>

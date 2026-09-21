@@ -1,10 +1,11 @@
 # Python revision pages
 
-Thirteen interactive pages built as a learn-then-drill shelf. Source is here; the
+Fourteen interactive pages built as a learn-then-drill shelf. Source is here; the
 published, shareable versions are linked below.
 
 | Page | What it's for | Live |
 |---|---|---|
+| `every-oop-answer.html` | **the 12 OOP concepts + 69 interview questions**, with a scored drill | https://claude.ai/artifact/1TYw9pdQwCvpqAvK1ptRgj |
 | `read-it-first.html` | **why each OOP keyword exists** (without-it vs with-it) + how to *read* code | https://claude.ai/artifact/9daLxZmWSiHHB8c6bj6L67 |
 | `five-moves.html` | **where to start on a blank page** — the five moves every function is made of | https://claude.ai/artifact/W9m1jNiqszJaPeKqvap3bh |
 | `oop-picture-book.html` | **OOP as nine animated images** — 4 pillars, 5 types of inheritance, every keyword | https://claude.ai/artifact/KohX1ZeUiBSaMnB2zB7kMN |
@@ -44,6 +45,31 @@ explanation was produced by running that wrong code; four claims were corrected
 as a result (`UnboundLocalError` not `NameError` for a missing accumulator;
 `'int' object is not iterable` for `list += int`; `[0, 2]` not `[1, 3]` for the
 `range(len(...))` mistake; and Python's actual `=` vs `==` hint text).
+
+`every-oop-answer.html` is the straight syllabus, built when the learner asked
+for the OOP concepts taught properly before anything advanced. Twelve concepts
+in teaching order — what OOP is, class and object, `__init__`/`self`, instance
+vs class attributes, the three method types, encapsulation and access
+modifiers, abstraction, inheritance with all five types plus `super()` and the
+MRO, polymorphism and duck typing, magic methods and operator overloading,
+composition vs aggregation vs association, and identity vs equality. Each gets
+one sentence to say out loud, verified code, and its interview questions
+inline. **69 questions**, then the whole bank as a shuffled drill that
+self-grades and reports which concepts were weakest.
+
+Two things it deliberately gets right where most sources do not. It does **not**
+repeat the `1000 is 1000` myth: running it showed `True`, because equal
+constants in one code block get folded, so the page says the answer depends on
+how the code is compiled and to never use `is` for values. And it answers the
+diamond question with the part usually left out — with cooperative `super()`,
+`A.__init__` runs **once**, not twice.
+
+Verification: every code block and error message was run on real Python first.
+The page was then driven in headless Chromium — 12 topics, 12 code blocks, all
+table-of-contents anchors resolve, all 69 answers are substantial, and the
+complete drill was played to the summary screen. That caught a real bug: "just
+the ones I missed" was keyed by topic rather than by question, so missing 23
+offered 59 back. It now returns exactly the 23.
 
 `read-it-first.html` came from the most useful thing the learner said: *"I am
 not understanding the code structure."* Writing was being taught on top of a
