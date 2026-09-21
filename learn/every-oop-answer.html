@@ -91,6 +91,12 @@ hr{border:none;border-top:1px solid var(--rule);margin:0}
 .qa .ans b{color:var(--ink)}
 .qa .ans .tag{display:inline-block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--warn);margin-bottom:5px}
 
+.human{background:color-mix(in srgb,var(--warn) 9%,var(--panel));border:1px solid color-mix(in srgb,var(--warn) 32%,var(--rule));border-radius:11px;padding:13px 15px;display:flex;flex-direction:column;gap:6px}
+.human .h{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--warn)}
+.human p{font-size:15px;line-height:1.58}
+.human p b{color:var(--ink)}
+.human code{background:color-mix(in srgb,var(--warn) 14%,var(--panel))}
+
 /* ---------- drill ---------- */
 .drill{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:15px}
 .dq{font-size:clamp(17px,3.6vw,21px);font-weight:800;line-height:1.35;min-height:60px}
@@ -119,7 +125,7 @@ footer{color:var(--ink-faint);font-size:13px;line-height:1.6;border-top:1px soli
 <header style="display:flex;flex-direction:column;gap:14px">
   <span style="font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)">OOP concepts · the whole syllabus</span>
   <h1>Every concept,<br>and <em>every question</em><br>they ask about it.</h1>
-  <p class="lede">Twelve concepts in teaching order — each one gets <b>a sentence you can say out loud</b>, code that was actually run, and the interview questions for that concept sitting right underneath it. Then the whole bank as a scored drill at the end.</p>
+  <p class="lede">Twelve concepts in teaching order — each one gets <b>a sentence you can say out loud</b>, then the <b>same idea in everyday human terms</b> — an ATM, a classroom whiteboard, identical twins — then code that was actually run, then the interview questions for that concept. Then the whole bank as a scored drill at the end.</p>
   <p class="lede" id="countline"></p>
 </header>
 
@@ -475,6 +481,33 @@ var TOPICS = [
   {q:'Shallow copy vs deep copy?', a:'A <b>shallow</b> copy duplicates the outer container but the inner objects are still shared. A <b>deep</b> copy (<code>copy.deepcopy</code>) duplicates everything recursively. It matters the moment you have a list of lists.'}]}
 ];
 
+/* ---------- the same idea, in human terms ---------- */
+var HUMAN = {
+what:'<b>A recipe book and a cupboard, versus a meal kit.</b> Procedural code is a recipe book on one shelf and ingredients in a cupboard across the room — you keep walking back and forth carrying things, and nothing stops you grabbing salt instead of sugar. OOP is a meal kit: the ingredients and the instructions arrive in <i>one box</i>, already matched.',
+
+classobj:'<b>An architect’s drawing, and the houses built from it.</b> The drawing is the class — nobody lives in it. Each house is an object: same design, different address, different furniture. Repaint one house and the drawing does not change, and neither do the other houses. <i>"Blueprint" is literally the word interviewers want to hear.</i>',
+
+init:'<b><code>__init__</code> is the hospital admission form.</b> The moment you arrive, someone fills in your name and date of birth. It happens once, automatically, at the very start, and you never call it yourself.<br><br><b><code>self</code> is the word "your".</b> When a teacher says "raise <i>your</i> hand", "your" means whichever student is listening. When you write <code>self.balance</code>, it means <i>this particular</i> account’s balance — not all accounts.',
+
+attrs:'<b>The classroom whiteboard, versus each student’s notebook.</b> A class attribute is the whiteboard: one board, everyone sees the same thing, and if you write on it everybody’s view changes at once. An instance attribute is a notebook on each desk — write in yours and nobody else’s changes. <i>Mutable things on the whiteboard is how classmates end up with each other’s homework.</i>',
+
+methods:'<b>Three questions you could ask at a school.</b><br>“Amaan, what is <i>your</i> score?” — needs a particular student. That is an <b>instance method</b> (<code>self</code>).<br>“How many students are in <i>this school</i>?” — needs the school, not a student. That is a <b>classmethod</b> (<code>cls</code>).<br>“What is 7 × 8?” — needs neither. That is a <b>staticmethod</b>; it is only on the wall here because this is where it is useful.',
+
+encap:'<b>An ATM.</b> The money is inside and you cannot reach in. You press buttons, and the machine checks your PIN and your balance before it lets anything happen — that is the object protecting its own state.<br><br>But Python’s “private” is a door marked <b>Staff Only</b>, not a locked one. It tells you to stay out. It does not stop you walking through.',
+
+abst:'<b>Driving a car.</b> You steer and press pedals. You have no idea how the fuel injection works, and you do not need to.<br><br>That is the clean way to separate the two: <b>abstraction is the dashboard</b> — the simple set of controls you are given. <b>Encapsulation is the bonnet being bolted shut</b> so you cannot reach the engine.',
+
+inher:'<b>Family.</b> You got your surname and your eye colour from your parents without asking for them. <code>super().__init__()</code> is saying <i>“first do everything my parent does, then add my own bit.”</i><br><br>The <b>diamond problem</b> is having two parents who both inherited the same rule from one grandparent — you want to follow that rule <b>once</b>, not twice. The MRO is the family tree Python walks to decide.',
+
+poly:'<b>The word “play”.</b> Play a song, play football, play a role — same word, completely different action depending on who is doing it. Nobody needs a dictionary entry for every new case.<br><br><b>Duck typing</b> is judging by behaviour, not by paperwork: if it walks like a duck and quacks like a duck, you treat it as a duck without checking its birth certificate.',
+
+dunder:'<b>Teaching your object the local customs.</b> Python has standard gestures it uses on everything — <code>+</code>, <code>==</code>, <code>len()</code>, printing. A brand new object does not know how to respond to any of them.<br><br>Dunder methods are you teaching it: <i>“when someone tries to add you, here is what that means.”</i> Without <code>__add__</code>, your object simply does not fit the <code>+</code> socket.',
+
+comp:'<b>Three relationships you already know.</b><br><b>Composition</b> — a house and its rooms. Demolish the house and the rooms go with it. The house <i>owns</i> them.<br><b>Aggregation</b> — a university and its professors. Close the university and the professors still exist and go and work elsewhere.<br><b>Association</b> — a doctor and a patient. They know each other. Neither owns the other, and either can walk away.',
+
+ident:'<b>Identical twins.</b> They are <b>equal</b> — same face, same height. That is <code>==</code>. But they are <b>not the same person</b>. That is <code>is</code>.<br><br>And a nickname is not a third twin: if you call one of them “Raju”, that name points at the <i>same person</i>. That is <code>c = a</code> — a second name for one object, not a copy of it.'
+};
+
 /* ---------- render ---------- */
 var totalQ = TOPICS.reduce(function(s, t){ return s + t.qs.length; }, 0);
 document.getElementById('countline').innerHTML =
@@ -489,6 +522,7 @@ document.getElementById('topics').innerHTML = TOPICS.map(function(t){
   return '<section class="topic" id="' + t.id + '">' +
     '<div class="thead"><span class="n">' + t.n + '</span><h2>' + t.title + '</h2></div>' +
     '<div class="say"><span class="h">Say this</span><p>' + t.say + '</p></div>' +
+    (HUMAN[t.id] ? '<div class="human"><span class="h">In human terms</span><p>' + HUMAN[t.id] + '</p></div>' : '') +
     code(t.code) +
     '<div class="qs">' + t.qs.map(function(x){
       return '<details class="qa"><summary>' + x.q + '</summary><div class="ans">' + x.a + '</div></details>';

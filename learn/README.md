@@ -53,8 +53,11 @@ vs class attributes, the three method types, encapsulation and access
 modifiers, abstraction, inheritance with all five types plus `super()` and the
 MRO, polymorphism and duck typing, magic methods and operator overloading,
 composition vs aggregation vs association, and identity vs equality. Each gets
-one sentence to say out loud, verified code, and its interview questions
-inline. **69 questions**, then the whole bank as a shuffled drill that
+one sentence to say out loud, then **the same idea in human terms** — an ATM,
+a classroom whiteboard, identical twins, a hospital admission form — then
+verified code, then its interview questions inline. The human comparison is a
+standing request: definitions alone were not landing, so every concept is
+anchored to something already familiar before any code appears. **69 questions**, then the whole bank as a shuffled drill that
 self-grades and reports which concepts were weakest.
 
 Two things it deliberately gets right where most sources do not. It does **not**
