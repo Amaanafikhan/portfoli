@@ -52,13 +52,21 @@ in teaching order — what OOP is, class and object, `__init__`/`self`, instance
 vs class attributes, the three method types, encapsulation and access
 modifiers, abstraction, inheritance with all five types plus `super()` and the
 MRO, polymorphism and duck typing, magic methods and operator overloading,
-composition vs aggregation vs association, and identity vs equality. Each gets
-one sentence to say out loud, then **the same idea in human terms** — an ATM,
+composition vs aggregation vs association, and identity vs equality. Each gets a **plain definition** — taken from the Python docs glossary where an
+official wording exists, including the docs' own blunt line that *the name
+`self` has absolutely no special meaning to Python* — then a sentence to say
+out loud, then **the same idea in human terms** — an ATM,
 a classroom whiteboard, identical twins, a hospital admission form — then
 the code as a **step-through player** — press Step and the running line
 lights up while the caption says why that line sits where it does and what
 the keyword on it actually does — then its interview questions inline.
-**98 steps across the twelve sections.** Section 03 makes the key point: the
+**98 steps across the twelve sections.** Under each player is a **“what happens
+if you don't use it”** block: the same code with the keyword removed and the
+real error it produces. Section 03 carries three, because `__init__` and `self`
+fail three different ways — no `__init__` (attributes never exist), no `self` in
+the signature (`takes 1 positional argument but 2 were given`), and no `self.`
+on the assignment, which raises nothing at the time and silently writes to a
+local that vanishes. Section 03 makes the key point: the
 writing order is name it, set it up, give it behaviour, use it, while the
 running order skips every definition and starts at the bottom. The human comparison is a
 standing request: definitions alone were not landing, so every concept is

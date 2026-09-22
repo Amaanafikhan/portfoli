@@ -105,6 +105,23 @@ hr{border:none;border-top:1px solid var(--rule);margin:0}
 .player .pnote .win{color:var(--good);font-weight:800}
 .player .pnote .lose{color:var(--bad);font-weight:800}
 
+.defn{background:var(--panel);border:1px solid var(--rule);border-left:4px solid var(--ink-faint);border-radius:0 11px 11px 0;padding:13px 15px;display:flex;flex-direction:column;gap:6px}
+.defn .h{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)}
+.defn p{font-size:15px;line-height:1.55}
+.defn p b{color:var(--ink)}
+.defn p i{color:var(--ink-soft)}
+
+.wo{border:1px solid color-mix(in srgb,var(--bad) 32%,var(--rule));border-radius:11px;background:color-mix(in srgb,var(--bad) 6%,var(--panel));overflow:hidden}
+/* block, not flex: a <b> inside a flex summary becomes its own flex item and wraps badly */
+.wo summary{cursor:pointer;list-style:none;padding:12px 15px;font-size:14px;font-weight:700;color:var(--bad);display:block;line-height:1.45}
+.wo summary::-webkit-details-marker{display:none}
+.wo summary::before{content:"\2717\00a0\00a0";font-weight:800}
+.wo summary:focus-visible{outline:3px solid var(--bad);outline-offset:-3px}
+.wo[open] summary{border-bottom:1px solid color-mix(in srgb,var(--bad) 22%,var(--rule))}
+.wobody{padding:13px 15px;display:flex;flex-direction:column;gap:11px}
+.wov{font-size:14.5px;line-height:1.58;color:var(--ink-soft)}
+.wov b{color:var(--ink)}
+
 /* ---------- drill ---------- */
 .drill{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:15px}
 .dq{font-size:clamp(17px,3.6vw,21px);font-weight:800;line-height:1.35;min-height:60px}
@@ -133,7 +150,7 @@ footer{color:var(--ink-faint);font-size:13px;line-height:1.6;border-top:1px soli
 <header style="display:flex;flex-direction:column;gap:14px">
   <span style="font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)">OOP concepts · the whole syllabus</span>
   <h1>Every concept,<br>and <em>every question</em><br>they ask about it.</h1>
-  <p class="lede">Twelve concepts in teaching order — each one gets <b>a sentence you can say out loud</b>, then the <b>same idea in everyday human terms</b> — an ATM, a classroom whiteboard, identical twins — then the code as a <b>step-by-step run</b> — press Step and watch which line executes, in what order, and what the keyword on it actually does — then the interview questions for that concept. Then the whole bank as a scored drill at the end.</p>
+  <p class="lede">Twelve concepts in teaching order. Each one gets <b>a plain definition</b>, <b>a sentence you can say out loud</b>, then the <b>same idea in everyday human terms</b> — an ATM, a classroom whiteboard, identical twins — then the code as a <b>step-by-step run</b> — press Step and watch which line executes, in what order, and what the keyword on it actually does — then <b>the same code run <i>without</i> the keyword</b> so you see the exact error it prevents, then the interview questions. Then the whole bank as a scored drill at the end.</p>
   <p class="lede" id="countline"></p>
 </header>
 
@@ -492,6 +509,160 @@ var TOPICS = [
   {q:'Shallow copy vs deep copy?', a:'A <b>shallow</b> copy duplicates the outer container but the inner objects are still shared. A <b>deep</b> copy (<code>copy.deepcopy</code>) duplicates everything recursively. It matters the moment you have a list of lists.'}]}
 ];
 
+/* ---------- simple definitions + what breaks without the keyword ----------
+   Definitions checked against the Python docs glossary where one exists.
+   Every "without it" output below came from actually running that code.
+   ------------------------------------------------------------------------ */
+var DEFS = {
+what:'Organising a program around <b>objects</b> — bundles that hold data together with the functions that work on that data. The Python docs put it plainly: <i>classes provide a means of bundling data and functionality together.</i>',
+classobj:'A <b>class</b> is the template: what this kind of thing has and can do. An <b>object</b> (also called an <b>instance</b>) is one thing built from that template, with its own values. Python docs: <i>creating a new class creates a new type of object, allowing new instances of that type to be made.</i>',
+init:'<b><code>__init__</code></b> is the method Python runs automatically right after an object is created, to set its starting values.<br><b><code>self</code></b> is the first parameter of every instance method, holding the object the method was called on. The Python docs are blunt about it: <i>the name <code>self</code> has absolutely no special meaning to Python</i> — it is a convention, not a keyword.',
+attrs:'A <b>class attribute</b> is written in the class body and shared by every instance. An <b>instance attribute</b> belongs to one object and is normally set through <code>self</code> inside <code>__init__</code>.',
+methods:'A <b>method</b> is a function defined inside a class. Python docs: <i>if called as an attribute of an instance, the method will get the instance object as its first argument</i> — that is <code>self</code>. <b><code>@classmethod</code></b> swaps that first argument for the class; <b><code>@staticmethod</code></b> removes it altogether.',
+encap:'Keeping data and the methods that use it inside one class, and <b>controlling access from outside</b>, so the object cannot be put into an invalid state.',
+abst:'<b>Hiding the implementation and showing only what the user needs.</b> You drive with a steering wheel and pedals; you never need to know how the engine burns fuel.',
+inher:'Letting one class <b>take on the attributes and methods of another</b>, so the new class reuses that code and then adds or changes parts of it.',
+poly:'<b>One method name behaving differently</b> depending on which object it is called on.',
+dunder:'<b>Special methods with double underscores that Python calls for you in response to syntax.</b> <code>+</code> calls <code>__add__</code>, <code>len()</code> calls <code>__len__</code>, <code>print()</code> calls <code>__str__</code>. Defining them is called <b>operator overloading</b>.',
+comp:'Building a class out of <b>other objects it holds</b> — a <b>has-a</b> relationship — rather than inheriting from them.',
+ident:'<b><code>==</code></b> asks whether two things have the <b>same value</b>. <b><code>is</code></b> asks whether they are the <b>same object</b> in memory.'
+};
+
+var WITHOUT = {
+what:{code:['# no class: just a dict',
+            'account = {"owner": "amaan", "balance": 100}',
+            'account.deposit(50)',
+            'ERR AttributeError: \'dict\' object has no attribute \'deposit\''],
+      v:'The data has <b>no behaviour attached</b>. Every function that works on an account has to live somewhere else and be handed the dict by hand — and nothing checks that you handed it the right one.'},
+
+classobj:{code:['# no class: build them by hand and hope',
+                'rex   = {"name": "Rex"}',
+                'bella = {"nme": "Bella"}      # typo. nobody notices.',
+                'print(bella["name"])',
+                'ERR KeyError: \'name\'',
+                '',
+                '# with a class, the same typo is caught immediately',
+                'Dog(nme="Bella")',
+                'ERR TypeError: Dog.__init__() got an unexpected keyword argument \'nme\''],
+          v:'Without a class nothing enforces the shape, so the typo survives until something far away asks for the missing key. <b>The class version fails at the moment you made the mistake</b>, and names it.'},
+
+init:{code:['# 1. no __init__ at all',
+            'class NoInit:',
+            '    def show(self): return self.owner',
+            'NoInit().show()',
+            'ERR AttributeError: \'NoInit\' object has no attribute \'owner\'',
+            '',
+            '# 2. self missing from the signature',
+            'class Bad:',
+            '    def deposit(amount): return amount',
+            'Bad().deposit(50)',
+            'ERR TypeError: Bad.deposit() takes 1 positional argument but 2 were given',
+            '',
+            '# 3. self. missing from the assignment',
+            'class Lost:',
+            '    def __init__(self, owner):',
+            '        owner = owner        # a local variable, thrown away',
+            'Lost("amaan").owner',
+            'ERR AttributeError: \'Lost\' object has no attribute \'owner\''],
+      v:'Three different failures, three different lessons. <b>No <code>__init__</code></b> and the attributes never exist. <b>No <code>self</code> in the signature</b> and Python still passes the object, so your one parameter becomes two. <b>No <code>self.</code> on the assignment</b> and you set a local variable that disappears the moment the method ends — this one is the quiet killer, because it looks completely fine.'},
+
+attrs:{code:['class Shared:',
+             '    items = []                # at class level: ONE list',
+             '    def add(self, x): self.items.append(x)',
+             '',
+             'a, b = Shared(), Shared()',
+             'a.add("apple")',
+             'b.items',
+             'ERR [\'apple\']    <- b was never touched'],
+       v:'Without <code>__init__</code> the list is built <b>once, when the class is read</b>, so every object shares it. <b>No error is raised</b> — you simply get a wrong answer, which is far worse.'},
+
+methods:{code:['# @classmethod removed',
+               'class NoCM:',
+               '    def from_f(cls, f): return cls((f - 32) * 5 / 9)',
+               'NoCM.from_f(212)',
+               'ERR TypeError: NoCM.from_f() missing 1 required positional argument: \'f\'',
+               '',
+               '# @staticmethod removed',
+               'class NoSM:',
+               '    def is_freezing(c): return c <= 0',
+               'NoSM().is_freezing(-5)',
+               'ERR TypeError: NoSM.is_freezing() takes 1 positional argument but 2 were given'],
+         v:'Without <code>@classmethod</code>, <code>cls</code> is just an ordinary first parameter, so calling it on the class leaves <code>f</code> unfilled. Without <code>@staticmethod</code>, Python still slips the instance into the first seat, so <code>c</code> silently becomes the object instead of the number. <b>The decorator is the only thing that decides what lands in seat one.</b>'},
+
+encap:{code:['class NoProp:',
+             '    def __init__(self, b): self.balance = b',
+             '',
+             'n = NoProp(100)',
+             'n.balance = -500      # nothing checks this',
+             'n.balance',
+             'ERR -500      <- an account that owes the bank money'],
+       v:'A plain attribute accepts anything. <b>Encapsulation is not about hiding the name</b> — it is about routing every change through a method or a <code>@property</code> setter that can refuse. Without that, the object can be put into a state it should never be in.'},
+
+abst:{code:['class PlainShape:',
+            '    def area(self): pass       # subclasses are "supposed to" override',
+            '',
+            'class Square(PlainShape):',
+            '    def __init__(self, s): self.s = s',
+            '    # forgot area()',
+            '',
+            'Square(4).area()',
+            'ERR None      <- no error. just nothing.',
+            '',
+            'sum(s.area() for s in shapes)',
+            'ERR TypeError: unsupported operand type(s) for +: \'int\' and \'NoneType\''],
+      v:'Without <code>ABC</code> and <code>@abstractmethod</code>, the forgotten method returns <code>None</code> in silence, and that <code>None</code> travels until it breaks something in completely unrelated code. <b>With them, Python refuses to build the object at all</b>, naming the class and the missing method.'},
+
+inher:{code:['class Child(Parent):',
+             '    def __init__(self, owner, balance=0, rate=0.05):',
+             '        self.rate = rate      # forgot super().__init__()',
+             '',
+             'Child("amaan", 1000).owner',
+             'ERR AttributeError: \'Child\' object has no attribute \'owner\''],
+       v:'The child’s <code>__init__</code> <b>replaces</b> the parent’s rather than adding to it. Skip <code>super().__init__()</code> and the parent’s attributes are simply never created — and you find out later, somewhere else, with an error that does not mention <code>super</code> at all.'},
+
+poly:{code:['class Dog:',
+            '    def speak(self): return "Woof"',
+            'class Robot:',
+            '    def make_noise(self): return "Beep"   # different name',
+            '',
+            '[x.speak() for x in (Dog(), Robot())]',
+            'ERR AttributeError: \'Robot\' object has no attribute \'speak\''],
+      v:'Polymorphism is not magic — it rests entirely on <b>everyone agreeing to the same method name</b>. Rename it on one class and the shared loop breaks. That agreement is the whole contract, and in Python it is the <i>only</i> thing required: no base class, no interface.'},
+
+dunder:{code:['class NoDunders:',
+              '    def __init__(self, amt): self.amt = amt',
+              '',
+              'NoDunders(5) + NoDunders(3)',
+              'ERR TypeError: unsupported operand type(s) for +: \'NoDunders\' and \'NoDunders\'',
+              '',
+              'print(NoDunders(5))',
+              'ERR <__main__.NoDunders object at 0x7fe050dbf710>',
+              '',
+              'NoDunders(5) == NoDunders(5)',
+              'ERR False     <- same value, still "not equal"'],
+        v:'Your object starts out understanding <b>none</b> of Python’s syntax. <code>+</code> has nothing to call, printing gives a memory address, and <code>==</code> falls back to comparing identity — so two identical Moneys are "different". <b>You only get the behaviour you explicitly teach it.</b>'},
+
+comp:{code:['class Car:',
+            '    def start(self): return "vroom"',
+            '    def refuel(self): return "pumping petrol"',
+            '',
+            'class ElectricCar(Car):    # inheritance instead of composition',
+            '    pass',
+            '',
+            'ElectricCar().refuel()',
+            'ERR \'pumping petrol\'    <- and no way to refuse it'],
+      v:'Inheritance hands down <b>everything</b>, and there is no syntax for "all of it except that one". With composition you hand the car exactly the engine you want, and nothing unwanted arrives.'},
+
+ident:{code:['x = [1, 2, 3]',
+             'y = [1, 2, 3]',
+             '',
+             'x == y',
+             'OUT True      <- same contents',
+             'x is y',
+             'ERR False     <- and this is the one that surprises people'],
+       v:'They look identical and they <i>are</i> equal, but they are two separate lists in two separate places in memory. <b>Use <code>is</code> to compare values and you will eventually get an answer that is technically correct and completely useless.</b> Keep <code>is</code> for <code>None</code>, <code>True</code> and <code>False</code>.'}
+};
+
 /* ---------- step-by-step execution: which line, and what the keyword does ---------- */
 var STEPS = {
 what:[
@@ -665,6 +836,7 @@ document.getElementById('toc').innerHTML = TOPICS.map(function(t){
 document.getElementById('topics').innerHTML = TOPICS.map(function(t){
   return '<section class="topic" id="' + t.id + '">' +
     '<div class="thead"><span class="n">' + t.n + '</span><h2>' + t.title + '</h2></div>' +
+    (DEFS[t.id] ? '<div class="defn"><span class="h">Definition</span><p>' + DEFS[t.id] + '</p></div>' : '') +
     '<div class="say"><span class="h">Say this</span><p>' + t.say + '</p></div>' +
     (HUMAN[t.id] ? '<div class="human"><span class="h">In human terms</span><p>' + HUMAN[t.id] + '</p></div>' : '') +
     '<div class="player" id="pl' + t.id + '">' + code(t.code) +
@@ -675,6 +847,11 @@ document.getElementById('topics').innerHTML = TOPICS.map(function(t){
         '<button class="btn q" data-a="reset">Reset</button>' +
         '<span class="cnt"></span>' +
       '</div></div>' +
+    (WITHOUT[t.id]
+      ? '<details class="wo"><summary>What happens if you <b>don\'t</b> use it \u2014 run for real</summary>' +
+          '<div class="wobody">' + code(WITHOUT[t.id].code) +
+          '<p class="wov">' + WITHOUT[t.id].v + '</p></div></details>'
+      : '') +
     '<div class="qs">' + t.qs.map(function(x){
       return '<details class="qa"><summary>' + x.q + '</summary><div class="ans">' + x.a + '</div></details>';
     }).join('') + '</div>' +
