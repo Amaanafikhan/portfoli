@@ -55,7 +55,12 @@ MRO, polymorphism and duck typing, magic methods and operator overloading,
 composition vs aggregation vs association, and identity vs equality. Each gets
 one sentence to say out loud, then **the same idea in human terms** — an ATM,
 a classroom whiteboard, identical twins, a hospital admission form — then
-verified code, then its interview questions inline. The human comparison is a
+the code as a **step-through player** — press Step and the running line
+lights up while the caption says why that line sits where it does and what
+the keyword on it actually does — then its interview questions inline.
+**98 steps across the twelve sections.** Section 03 makes the key point: the
+writing order is name it, set it up, give it behaviour, use it, while the
+running order skips every definition and starts at the bottom. The human comparison is a
 standing request: definitions alone were not landing, so every concept is
 anchored to something already familiar before any code appears. **69 questions**, then the whole bank as a shuffled drill that
 self-grades and reports which concepts were weakest.

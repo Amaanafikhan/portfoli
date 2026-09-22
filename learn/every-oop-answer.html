@@ -97,6 +97,14 @@ hr{border:none;border-top:1px solid var(--rule);margin:0}
 .human p b{color:var(--ink)}
 .human code{background:color-mix(in srgb,var(--warn) 14%,var(--panel))}
 
+.player{display:flex;flex-direction:column;gap:11px}
+.player .code .ln{border-left:3px solid transparent;transition:background .2s,color .2s,border-color .2s}
+.player .code .ln.on{background:color-mix(in srgb,var(--warn) 34%,transparent);color:#fff;border-left-color:var(--warn)}
+.player .pnote{font-size:14.5px;line-height:1.55;color:var(--ink-soft);min-height:58px;border-top:1px solid var(--rule);padding-top:11px}
+.player .pnote b{color:var(--ink)}
+.player .pnote .win{color:var(--good);font-weight:800}
+.player .pnote .lose{color:var(--bad);font-weight:800}
+
 /* ---------- drill ---------- */
 .drill{background:var(--panel);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:15px}
 .dq{font-size:clamp(17px,3.6vw,21px);font-weight:800;line-height:1.35;min-height:60px}
@@ -125,7 +133,7 @@ footer{color:var(--ink-faint);font-size:13px;line-height:1.6;border-top:1px soli
 <header style="display:flex;flex-direction:column;gap:14px">
   <span style="font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:800;color:var(--ink-faint)">OOP concepts · the whole syllabus</span>
   <h1>Every concept,<br>and <em>every question</em><br>they ask about it.</h1>
-  <p class="lede">Twelve concepts in teaching order — each one gets <b>a sentence you can say out loud</b>, then the <b>same idea in everyday human terms</b> — an ATM, a classroom whiteboard, identical twins — then code that was actually run, then the interview questions for that concept. Then the whole bank as a scored drill at the end.</p>
+  <p class="lede">Twelve concepts in teaching order — each one gets <b>a sentence you can say out loud</b>, then the <b>same idea in everyday human terms</b> — an ATM, a classroom whiteboard, identical twins — then the code as a <b>step-by-step run</b> — press Step and watch which line executes, in what order, and what the keyword on it actually does — then the interview questions for that concept. Then the whole bank as a scored drill at the end.</p>
   <p class="lede" id="countline"></p>
 </header>
 
@@ -217,16 +225,19 @@ var TOPICS = [
 
 {id:'init', n:'03', title:'__init__ and self',
  say:'<code>__init__</code> runs automatically when an object is created and sets its starting state. <code>self</code> is the object itself, handed to every method as the hidden first argument.',
- code:['class Demo:',
-       '    def __new__(cls, *args):        # 1. creates the object',
-       '        return super().__new__(cls)',
-       '    def __init__(self, x):          # 2. fills it in',
-       '        self.x = x',
-       '    def __del__(self):              # 3. runs when it is destroyed',
-       '        pass',
+ code:['class BankAccount:',
+       '    def __init__(self, owner, balance=0):',
+       '        self.owner = owner',
+       '        self.balance = balance',
        '',
-       '# acc.deposit(50)  is really  BankAccount.deposit(acc, 50)',
-       '# the object on the left of the dot becomes self'],
+       '    def deposit(self, amount):',
+       '        self.balance += amount',
+       '        return self.balance',
+       '',
+       'acc = BankAccount("amaan", 100)',
+       'acc.deposit(50)',
+       'print(acc.balance)',
+       'OUT 150'],
  qs:[
   {q:'What is <code>self</code>?', a:'The <b>instance the method was called on</b>. Python passes it automatically as the first argument, so <code>acc.deposit(50)</code> is really <code>BankAccount.deposit(acc, 50)</code>.'},
   {q:'Is <code>self</code> a keyword?', a:'<b>No</b> — it is a naming convention. Any name works, but every Python programmer reads <code>self</code>, so never rename it.'},
@@ -481,6 +492,139 @@ var TOPICS = [
   {q:'Shallow copy vs deep copy?', a:'A <b>shallow</b> copy duplicates the outer container but the inner objects are still shared. A <b>deep</b> copy (<code>copy.deepcopy</code>) duplicates everything recursively. It matters the moment you have a list of lists.'}]}
 ];
 
+/* ---------- step-by-step execution: which line, and what the keyword does ---------- */
+var STEPS = {
+what:[
+ {l:1,t:'<b>Procedural first.</b> A dict holding values. It is a bag of data — it knows nothing about deposits.'},
+ {l:2,t:'The function lives <b>somewhere else entirely</b>, and has to be <i>handed</i> the account. Two separate things you keep matched by hand.'},
+ {l:3,t:'Every call repeats it. <b>Nothing stops you passing the wrong dict</b> — Python has no idea this function was meant for accounts.'},
+ {l:6,t:'<b>Now the OOP version. This is the line you write first:</b> <code>class BankAccount:</code>. You are naming the <i>thing</i>, before any behaviour exists.'},
+ {l:7,t:'<code>__init__</code> comes second, because everything else needs an object to exist first. <b>What the keyword does:</b> it runs automatically the moment one is created.'},
+ {l:10,t:'Then the behaviour, written <b>inside</b> the class — <code>deposit</code> now sits next to the data it changes.'},
+ {l:13,t:'<b>This is the first line that actually does anything.</b> Everything above was definitions being filed away.'},
+ {l:14,t:'<code>acc.deposit(50)</code> — and <b>no account was passed</b>. The object on the left of the dot becomes <code>self</code>. That is the whole difference.'}],
+
+classobj:[
+ {l:0,t:'<b>Write this first.</b> Nothing exists yet — no dog has a name, no dog can bark. Python files the blueprint and moves on.'},
+ {l:1,t:'<code>species</code> sits at <b>class level</b>, so it is created <b>once</b> and shared by every dog. The right choice here — every dog really is the same species.'},
+ {l:2,t:'<code>__init__</code> — what each dog needs in order to exist. <b>The keyword:</b> Python calls it for you at creation. You never call it.'},
+ {l:3,t:'<code>self.name</code> is an <b>instance</b> attribute — one per dog, because names differ.'},
+ {l:5,t:'<b>First line that runs.</b> <code>Dog("Rex")</code> builds an object, then hands it to <code>__init__</code>.'},
+ {l:6,t:'A second object from the same blueprint, with its own memory. <b>One stamp, two prints.</b>'},
+ {l:8,t:'Different names — because <code>name</code> was per-instance.'},
+ {l:10,t:'<code>True</code> — the <i>same</i> species string, not a copy, because a class attribute is one object shared by all.'}],
+
+init:[
+ {l:0,t:'<b>Line one, always:</b> name the thing. <code>class BankAccount:</code>. No account exists yet — Python files this away and reads on.'},
+ {l:1,t:'<code>def __init__(self, owner, balance=0):</code> — written second, because everything else needs an object first. <b>What the keyword does:</b> Python runs it automatically at creation. <code>self</code> is the first parameter and you <b>never</b> pass it.'},
+ {l:2,t:'<code>self.owner = owner</code>. Right of the <code>=</code> is the value that arrived; left is where it is stored <b>on this object</b>. Still nothing has run — this is only being defined.'},
+ {l:5,t:'<code>def deposit(self, amount):</code> — behaviour, written after the setup. Note <code>self</code> again in the first seat.'},
+ {l:9,t:'<b>Now execution starts.</b> The first line that does real work is at the bottom. <code>BankAccount("amaan", 100)</code> creates an empty object, then calls <code>__init__</code> with <code>self</code> = that new object.'},
+ {l:2,t:'So <b>now</b> line 3 runs, with <code>self</code> being the account being born. <code>self.owner</code> becomes "amaan".'},
+ {l:3,t:'And <code>self.balance</code> becomes 100. <code>__init__</code> finishes and hands the finished object back to <code>acc</code>.'},
+ {l:10,t:'<code>acc.deposit(50)</code>. <b>Watch the hidden argument:</b> Python turns this into <code>BankAccount.deposit(acc, 50)</code>. The thing left of the dot slides into <code>self</code>.'},
+ {l:6,t:'Inside, <code>self</code> <i>is</i> <code>acc</code>. So <code>self.balance += amount</code> is this one account’s balance: 100 + 50.'},
+ {l:12,t:'<b>150.</b> Writing order was: name it → set it up → give it behaviour → use it. Running order was: skip all the definitions → create → <code>__init__</code> → call → method body.'}],
+
+attrs:[
+ {l:1,t:'<b>The bug is born on this line.</b> <code>items = []</code> sits at class level, so the list is built <b>once</b>, when Python reads the class — before any cart exists.'},
+ {l:4,t:'Two carts. But <code>a.items</code> and <code>b.items</code> are <b>not two lists</b> — they are two names pointing at the one above.'},
+ {l:5,t:'The apple goes into that single shared list.'},
+ {l:7,t:'<span class="lose">And b has it too, although nobody touched b.</span> No error, no warning — just a wrong answer.'},
+ {l:10,t:'<b>The fix is one line of difference.</b> <code>__init__</code> runs <b>once per cart</b>...'},
+ {l:11,t:'...so <code>[]</code> is evaluated separately each time. Two genuinely separate lists.'},
+ {l:15,t:'The apple goes into c’s own list, and only c’s.'},
+ {l:17,t:'<span class="win">d is empty. Correct.</span> The rule to carry: <b>mutable values belong in <code>__init__</code>, never at class level.</b>'}],
+
+methods:[
+ {l:1,t:'The ordinary method. First seat is <code>self</code> — it needs one particular Temp to work on.'},
+ {l:4,t:'<b><code>@classmethod</code></b>. A decorator is a line written <i>above</i> a def that changes what arrives in the first seat.'},
+ {l:5,t:'Now the first seat holds <code>cls</code> — <b>the class itself</b>, not an object.'},
+ {l:6,t:'Which is exactly why it can <b>build</b> one: <code>cls(...)</code> makes a new Temp. That is what "alternative constructor" means.'},
+ {l:8,t:'<b><code>@staticmethod</code></b> — the first seat gets <b>nothing at all</b>.'},
+ {l:9,t:'No <code>self</code>, no <code>cls</code>. A plain function that lives inside the class only because this is where it is useful.'},
+ {l:13,t:'Called on the <b>class</b>, and it hands back a new object. 100 °C.'},
+ {l:15,t:'The staticmethod needs no object either — just a value.'},
+ {l:17,t:'The contrast: an <i>instance</i> method called on the class has nobody in seat one, so Python says so outright.'}],
+
+encap:[
+ {l:2,t:'<b>One underscore.</b> A sign on the door reading <i>Staff Only</i>. Python does <b>nothing</b> — it is a message to other programmers.'},
+ {l:3,t:'<b>Two underscores.</b> Here Python does act: it <b>renames</b> the attribute behind your back. That is name mangling.'},
+ {l:6,t:'Now reading <code>_soft</code> from outside the class \u2014 the single-underscore one, the one that is only a polite request.'},
+ {l:7,t:'...works perfectly. Nothing was ever stopping you.'},
+ {l:8,t:'Now reading <code>__hard</code> by the name you wrote...'},
+ {l:9,t:'...fails — because that name no longer exists. It was renamed at class-creation time.'},
+ {l:10,t:'But the new name is completely predictable: <code>_ClassName__attr</code>.'},
+ {l:11,t:'<span class="lose">And there it is.</span> <b>Nothing in Python is truly private.</b> Mangling exists to stop accidental clashes in subclasses, not to stop you.'}],
+
+abst:[
+ {l:0,t:'<b>Write this first:</b> the import. <code>ABC</code> stands for Abstract Base Class.'},
+ {l:2,t:'<code>class Shape(ABC)</code> — inheriting from <code>ABC</code> is the switch that turns the enforcement on.'},
+ {l:3,t:'<b><code>@abstractmethod</code></b> is the contract. It says: any real subclass <b>must</b> write this method.'},
+ {l:4,t:'The body is <code>...</code> because there is nothing to write — a generic Shape has no idea how to compute an area.'},
+ {l:6,t:'A subclass that promises to be a Shape...'},
+ {l:8,t:'...and forgets <code>area()</code>. Without ABC this would be quietly allowed.'},
+ {l:10,t:'Now try to actually build a Square. <b>This is the moment the contract gets checked</b> \u2014 not later, when something asks for its area.'},
+ {l:11,t:'<span class="win">Refused at once</span> — naming both the class and the missing method. <b>An error in the right place beats no error at all.</b>'}],
+
+inher:[
+ {l:0,t:'<b>The parent goes in the brackets.</b> From this line on, SavingsAccount already has everything BankAccount has.'},
+ {l:1,t:'The child writes its own <code>__init__</code>, which <b>replaces</b> the parent’s rather than adding to it. This is where people lose the parent’s attributes.'},
+ {l:2,t:'<b><code>super().__init__(...)</code> — write this FIRST inside the child.</b> It runs the parent’s setup. Leave it out and <code>owner</code> and <code>balance</code> simply never exist.'},
+ {l:3,t:'<i>Then</i> your own additions, after the parent is done.'},
+ {l:6,t:'<b>Type 1 · Single.</b> One parent, one child. Ninety percent of real code.'},
+ {l:7,t:'<b>Type 2 · Multiple.</b> Two parents, one child. Python allows it; Java does not, for real classes.'},
+ {l:8,t:'<b>Type 3 · Multilevel.</b> A chain — grandparent, parent, child.'},
+ {l:9,t:'<b>Type 4 · Hierarchical.</b> One parent, many children.'},
+ {l:10,t:'<b>Type 5 · Hybrid.</b> A mix — almost always drawn as the diamond.'},
+ {l:18,t:'The diamond in code: <code>D</code> has two parents, and both of them descend from <code>A</code>.'},
+ {l:21,t:'<code>B</code> wins — <b>left to right</b> through the parent list.'},
+ {l:23,t:'And this is the order Python actually walks: <b>D → B → C → A → object</b>, each class appearing exactly once. That is the MRO, and it is the answer to the diamond problem.'}],
+
+poly:[
+ {l:1,t:'Dog has a method called <code>speak</code>. Nothing special about it \u2014 an ordinary method with an ordinary name.'},
+ {l:3,t:'Robot has a method called <code>speak</code>. <b>Notice what is missing: no shared parent, no base class, nothing.</b>'},
+ {l:5,t:'The loop does not check what type anything is.'},
+ {l:6,t:'One call, written once: <code>t.speak()</code>. This line has no idea whether <code>t</code> is a Dog or a Robot, and does not need to.'},
+ {l:8,t:'<span class="win">Two different answers from one line of code.</span> That is polymorphism — and you got it with <b>no inheritance at all</b>. Duck typing.'},
+ {l:12,t:'Now overloading. You write <code>add</code> taking two numbers.'},
+ {l:13,t:'Then <code>add</code> taking three. In Java the compiler would pick between them. <b>In Python a class body is just a namespace</b>, so this <code>def</code> overwrites the first exactly like <code>x = 1; x = 2</code>.'},
+ {l:16,t:'<span class="lose">So the two-argument version is gone.</span> Not "picks the other one" — <b>gone</b>. Python does not support method overloading.'},
+ {l:20,t:'The Pythonic answer: one method, <code>*args</code>. For real type-based dispatch, <code>functools.singledispatch</code>.'}],
+
+dunder:[
+ {l:1,t:'An ordinary <code>__init__</code>. At this point Money is just a number in a box — it cannot be added, compared or measured.'},
+ {l:2,t:'<b><code>__add__</code> teaches your object what <code>+</code> means.</b> Without this line Money simply does not fit the <code>+</code> socket.'},
+ {l:3,t:'<code>__eq__</code> for <code>==</code>. Without it, two equal-looking Moneys compare as <i>different</i>, because the default compares identity, not value.'},
+ {l:4,t:'<code>__len__</code> is what <code>len()</code> reaches for. Define it and your object can be measured like a list or a string.'},
+ {l:5,t:'<code>__repr__</code> so you can actually see it while debugging instead of a memory address.'},
+ {l:7,t:'Now Python sees <code>+</code> and goes looking for <code>__add__</code>...'},
+ {l:8,t:'...finds it, and hands you back a brand new Money.'},
+ {l:11,t:'Same again for <code>len()</code>. Python does not care what your class is called \u2014 it just goes looking for <code>__len__</code>...'},
+ {l:12,t:'...finds it, and <code>len()</code> now works on a type you invented yourself. That is the whole trick of dunder methods.'},
+ {l:13,t:'Now try subtraction \u2014 but you never wrote <code>__sub__</code>, so there is nothing for <code>-</code> to call...'},
+ {l:14,t:'...so <code>-</code> has nothing to call. <b>You only get the operators you teach it.</b>'}],
+
+comp:[
+ {l:3,t:'<b>Composition.</b> The engine is built <b>inside</b> <code>__init__</code>. The car owns it, and it dies with the car.'},
+ {l:7,t:'<b>Aggregation.</b> Here the engine arrives as a <b>parameter</b>...'},
+ {l:8,t:'...so it already existed before the car, and it will outlive it.'},
+ {l:10,t:'One engine, built <b>outside</b> any car \u2014 it exists on its own before a car is anywhere near it.'},
+ {l:11,t:'Two cars, and <b>the same engine handed to both</b>. Neither of them made it, so neither of them owns it.'},
+ {l:13,t:'<code>True</code> — they are literally the same engine object. That is aggregation: shared, with an independent lifetime.'},
+ {l:16,t:'<code>False</code> — each composition car built its own. <b>Look at where the part is created and you know instantly which relationship it is.</b>'}],
+
+ident:[
+ {l:0,t:'One list, sitting in one place in memory. The name <code>a</code> is a label pointing at it.'},
+ {l:1,t:'A second list with the same contents. <b>Same values, completely different object.</b>'},
+ {l:2,t:'<code>c = a</code> — <b>not a copy.</b> Just a second name for the first list.'},
+ {l:5,t:'<code>==</code> compares contents, so a and b match.'},
+ {l:7,t:'<code>is</code> compares identity, so they do not. <b>Two separate objects that happen to look alike.</b>'},
+ {l:9,t:'But <code>a is c</code> is True, because c was never a new list — only a new name.'},
+ {l:15,t:'<code>isinstance</code> counts subclasses: a Dog <i>is</i> an Animal.'},
+ {l:17,t:'<code>type() ==</code> demands the exact class, so it says no — which quietly breaks polymorphism. <b>That is why isinstance is almost always the right one.</b>'}]
+};
+
 /* ---------- the same idea, in human terms ---------- */
 var HUMAN = {
 what:'<b>A recipe book and a cupboard, versus a meal kit.</b> Procedural code is a recipe book on one shelf and ingredients in a cupboard across the room — you keep walking back and forth carrying things, and nothing stops you grabbing salt instead of sugar. OOP is a meal kit: the ingredients and the instructions arrive in <i>one box</i>, already matched.',
@@ -523,12 +667,48 @@ document.getElementById('topics').innerHTML = TOPICS.map(function(t){
     '<div class="thead"><span class="n">' + t.n + '</span><h2>' + t.title + '</h2></div>' +
     '<div class="say"><span class="h">Say this</span><p>' + t.say + '</p></div>' +
     (HUMAN[t.id] ? '<div class="human"><span class="h">In human terms</span><p>' + HUMAN[t.id] + '</p></div>' : '') +
-    code(t.code) +
+    '<div class="player" id="pl' + t.id + '">' + code(t.code) +
+      '<p class="pnote"></p>' +
+      '<div class="row">' +
+        '<button class="btn" data-a="next">Step \u2192</button>' +
+        '<button class="btn q" data-a="back">\u2190 Back</button>' +
+        '<button class="btn q" data-a="reset">Reset</button>' +
+        '<span class="cnt"></span>' +
+      '</div></div>' +
     '<div class="qs">' + t.qs.map(function(x){
       return '<details class="qa"><summary>' + x.q + '</summary><div class="ans">' + x.a + '</div></details>';
     }).join('') + '</div>' +
   '</section>';
 }).join('');
+
+
+/* ---------- step players: highlight the running line, explain it ---------- */
+TOPICS.forEach(function(t){
+  var S = STEPS[t.id];
+  var root = document.getElementById('pl' + t.id);
+  if (!S || !root) return;
+  var lines = root.querySelectorAll('.code .ln');
+  var note = root.querySelector('.pnote');
+  var cnt = root.querySelector('.cnt');
+  var next = root.querySelector('[data-a="next"]');
+  var back = root.querySelector('[data-a="back"]');
+  var at = -1;
+
+  function paint(){
+    lines.forEach(function(l, i){ l.classList.toggle('on', at >= 0 && i === S[at].l); });
+    note.innerHTML = at < 0
+      ? 'Press <b>Step</b> to walk the code one line at a time \u2014 which line runs, and what the keyword on it actually does.'
+      : S[at].t;
+    cnt.textContent = at < 0 ? '0 / ' + S.length : (at + 1) + ' / ' + S.length;
+    next.disabled = at >= S.length - 1;
+    back.disabled = at < 0;
+    next.textContent = at >= S.length - 1 ? 'Done' : 'Step \u2192';
+  }
+  next.onclick = function(){ if (at < S.length - 1){ at++; paint(); } };
+  back.onclick = function(){ if (at >= 0){ at--; paint(); } };
+  root.querySelector('[data-a="reset"]').onclick = function(){ at = -1; paint(); };
+  paint();
+});
 
 /* ---------- the drill ---------- */
 var BANK = [];
